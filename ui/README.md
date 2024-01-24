@@ -9,15 +9,12 @@ Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 configurations are in dev.env file
-
-
-
+```sh
 REACT_APP_ENV = "DEVELOPMENT"
-
 REACT_APP_KEYCLOAK_URL = "http://localhost:8080/"
 REACT_APP_KEYCLOAK_REALM = "test"
 REACT_APP_KEYCLOAK_CLIENTID = "frontend"
-
 REACT_APP_BACKEND_URL = "http://localhost:8082"
+```
 
 
