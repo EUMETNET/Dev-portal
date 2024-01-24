@@ -8,11 +8,11 @@
 		<version>2.6.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>io.wkrzywiec.keycloak</groupId>
+	<groupId>com.apiportal.backend</groupId>
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>backend</name>
-	<description>Backend application for Keycloak (security) playground project</description>
+	<description>Backend application for Keycloak dev portal project</description>
 
 	<properties>
 		<java.version>17</java.version>
@@ -143,13 +143,7 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

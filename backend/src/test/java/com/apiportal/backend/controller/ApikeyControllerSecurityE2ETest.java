@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = {"spring.main.allow-bean-definition-overriding=true"})
 @AutoConfigureMockMvc
 @Testcontainers
-public class MovieControllerSecurityE2ETest {
+public class ApikeyControllerSecurityE2ETest {
 
     @Container
     private static final GenericContainer keycloak = new GenericContainer(DockerImageName.parse("jboss/keycloak:11.0.2"))
@@ -44,49 +44,38 @@ public class MovieControllerSecurityE2ETest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("Try to get all movies (request without Authorization header)")
-    void requestAllMoviesWithoutAuthorizationHeader() throws Exception {
+    @DisplayName("Try to get apikey (request without Authorization header)")
+    void requestApikeyWithoutAuthorizationHeader() throws Exception {
 
         mockMvc.perform(
-                get("/movies"))
+                get("/getapikey"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("Get all movies (request with Authorization header)")
-    void getAllMoviesWithAuthorizationHeader() throws Exception {
+    @DisplayName("Get api-key (request with Authorization header)")
+    void getApikeyWithAuthorizationHeader() throws Exception {
 
         String accessToken = fetchAccessToken("ADMIN");
 
         mockMvc.perform(
-                get("/movies")
+                get("/getapikey")
                         .header("Authorization", "Bearer " + accessToken))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
+
+
     @Test
-    @DisplayName("Get a single movie (request with Authorization header)")
-    void getSingleMovieWithAuthorizationHeader() throws Exception {
+    @DisplayName("Try to get a api key with wrong role (request with Authorization header)")
+    void getKeyHavingIncorrectUserRole() throws Exception {
 
         String accessToken = fetchAccessToken("VISITOR");
 
         mockMvc.perform(
-                get("/movies/1")
-                        .header("Authorization", "Bearer " + accessToken))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("Try to get a single movie having wrong role (request with Authorization header)")
-    void getSingleHavingIncorrectUserRole() throws Exception {
-
-        String accessToken = fetchAccessToken("VISITOR");
-
-        mockMvc.perform(
-                get("/movies")
+                get("/getapikey")
                         .header("Authorization", "Bearer " + accessToken))
                 .andDo(print())
                 .andExpect(status().isForbidden());
