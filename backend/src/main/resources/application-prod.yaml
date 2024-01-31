@@ -2,7 +2,8 @@ server:
   port: 9000
 
 keycloak:
-  url: http://localhost:8080
+  #url: http://localhost:8080
+  url: http://auth:8080/realms/test/protocol/openid-connect/certs #this is for docker
   realm: test
 
 management:
