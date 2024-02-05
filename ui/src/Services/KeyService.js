@@ -1,4 +1,5 @@
 import axios from "axios"
+import { toast } from 'react-toastify';
 
 export const keyApi = {
     getApiKey
@@ -8,7 +9,9 @@ export const keyApi = {
     debugger
     return instance.get('/getapikey', {
       headers: { 'Authorization': bearerAuth(token)}
-    })
+    }).catch(err => { debugger 
+      handleError(err);
+      });
 
     // instance.get('/getapikey', { headers: { 'Authorization': bearerAuth(token)}})
     // .then((response) => {return response.data})
@@ -38,4 +41,31 @@ export const keyApi = {
   
   function bearerAuth(token) {
     return `Bearer ${token}`
+  }
+
+  function showToaster(error) {
+    toast.error(error, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+      })
+  }
+
+  function handleError(error) {
+    if (error.status === 500) {
+      showToaster('error: 500 are you logged in?'  );
+    }
+    else {
+      if (error.data !== undefined) {
+        showToaster('error: ' +error.status + ' message: ' + error.data.message !== undefined ? error.data.message : error.data);
+      }
+      else
+      showToaster('error: ' +error.status + ' message: ' + error.data);
+    }
+    
   }

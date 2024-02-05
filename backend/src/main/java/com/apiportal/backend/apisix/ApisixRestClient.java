@@ -9,10 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -48,6 +45,26 @@ public class ApisixRestClient {
         } catch (RestClientException e) {
             throw e;
         }
+    }
+
+    public boolean checkIfUserExists(String userName) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<Void> requestEntity = new HttpEntity<>(generateHeaders());
+
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                consumersUrl+ "/" + userName, HttpMethod.GET, requestEntity, String.class);
+
+        JSONObject jsonObject = new JSONObject(response.getBody());
+        JSONObject values = jsonObject.getJSONObject("value");
+        String foundUsername = values.get("username").toString();
+        if (foundUsername != null) {
+            return true;
+        }
+        else {
+            return false;
+        }
+
     }
 
     private HttpHeaders generateHeaders() {

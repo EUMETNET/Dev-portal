@@ -1,5 +1,6 @@
 package com.apiportal.backend.service;
 
+import com.apiportal.backend.models.VaultApiInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,8 @@ import org.springframework.vault.core.VaultOperations;
 import org.springframework.vault.core.VaultTemplate;
 import org.springframework.vault.support.VaultResponse;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -52,10 +55,24 @@ public class VaultService {
             read = operations.read("apisix/" +username);
         } catch (HttpStatusCodeException e) {
             throw e;
+        } catch (RestClientException e) {
+            throw e;
         } catch (NoSuchMethodError e) {
             return null;
         }
         return read;
+    }
+
+    public VaultApiInfo checkIfUserExists(String userName) {
+        VaultResponse vaultResponse = getUserinfoFromVault(userName);
+        //check if user exists
+        if (vaultResponse == null) {
+            return null;
+        }
+        VaultApiInfo vaultApiInfo = new VaultApiInfo();
+        vaultApiInfo.setApiKey(vaultResponse.getData().get("api-key").toString());
+        vaultApiInfo.setDate(vaultResponse.getData().get("date").toString());
+        return vaultApiInfo;
     }
 
     private String getDate() {

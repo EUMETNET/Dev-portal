@@ -1,5 +1,8 @@
 package com.apiportal.backend.controller;
 
+import com.apiportal.backend.models.MessageObject;
+import com.apiportal.backend.models.ServerStatus;
+import com.apiportal.backend.models.VaultApiInfo;
 import com.apiportal.backend.service.VaultService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.apiportal.backend.apisix.ApisixRestClient;
@@ -15,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.vault.support.VaultResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientException;
 
 
 @RestController
@@ -39,32 +43,41 @@ public class ApikeyController {
         //get user name we use this as id to save to vault and apisix
         String userName = sc.getAuthentication().getName();
 
-        //check if user is allready in vault
-        VaultResponse vaultResponse = vaultService.getUserinfoFromVault(userName);
+        //check if servers are online and if user exists
+        ServerStatus serverStatus = checkVaultAndApisix(userName);
 
+        //if vault or apisix is offline we should not save any new user information
+        if (!serverStatus.isApisixOnline() || !serverStatus.isVaultOnline()) {
+            if (!serverStatus.isApisixOnline()) {
+                return ResponseEntity
+                        .status(HttpStatus.SERVICE_UNAVAILABLE)
+                        .body(new MessageObject("Apisix server error"));
+            }
+            else if (!serverStatus.isVaultOnline()) {
+                return ResponseEntity
+                        .status(HttpStatus.SERVICE_UNAVAILABLE)
+                        .body(new MessageObject("Vault server error"));
+            }
+
+        }
+
+        //both servers seem to be online lets return key if user is allready saved
         String savedApikey = null;
         User createdUser = new User();
         createdUser.setUserName(userName);
 
-        //if vault response is null it means user is not saved in there
-        if (vaultResponse == null) {
-//            return ResponseEntity
-//                    .status(HttpStatus.FORBIDDEN)
-//                    .body("Error Message");
-            //save user to vault and return generated api key
-            savedApikey = vaultService.saveUserToVault(userName);
-            createdUser.setApiKey(savedApikey);
-
+        if (!serverStatus.isApisixUserFound()) {
             //save user to apisix
             createApisixUser(userName);
         }
-        else {
-            createdUser.setApiKey(vaultResponse.getData().get("api-key").toString());
+
+        if (!serverStatus.isVaultUserFound()) {
+            savedApikey = vaultService.saveUserToVault(userName);
+            createdUser.setApiKey(savedApikey);
         }
-
-
-
-
+        else {
+            createdUser.setApiKey(serverStatus.getVaultApiInfo().getApiKey());
+        }
 
         return  ResponseEntity.status(HttpStatus.OK).body(createdUser);
     }
@@ -77,5 +90,26 @@ public class ApikeyController {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private ServerStatus checkVaultAndApisix(String userName) {
+        ServerStatus serverStatus = new ServerStatus();
+        try {
+            boolean found = apisixRestClient.checkIfUserExists(userName);
+            serverStatus.setApisixUserFound(found);
+        } catch (RestClientException e) {
+            serverStatus.setApisixOnline(false);
+        }
+        try {
+            VaultApiInfo vaultApiInfo = vaultService.checkIfUserExists(userName);
+            if (vaultApiInfo != null) {
+                serverStatus.setVaultUserFound(true);
+                serverStatus.setVaultApiInfo(vaultApiInfo);
+            }
+            serverStatus.setVaultOnline(true);
+        } catch (RestClientException e) {
+            serverStatus.setVaultOnline(false);
+        }
+        return serverStatus;
     }
 }
