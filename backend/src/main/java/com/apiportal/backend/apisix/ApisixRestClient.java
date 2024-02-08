@@ -1,9 +1,10 @@
 package com.apiportal.backend.apisix;
 
 
-import com.apiportal.backend.apisix.models.Consumer;
-import com.apiportal.backend.apisix.models.KeyAuth;
-import com.apiportal.backend.apisix.models.Plugins;
+import com.apiportal.backend.apisix.models.Consumer.Consumer;
+import com.apiportal.backend.apisix.models.Consumer.KeyAuth;
+import com.apiportal.backend.apisix.models.Consumer.Plugins;
+import com.apiportal.backend.apisix.models.Route.Routes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
@@ -13,11 +14,19 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ApisixRestClient {
 
     @Value("${apisix.consumersUrl}")
     private String consumersUrl;
+
+    @Value("${apisix.routesUrl}")
+    private String routesUrl;
 
     @Value("${apisix.adminApiKey}")
     private String adminApiKey;
@@ -27,6 +36,9 @@ public class ApisixRestClient {
 
     @Value("${apisix.keyName}")
     private String keyName;
+
+    @Value("${apisix.gatewayUrl}")
+    private String gatewayUrl;
 
 
     public void createConsumer(String username) throws JSONException, JsonProcessingException {
@@ -42,6 +54,23 @@ public class ApisixRestClient {
 
         try {
             HttpEntity<String> response = restTemplate.exchange(consumersUrl, HttpMethod.PUT, request, String.class);
+        } catch (RestClientException e) {
+            throw e;
+        }
+    }
+
+    public List<String> getRoutes() {
+        HttpEntity<String> request = new HttpEntity<String>( generateHeaders());
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            HttpEntity<Routes> response = restTemplate.exchange(routesUrl, HttpMethod.GET, request, Routes.class);
+            Routes routes = response.getBody();
+            //get all routes that has keyauth plugin. These are the ones using apikey
+            routes.setList(routes.getList().stream().filter(x -> x.getValue().getPlugins().getKeyAuth() != null).collect(Collectors.toList()));
+            routes.setTotal(routes.getList().size());
+            List<String> urlList = new ArrayList<>();
+            routes.getList().stream().forEach(x -> urlList.add(gatewayUrl + x.getValue().getUri()));
+            return urlList;
         } catch (RestClientException e) {
             throw e;
         }

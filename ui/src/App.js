@@ -5,6 +5,8 @@ import "primereact/resources/primereact.min.css";
 import '/node_modules/primeflex/primeflex.css'
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
+import { DataTable } from "primereact/datatable";
+import {Column} from 'primereact/column';
 
 import Keycloak from 'keycloak-js';
 import { keyApi } from './Services/KeyService';
@@ -20,7 +22,8 @@ let initOptions = {
 }
 
 let kc = new Keycloak(initOptions);
-
+let routes = [];
+let apiKey ='';
 
 kc.init({
   onLoad: initOptions.onLoad,
@@ -45,13 +48,17 @@ kc.init({
 function App() {
 
   const [infoMessage, setInfoMessage] = useState('');
+  
+  
 
   const  handleApiCall = async (token) => {
     try {
       debugger
       const response = await keyApi.getApiKey(token);
-      const apikey = response.data.apiKey;
-      return apikey;
+      debugger
+      apiKey = response.data.apiKey;
+      routes = response.data.routes;
+      return apiKey;
 
    
     } catch (error) {
@@ -59,6 +66,21 @@ function App() {
     } finally {
       
     }
+  }
+
+  const handleRoutes = async (routes) => {
+    const listItems = routes.map((currElement, index) => {
+      return {id:index, route:currElement}
+    });
+    setInfoMessage(generateTable(listItems));
+  };
+
+  function generateTable(routes) {
+    debugger
+    return(
+    <DataTable value={routes}>
+    <Column field="route" header="Route"></Column>
+    </DataTable>);
   }
 
   return (
@@ -78,7 +100,8 @@ function App() {
          
           <Button onClick={() => { kc.login() }} className='m-1' label='Login' severity="success" />
           <Button onClick={() => { handleApiCall(kc.token).then(response => {setInfoMessage('ApiKey: ' +response)}, (e)=>{setInfoMessage('Are you logged in?')}) }} className='m-1' label='Get ApiKey' severity="success" />
-          <Button onClick={() => { setInfoMessage(kc.token) }} className="m-1" label='Show Access Token' severity="info" />
+          <Button onClick={() => { handleRoutes(routes) }} className="m-1" label='Show routes' severity="info" />
+          {/*<Button onClick={() => { setInfoMessage('test' + routes) }} className="m-1" label='Show routes' severity="info" /> */}
           <Button onClick={() => { setInfoMessage(JSON.stringify(kc.tokenParsed)) }} className="m-1" label='Show Parsed Access token' severity="info" />
           <Button onClick={() => { setInfoMessage(kc.isTokenExpired(5).toString()) }} className="m-1" label='Check Token expired' severity="warning" />
           <Button onClick={() => { kc.updateToken(10).then((refreshed)=>{ setInfoMessage('Token Refreshed: ' + refreshed.toString()) }, (e)=>{setInfoMessage('Refresh Error')}) }} className="m-1" label='Update Token (if about to expire)' />  {/** 10 seconds */}
@@ -99,9 +122,9 @@ function App() {
         <div className='col-8'>
         <h3>Info Pane</h3>
           <Card>
-            <p style={{ wordBreak: 'break-all' }} id='infoPanel'>
+   
               {infoMessage}
-            </p>
+       
           </Card>
         </div>
         <div className='col-2'></div>

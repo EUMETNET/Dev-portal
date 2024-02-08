@@ -1,8 +1,12 @@
 package com.apiportal.backend.models;
 
+import java.util.List;
+
 public class User {
     private String userName;
     private String apiKey;
+
+    private List<String> routes;
 
     public String getUserName() {
         return userName;
@@ -19,4 +23,8 @@ public class User {
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
+
+    public List<String> getRoutes() {return routes;}
+
+    public void setRoutes(List<String> routes) {this.routes = routes;}
 }

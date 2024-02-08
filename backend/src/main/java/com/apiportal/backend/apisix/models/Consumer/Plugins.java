@@ -1,5 +1,5 @@
 
-package com.apiportal.backend.apisix.models;
+package com.apiportal.backend.apisix.models.Consumer;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,37 +13,24 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "username",
-    "plugins"
+    "key-auth"
 })
 @Generated("jsonschema2pojo")
-public class Consumer {
+public class Plugins {
 
-    @JsonProperty("username")
-    private String username;
-    @JsonProperty("plugins")
-    private Plugins plugins;
+    @JsonProperty("key-auth")
+    private KeyAuth keyAuth;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 
-    @JsonProperty("username")
-    public String getUsername() {
-        return username;
+    @JsonProperty("key-auth")
+    public KeyAuth getKeyAuth() {
+        return keyAuth;
     }
 
-    @JsonProperty("username")
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @JsonProperty("plugins")
-    public Plugins getPlugins() {
-        return plugins;
-    }
-
-    @JsonProperty("plugins")
-    public void setPlugins(Plugins plugins) {
-        this.plugins = plugins;
+    @JsonProperty("key-auth")
+    public void setKeyAuth(KeyAuth keyAuth) {
+        this.keyAuth = keyAuth;
     }
 
     @JsonAnyGetter
