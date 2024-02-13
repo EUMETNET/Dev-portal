@@ -1,0 +1,35 @@
+name: "Frontend: (test), build and publish docker image to registry"
+
+on:
+  workflow_dispatch:
+#  push:
+#    branches: [ main ]
+
+jobs:
+  # Currently there are no tests to run before build
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3 
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        file: ui/Dockerfile
+        context: ./ui
+        push: true
+        # for now cache to github actions
+        # might need some tuning
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        tags: your-dockerhub-username/your-repo-name:latest
+        #secret-files: |
+        #  files here if any
