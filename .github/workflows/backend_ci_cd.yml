@@ -13,7 +13,7 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v4
         
-        - name: Set up Java JDK 17
+        - name: Set up Java environment
           uses: actions/setup-java@v4
           with:
             java-version: '17'
@@ -22,6 +22,7 @@ jobs:
 
         - name: Run tests
           run: mvn test
+          working-directory: ./backend
 
   build:
     needs: test
