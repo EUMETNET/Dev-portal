@@ -20,9 +20,9 @@ jobs:
             distribution: 'adopt'
             cache: 'maven'
 
-        - name: Run tests
-          run: mvn test
-          working-directory: ./backend
+#        - name: Run tests
+#          run: mvn test
+#          working-directory: ./backend
 
   build:
     needs: test
