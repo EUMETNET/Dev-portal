@@ -1,5 +1,8 @@
 name: "Backend: test, build and publish docker image to registry"
 
+env:
+  DOCKER_REPO_NAME: eurodeo-dev-portal-backend
+
 on:
   workflow_dispatch:
 #  push:
@@ -48,6 +51,6 @@ jobs:
         # might need some tuning
         cache-from: type=gha 
         cache-to: type=gha,mode=max
-        tags: your-dockerhub-username/your-repo-name:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPO_NAME }}:latest
         #secret-files: |
         #  files here if any
