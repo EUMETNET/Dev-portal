@@ -5,8 +5,10 @@ env:
 
 on:
   workflow_dispatch:
-#  push:
-#    branches: [ main ]
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   # Currently there are no tests to run before build
