@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: {{ .Release.Namespace }}
+data:
+  .env: |
+    REACT_APP_ENV = "PRODUCTION"
+    PORT=3002
+    REACT_APP_KEYCLOAK_URL = {{ .Values.frontend.keycloack_url }}
+    REACT_APP_KEYCLOAK_REALM = "dev-apisix"
+    REACT_APP_KEYCLOAK_CLIENTID = "frontend"
+    REACT_APP_BACKEND_URL = http://{{ .Release.Name }}-{{ .Values.backend.name }}.{{ .Release.Namespace }}.svc.local
+
