@@ -17,9 +17,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write # To be able to request OIDC JWT token
+      contents: read  # This is required for actions/checkout
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Retrieve secrets from Vault
+      uses: hashicorp/vault-action@v2
+      with:
+        method: jwt
+        url: ${{ secrets.VAULT_URL }}
+        role: dev-portal # Match role to role configured in Vault
+        path: github # Specify the custom path where jwt was enabled
+        secrets: |
+          dev-portal/ui/ewc/ PORT;
+          dev-portal/ui/ewc/ KEYCLOAK_URL;
+          dev-portal/ui/ewc/ KEYCLOAK_REALM;
+          dev-portal/ui/ewc/ KEYCLOAK_CLIENTID;
+          dev-portal/ui/ewc/ BACKEND_URL;
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -33,13 +51,18 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        file: ui/Dockerfile
+        file: ui/Dockerfile.prod
         context: ./ui
         push: true
         # for now cache to github actions
         # might need some tuning
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        secret-envs: |
+          REACT_APP_ENV="PRODUCTION"
+          PORT=${{ env.PORT }}
+          REACT_APP_KEYCLOAK_URL==${{ env.KEYCLOAK_URL }}
+          REACT_APP_KEYCLOAK_REALM=${{ env.KEYCLOAK_REALM }}
+          REACT_APP_KEYCLOAK_CLIENTID=${{ env.KEYCLOAK_CLIENTID }}
+          REACT_APP_BACKEND_URL=${{ env.BACKEND_URL }}
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPO_NAME }}:latest
-        #secret-files: |
-        #  files here if any
