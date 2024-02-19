@@ -24,10 +24,7 @@ jobs:
           uses: docker/setup-buildx-action@v3
 
         - name: Start dependencies stack
-          run: docker compose -f docker-compose.yml up -d
-
-        - name: Wait Vault to be healthy
-          run: docker compose wait 
+          run: docker compose -f docker-compose.yml up -d --wait
         
         - name: Setup Vault
           run: docker exec vault_test sh /vault/config/setup.sh
