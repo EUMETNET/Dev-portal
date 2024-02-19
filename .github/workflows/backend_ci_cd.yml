@@ -27,7 +27,9 @@ jobs:
           run: docker compose -f docker-compose.yml up -d
         
         - name: Setup Vault
-          run: docker exec vault_test sh /vault/config/setup.sh
+          run: |
+            sleep 30
+            docker exec vault_test sh /vault/config/setup.sh
         
         - name: Set up Java environment
           uses: actions/setup-java@v4
