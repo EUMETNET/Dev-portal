@@ -101,17 +101,17 @@ services:
     networks:
       apisix:
 
-  grafana:
-    image: grafana/grafana:7.3.7
-    restart: always
-    ports:
-      - "3000:3000"
-    volumes:
-      - "./grafana_conf/provisioning:/etc/grafana/provisioning"
-      - "./grafana_conf/dashboards:/var/lib/grafana/dashboards"
-      - "./grafana_conf/config/grafana.ini:/etc/grafana/grafana.ini"
-    networks:
-      apisix:
+  #grafana:
+  #  image: grafana/grafana:7.3.7
+  #  restart: always
+  #  ports:
+  #    - "3000:3000"
+  #  volumes:
+  #    - "./grafana_conf/provisioning:/etc/grafana/provisioning"
+  #    - "./grafana_conf/dashboards:/var/lib/grafana/dashboards"
+  #    - "./grafana_conf/config/grafana.ini:/etc/grafana/grafana.ini"
+  #  networks:
+  #    apisix:
   
   vault:
     image: hashicorp/vault:latest
@@ -131,7 +131,10 @@ services:
     volumes:
       - ./vault/:/vault
     healthcheck:
-      retries: 5
+      test: ["CMD", "vault", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
     command: server -dev -dev-root-token-id="00000000-0000-0000-0000-000000000000"
    # command: sh ./vault/workflow-vault.sh
     networks:

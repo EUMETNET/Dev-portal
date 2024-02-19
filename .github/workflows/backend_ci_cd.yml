@@ -25,11 +25,12 @@ jobs:
 
         - name: Start dependencies stack
           run: docker compose -f docker-compose.yml up -d
+
+        - name: Wait Vault to be healthy
+          run: docker compose wait 
         
         - name: Setup Vault
-          run: |
-            sleep 30
-            docker exec vault_test sh /vault/config/setup.sh
+          run: docker exec vault_test sh /vault/config/setup.sh
         
         - name: Set up Java environment
           uses: actions/setup-java@v4
