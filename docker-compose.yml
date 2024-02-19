@@ -135,7 +135,6 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
-      start_period: 10s
     command: server -dev -dev-root-token-id="00000000-0000-0000-0000-000000000000"
    # command: sh ./vault/workflow-vault.sh
     networks:
