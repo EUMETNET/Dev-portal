@@ -133,8 +133,8 @@ services:
     healthcheck:
       test: ["CMD", "vault", "status"]
       interval: 3s
-      timeout: 3s
-      retries: 3
+      timeout: 5s
+      retries: 5
     command: server -dev -dev-root-token-id="00000000-0000-0000-0000-000000000000"
    # command: sh ./vault/workflow-vault.sh
     networks:
