@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 import java.util.List;
@@ -116,7 +117,9 @@ public class ApikeyController {
             serverStatus.setApisixOnline(true);
         } catch (RestClientException e) {
             System.out.println("apisix error: " +e);
-            serverStatus.setApisixOnline(false);
+            if (((HttpClientErrorException.NotFound) e).getRawStatusCode() != 404) {
+                serverStatus.setApisixOnline(false);
+            }
         }
         try {
             VaultApiInfo vaultApiInfo = vaultService.checkIfUserExists(userName);
