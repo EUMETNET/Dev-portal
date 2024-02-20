@@ -5,8 +5,12 @@ env:
 
 on:
   workflow_dispatch:
-#  push:
-#    branches: [ main ]
+  push:
+    branches: [ main ]
+    paths:
+      - backend/**
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
@@ -15,6 +19,15 @@ jobs:
     steps:
         - name: Checkout code
           uses: actions/checkout@v4
+    
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Start external services stack
+          run: docker compose -f docker-compose.yml up -d --wait
+        
+        - name: Setup Vault
+          run: docker exec vault_test sh /vault/config/setup.sh
         
         - name: Set up Java environment
           uses: actions/setup-java@v4
@@ -23,9 +36,9 @@ jobs:
             distribution: 'adopt'
             cache: 'maven'
 
-#        - name: Run tests
-#          run: mvn test
-#          working-directory: ./backend
+        - name: Run tests
+          run: mvn test
+          working-directory: ./backend
 
   build:
     needs: test
