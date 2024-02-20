@@ -101,17 +101,17 @@ services:
     networks:
       apisix:
 
-  #grafana:
-  #  image: grafana/grafana:7.3.7
-  #  restart: always
-  #  ports:
-  #    - "3000:3000"
-  #  volumes:
-  #    - "./grafana_conf/provisioning:/etc/grafana/provisioning"
-  #    - "./grafana_conf/dashboards:/var/lib/grafana/dashboards"
-  #    - "./grafana_conf/config/grafana.ini:/etc/grafana/grafana.ini"
-  #  networks:
-  #    apisix:
+  grafana:
+    image: grafana/grafana:7.3.7
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./grafana_conf/provisioning:/etc/grafana/provisioning"
+      - "./grafana_conf/dashboards:/var/lib/grafana/dashboards"
+      - "./grafana_conf/config/grafana.ini:/etc/grafana/grafana.ini"
+    networks:
+      apisix:
   
   vault:
     image: hashicorp/vault:latest
