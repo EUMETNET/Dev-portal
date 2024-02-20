@@ -9,8 +9,8 @@ data:
       port: 8082
 
     keycloak:
-      url: http://{{ .Release.Name }}-keycloack.{{ .Release.Namespace }}.svc.cluster.local
-      realm: dev-apisix
+      url: {{ .Values.backend.keycloak_cluster_url }}
+      realm: {{ .Values.keycloak_realm }}
 
     vault:
       endpoint: {{ .Values.backend.vault_url }}

@@ -7,8 +7,8 @@ data:
   .env: |
     REACT_APP_ENV = "PRODUCTION"
     PORT=3002
-    REACT_APP_KEYCLOAK_URL = {{ .Values.frontend.keycloack_url }}
-    REACT_APP_KEYCLOAK_REALM = "dev-apisix"
+    REACT_APP_KEYCLOAK_URL = {{ .Values.frontend.keycloak_url }}
+    REACT_APP_KEYCLOAK_REALM = {{ .Values.frontend.keycloak_realm }}
     REACT_APP_KEYCLOAK_CLIENTID = "frontend"
     REACT_APP_BACKEND_URL = http://{{ .Release.Name }}-{{ .Values.backend.name }}.{{ .Release.Namespace }}.svc.local
 
