@@ -35,7 +35,7 @@ public class VaultService {
     public String saveUserToVault(String userName) {
         String generatedApiKey = apiKeyService.generateMD5Hashvalue(userName);
         VaultOperations operations = vaultTemplate;
-        VaultKeyValueOperations keyValueOperations = operations.opsForKeyValue("apisix",
+        VaultKeyValueOperations keyValueOperations = operations.opsForKeyValue(vaultPath,
                 VaultKeyValueOperationsSupport.KeyValueBackend.unversioned());
 
         Map vaultValues = new HashMap<>();
@@ -56,7 +56,7 @@ public class VaultService {
 
         VaultResponse read = null;
         try {
-            read = operations.read(vaultPath +username);
+            read = operations.read(vaultPath +"/" +username);
         } catch (HttpStatusCodeException e) {
             System.out.println("vault error: " +e);
             throw e;
