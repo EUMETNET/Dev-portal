@@ -10,7 +10,6 @@ vault:
   token: 00000000-0000-0000-0000-000000000000
 
 apisix:
-  consumersUrl: http://127.0.0.1:9180/apisix/admin/consumers
   #baseUrl: http://apisix:9180 #this is for docker
   adminUrl: http://127.0.0.1:9180
   gatewayUrl: http://127.0.0.1:9080
