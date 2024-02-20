@@ -17,6 +17,7 @@ data:
       scheme: http
       port: {{ .Values.backend.vault_port }}
       token: {{ .Values.backend.vault_token }}
+      path: {{ .Values.backend.vault_path }}
 
     apisix:
       #baseUrl: http://apisix:9180 #this is for docker
@@ -26,7 +27,7 @@ data:
       routesUrl: ${apisix.adminUrl}/apisix/admin/routes
       adminApiKey: {{ .Values.backend.apisix_apikey }}
       keyPath: {{ .Values.backend.apisix_keypath }}
-      keyName: key-auth
+      keyName: {{ .Values.backend.apisix_keyname }}
 
 
     management:
