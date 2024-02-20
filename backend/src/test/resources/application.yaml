@@ -19,9 +19,6 @@ apisix:
   keyPath: $secret://vault/1/
   keyName: api-key
 
-
-
-
 spring:
   security:
     ignored: "/actuator/**"
