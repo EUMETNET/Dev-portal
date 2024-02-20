@@ -77,7 +77,7 @@ public class VaultService {
             return null;
         }
         VaultApiInfo vaultApiInfo = new VaultApiInfo();
-        vaultApiInfo.setApiKey(vaultResponse.getData().get("api-key").toString());
+        vaultApiInfo.setApiKey(vaultResponse.getData().get(keyName).toString());
         vaultApiInfo.setDate(vaultResponse.getData().get("date").toString());
         return vaultApiInfo;
     }
