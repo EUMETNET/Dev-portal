@@ -47,6 +47,8 @@ public class ApikeyController {
         //check if servers are online and if user exists
         ServerStatus serverStatus = checkVaultAndApisix(userName);
 
+
+
         //if vault or apisix is offline we should not save any new user information
         if (!serverStatus.isApisixOnline() || !serverStatus.isVaultOnline()) {
             if (!serverStatus.isApisixOnline()) {
@@ -113,6 +115,7 @@ public class ApikeyController {
             serverStatus.setApisixUserFound(found);
             serverStatus.setApisixOnline(true);
         } catch (RestClientException e) {
+            System.out.println("apisix error: " +e);
             serverStatus.setApisixOnline(false);
         }
         try {

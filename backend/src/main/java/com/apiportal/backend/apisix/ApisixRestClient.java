@@ -79,12 +79,13 @@ public class ApisixRestClient {
     public boolean checkIfUserExists(String userName) {
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<Void> requestEntity = new HttpEntity<>(generateHeaders());
-
+        System.out.println("apisix address: " +consumersUrl);
 
         ResponseEntity<String> response = restTemplate.exchange(
                 consumersUrl+ "/" + userName, HttpMethod.GET, requestEntity, String.class);
 
         JSONObject jsonObject = new JSONObject(response.getBody());
+        System.out.println("apisix json: " +jsonObject);
         JSONObject values = jsonObject.getJSONObject("value");
         String foundUsername = values.get("username").toString();
         if (foundUsername != null) {
