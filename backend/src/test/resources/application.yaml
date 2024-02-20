@@ -11,6 +11,11 @@ vault:
 
 apisix:
   consumersUrl: http://127.0.0.1:9180/apisix/admin/consumers
+  #baseUrl: http://apisix:9180 #this is for docker
+  adminUrl: http://127.0.0.1:9180
+  gatewayUrl: http://127.0.0.1:9080
+  consumersUrl: ${apisix.adminUrl}/apisix/admin/consumers
+  routesUrl: ${apisix.adminUrl}/apisix/admin/routes
   adminApiKey: edd1c9f034335f136f87ad84b625c8f1
   keyPath: $secret://vault/1/
   keyName: api-key
