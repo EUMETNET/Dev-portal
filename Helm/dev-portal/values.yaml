@@ -1,0 +1,100 @@
+# Default values for dev-portal.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+backend:
+  name: dev-portal-backend
+  image:
+    repository: joonahalonencgi/eurodeo-dev-portal-backend
+    pullPolicy: IfNotPresent
+    tag: latest
+  replicaCount: 1
+  containerport: 8082
+  debugport: 5005
+  service:
+    type: ClusterIP
+    port: 80
+  args: ["--spring.profiles.active=ewc-dev"]
+  vault_url: "http://vault.vault.svc.cluster.local"
+  vault_token: ""
+  apisix_admin_url: "http://apisix_admin.apisix.svc.cluster.local"
+  apisix_gateway_url: "http://apisix_gateway.apisix.svc.cluster.local"
+  apisix_apikey: ""
+  apisix_keypath: $secret://vault/dev/
+  keycloak_cluster_url: http://keycloack-keycloak.keycloack.svc.cluster.local
+
+frontend:
+  name: dev-portal-frontend
+  image:
+    repository: joonahalonencgi/eurodeo-dev-portal-frontend
+    pullPolicy: IfNotPresent
+    tag: latest
+  replicaCount: 1
+  containerport: 3002
+  service:
+    type: ClusterIP
+    port: 80
+
+keycloak_url: "https://keycloak-apisixdev.eumetnet-femdi.eumetsat.ewcloud.host"
+keycloak_realm: test
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: 
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+    external-dns.alpha.kubernetes.io/hostname: devportal-apisixdev.eumetnet-femdi.eumetsat.ewcloud.host
+    external-dns.alpha.kubernetes.io/target: 64.225.132.246
+  host: devportal-apisixdev.eumetnet-femdi.eumetsat.ewcloud.host
+  tls: 
+    - secretName: devportal-tls
+      hosts:
+        - devportal-apisixdev.eumetnet-femdi.eumetsat.ewcloud.host
+
+#resources: {}
+#  # We usually recommend not to specify default resources and to leave this as a conscious
+#  # choice for the user. This also increases chances charts run on environments with little
+#  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+#  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+#  # limits:
+#  #   cpu: 100m
+#  #   memory: 128Mi
+#  # requests:
+#  #   cpu: 100m
+#  #   memory: 128Mi
+#
+#livenessProbe:
+#  httpGet:
+#    path: /
+#    port: http
+#readinessProbe:
+#  httpGet:
+#    path: /
+#    port: http
+#
+#autoscaling:
+#  enabled: false
+#  minReplicas: 1
+#  maxReplicas: 100
+#  targetCPUUtilizationPercentage: 80
+#  # targetMemoryUtilizationPercentage: 80
+#
+## Additional volumes on the output Deployment definition.
+#volumes: []
+## - name: foo
+##   secret:
+##     secretName: mysecret
+##     optional: false
+#
+## Additional volumeMounts on the output Deployment definition.
+#volumeMounts: []
+## - name: foo
+##   mountPath: "/etc/foo"
+##   readOnly: true
+#
+#nodeSelector: {}
+#
+#tolerations: []
+#
+#affinity: {}

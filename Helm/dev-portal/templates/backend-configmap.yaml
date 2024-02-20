@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: {{ .Release.Namespace }}
+data:
+  application-ewc-dev.yaml: |
+    server:
+      port: 8082
+
+    keycloak:
+      url: {{ .Values.backend.keycloak_cluster_url }}
+      realm: {{ .Values.keycloak_realm }}
+
+    vault:
+      endpoint: {{ .Values.backend.vault_url }}
+      scheme: http
+      port: 8200
+      token: {{ .Values.backend.vault_token }}
+
+    apisix:
+      #baseUrl: http://apisix:9180 #this is for docker
+      adminUrl: {{ .Values.backend.apisix_admin_url }}
+      gatewayUrl: {{ .Values.backend.apisix_gateway_url }} 
+      consumersUrl: ${apisix.adminUrl}/apisix/admin/consumers
+      routesUrl: ${apisix.adminUrl}/apisix/admin/routes
+      adminApiKey: {{ .Values.backend.apisix_apikey }}
+      keyPath: {{ .Values.backend.apisix_keypath }}
+      keyName: key-auth
+
+
+    management:
+      metrics:
+        tags:
+          application: devportal-backend

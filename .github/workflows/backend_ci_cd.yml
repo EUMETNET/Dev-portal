@@ -1,0 +1,70 @@
+name: "Backend: test, build and publish docker image to registry"
+
+env:
+  DOCKER_REPO_NAME: eurodeo-dev-portal-backend
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - backend/**
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+    
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Start external services stack
+          run: docker compose -f docker-compose.yml up -d --wait
+        
+        - name: Setup Vault
+          run: docker exec vault_test sh /vault/config/setup.sh
+        
+        - name: Set up Java environment
+          uses: actions/setup-java@v4
+          with:
+            java-version: '17'
+            distribution: 'adopt'
+            cache: 'maven'
+
+        - name: Run tests
+          run: mvn test
+          working-directory: ./backend
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3 
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        file: backend/Dockerfile
+        context: ./backend
+        push: true
+        # for now cache to github actions
+        # might need some tuning
+        cache-from: type=gha 
+        cache-to: type=gha,mode=max
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPO_NAME }}:latest
+        #secret-files: |
+        #  files here if any
