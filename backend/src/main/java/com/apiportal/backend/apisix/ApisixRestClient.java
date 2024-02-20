@@ -65,6 +65,7 @@ public class ApisixRestClient {
         try {
             HttpEntity<Routes> response = restTemplate.exchange(routesUrl, HttpMethod.GET, request, Routes.class);
             Routes routes = response.getBody();
+
             //get all routes that has keyauth plugin. These are the ones using apikey
             routes.setList(routes.getList().stream().filter(x -> x.getValue().getPlugins().getKeyAuth() != null).collect(Collectors.toList()));
             routes.setTotal(routes.getList().size());

@@ -22,7 +22,7 @@ public class Routes {
     @JsonProperty("total")
     private Integer total;
     @JsonProperty("list")
-    private java.util.List<com.apiportal.backend.apisix.List> list;
+    private java.util.List<List> list;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 
@@ -37,12 +37,12 @@ public class Routes {
     }
 
     @JsonProperty("list")
-    public java.util.List<com.apiportal.backend.apisix.List> getList() {
+    public java.util.List<List> getList() {
         return list;
     }
 
     @JsonProperty("list")
-    public void setList(java.util.List<com.apiportal.backend.apisix.List> list) {
+    public void setList(java.util.List<List> list) {
         this.list = list;
     }
 
