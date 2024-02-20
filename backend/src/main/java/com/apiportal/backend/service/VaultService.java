@@ -45,6 +45,7 @@ public class VaultService {
         try {
             keyValueOperations.put(userName, vaultValues);
         } catch (Exception e) {
+            System.out.println("vault error " +e);
             throw e;
         }
         return generatedApiKey;
@@ -57,10 +58,13 @@ public class VaultService {
         try {
             read = operations.read(vaultPath +username);
         } catch (HttpStatusCodeException e) {
+            System.out.println("vault error: " +e);
             throw e;
         } catch (RestClientException e) {
+            System.out.println("vault error: " +e);
             throw e;
         } catch (NoSuchMethodError e) {
+            System.out.println("vault error: " +e);
             return null;
         }
         return read;
