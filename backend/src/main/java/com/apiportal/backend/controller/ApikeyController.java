@@ -117,7 +117,10 @@ public class ApikeyController {
             serverStatus.setApisixOnline(true);
         } catch (RestClientException e) {
             System.out.println("apisix error: " +e);
-            if (((HttpClientErrorException.NotFound) e).getRawStatusCode() != 404) {
+            if (((HttpClientErrorException.NotFound) e).getRawStatusCode() == 404) {
+                serverStatus.setApisixOnline(true);
+            }
+            else {
                 serverStatus.setApisixOnline(false);
             }
         }
