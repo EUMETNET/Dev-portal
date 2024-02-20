@@ -29,6 +29,9 @@ public class VaultService {
     @Value("${apisix.keyName}")
     private String keyName;
 
+    @Value("${vault.path}")
+    private String vaultPath;
+
     public String saveUserToVault(String userName) {
         String generatedApiKey = apiKeyService.generateMD5Hashvalue(userName);
         VaultOperations operations = vaultTemplate;
@@ -52,7 +55,7 @@ public class VaultService {
 
         VaultResponse read = null;
         try {
-            read = operations.read("apisix/" +username);
+            read = operations.read(vaultPath +username);
         } catch (HttpStatusCodeException e) {
             throw e;
         } catch (RestClientException e) {
