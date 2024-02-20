@@ -10,5 +10,7 @@ COPY dev.env /portal-ui/
 COPY .env /portal-ui/
 
 RUN npm install
+RUN npm run build
 
+EXPOSE 3002
 CMD ["npm", "run" ,"start"]
