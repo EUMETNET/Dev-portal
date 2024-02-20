@@ -10,5 +10,10 @@ spec:
     - port: {{ .Values.backend.service.port }}
       targetPort: {{ .Values.backend.containerport}}
       protocol: TCP
+      name: {{ .Values.backend.name }}
+    - port: {{ .Values.backend.service.debugport }}
+      targetPort: {{ .Values.backend.debugport}}
+      protocol: TCP
+      name: {{ .Values.backend.name }}-debug
   selector:
     app: {{ .Values.backend.name }}

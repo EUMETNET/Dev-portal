@@ -6,7 +6,7 @@ metadata:
 data:
   application-ewc-dev.yaml: |
     server:
-      port: 8082
+      port: {{ .Values.backend.containerport }}
 
     keycloak:
       url: {{ .Values.backend.keycloak_cluster_url }}
@@ -15,7 +15,7 @@ data:
     vault:
       endpoint: {{ .Values.backend.vault_url }}
       scheme: http
-      port: 8200
+      port: {{ .Values.backend.vault_port }}
       token: {{ .Values.backend.vault_token }}
 
     apisix:
