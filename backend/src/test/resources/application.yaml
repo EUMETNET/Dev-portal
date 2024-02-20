@@ -8,6 +8,7 @@ vault:
   scheme: http
   port: 8200
   token: 00000000-0000-0000-0000-000000000000
+  path: apisix/
 
 apisix:
   #baseUrl: http://apisix:9180 #this is for docker
