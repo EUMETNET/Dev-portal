@@ -1,4 +1,4 @@
-FROM node:21-alpine
+FROM node:21-alpine as build
 
 WORKDIR /portal-ui/
 
@@ -11,6 +11,12 @@ COPY .env /portal-ui/
 
 RUN npm install
 RUN npm run build
+
+
+FROM build as deploy
+
+WORKDIR /portal-ui/
+
 RUN npm install -g serve
 
 EXPOSE 443

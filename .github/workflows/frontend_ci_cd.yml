@@ -31,7 +31,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        file: ui/prod.Dockerfile
+        file: ui/Dockerfile
         context: ./ui
         push: true
         # for now cache to github actions
