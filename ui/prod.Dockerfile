@@ -21,4 +21,4 @@ RUN npm install -g serve
 
 EXPOSE 3002
 
-CMD ["serve", "-s" ,"build"]
+CMD ["serve", "-s" ,"build", "-l", "443"]
