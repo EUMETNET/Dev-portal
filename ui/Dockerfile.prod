@@ -8,11 +8,11 @@ COPY public/ ./public
 COPY src/ ./src
 
 # Define args
-ARG REACT_APP_ENV
-ARG PORT
+ARG REACT_APP_ENV=PRODUCTION
 ARG REACT_APP_KEYCLOAK_URL
 ARG REACT_APP_KEYCLOAK_REALM
 ARG REACT_APP_KEYCLOAK_CLIENTID
+ARG REACT_APP_LOGOUT_URL
 ARG REACT_APP_BACKEND_URL
 
 # TODO change npm i --> npm ci to respect the package-lock once the vulnerabilites are fixed
@@ -21,14 +21,17 @@ RUN npm run build
 
 # ---- Runtime stage ----
 FROM node:21-alpine AS runtime
+
 WORKDIR /portal-ui/
 COPY --from=build /portal-ui/build ./build
 
-ARG PORT
+ARG PORT=443
+
 ENV PORT=$PORT
 
 # For now install serve to serve the static files
 RUN npm install -g serve
+
 EXPOSE $PORT
 
-CMD serve -s build -l $PORT
+CMD ["sh", "-c", "serve -s build -l ${PORT}"]

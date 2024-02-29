@@ -11,9 +11,24 @@ on:
       - ui/**
 
 jobs:
-  # Currently there are no tests to run before build
-  build:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      platform-matrix: ${{ steps.platform-matrix.outputs.matrix }}
+    steps:
+      - name: Set platform matrix
+        id: platform-matrix
+        run: echo "matrix=${{ toJSON(vars.PLATFORMS) }}" >> $GITHUB_OUTPUT
+
+  # Currently there are no tests to run before build
+
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        platform: ${{ fromJSON(needs.setup.outputs.platform-matrix) }}
 
     permissions:
       id-token: write # To be able to request OIDC JWT token
@@ -31,11 +46,11 @@ jobs:
         role: dev-portal # Match role to role configured in Vault
         path: github # Specify the custom path where jwt was enabled
         secrets: |
-          dev-portal/ui/ewc/ PORT;
-          dev-portal/ui/ewc/ KEYCLOAK_URL;
-          dev-portal/ui/ewc/ KEYCLOAK_REALM;
-          dev-portal/ui/ewc/ KEYCLOAK_CLIENTID;
-          dev-portal/ui/ewc/ BACKEND_URL;
+          dev-portal/${{ matrix.platform }}/ui/ KEYCLOAK_URL;
+          dev-portal/${{ matrix.platform }}/ui/ KEYCLOAK_REALM;
+          dev-portal/${{ matrix.platform }}/ui/ KEYCLOAK_CLIENTID;
+          dev-portal/${{ matrix.platform }}/ui/ KEYCLOAK_LOGOUT_URL;
+          dev-portal/${{ matrix.platform }}/ui/ BACKEND_URL;
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -56,11 +71,10 @@ jobs:
         # might need some tuning
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        secret-envs: |
-          REACT_APP_ENV="PRODUCTION"
-          PORT=${{ env.PORT }}
-          REACT_APP_KEYCLOAK_URL==${{ env.KEYCLOAK_URL }}
+        build-args: |
+          REACT_APP_KEYCLOAK_URL=${{ env.KEYCLOAK_URL }}
           REACT_APP_KEYCLOAK_REALM=${{ env.KEYCLOAK_REALM }}
           REACT_APP_KEYCLOAK_CLIENTID=${{ env.KEYCLOAK_CLIENTID }}
+          REACT_APP_LOGOUT_URL=${{ env.KEYCLOAK_LOGOUT_URL }}
           REACT_APP_BACKEND_URL=${{ env.BACKEND_URL }}
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPO_NAME }}:latest
+        tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPO_NAME }}:${{ matrix.platform }}-latest
