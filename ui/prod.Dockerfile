@@ -7,7 +7,7 @@ COPY package*.json .
 COPY public/ ./public
 COPY src/ ./src
 
-# Define args
+# Define args needed by React app
 ARG REACT_APP_ENV=PRODUCTION
 ARG REACT_APP_KEYCLOAK_URL
 ARG REACT_APP_KEYCLOAK_REALM
