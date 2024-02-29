@@ -1,5 +1,5 @@
 
-package com.apiportal.backend.apisix;
+package com.apiportal.backend.apisix.models.Route;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

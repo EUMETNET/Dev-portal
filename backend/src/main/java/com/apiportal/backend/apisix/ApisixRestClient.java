@@ -65,6 +65,7 @@ public class ApisixRestClient {
         try {
             HttpEntity<Routes> response = restTemplate.exchange(routesUrl, HttpMethod.GET, request, Routes.class);
             Routes routes = response.getBody();
+
             //get all routes that has keyauth plugin. These are the ones using apikey
             routes.setList(routes.getList().stream().filter(x -> x.getValue().getPlugins().getKeyAuth() != null).collect(Collectors.toList()));
             routes.setTotal(routes.getList().size());
@@ -79,12 +80,13 @@ public class ApisixRestClient {
     public boolean checkIfUserExists(String userName) {
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<Void> requestEntity = new HttpEntity<>(generateHeaders());
-
+        System.out.println("apisix address: " +consumersUrl);
 
         ResponseEntity<String> response = restTemplate.exchange(
                 consumersUrl+ "/" + userName, HttpMethod.GET, requestEntity, String.class);
 
         JSONObject jsonObject = new JSONObject(response.getBody());
+        System.out.println("apisix json: " +jsonObject);
         JSONObject values = jsonObject.getJSONObject("value");
         String foundUsername = values.get("username").toString();
         if (foundUsername != null) {

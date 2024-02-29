@@ -6,9 +6,10 @@ metadata:
 data:
   .env: |
     REACT_APP_ENV = "PRODUCTION"
-    PORT=3002
-    REACT_APP_KEYCLOAK_URL = {{ .Values.frontend.keycloak_url }}
-    REACT_APP_KEYCLOAK_REALM = {{ .Values.frontend.keycloak_realm }}
+    PORT={{ .Values.frontend.containerport }}
+    REACT_APP_KEYCLOAK_URL = {{ .Values.keycloak_url }}
+    REACT_APP_LOGOUT_URL = {{ .Values.keycloak_logout_url }}
+    REACT_APP_KEYCLOAK_REALM = {{ .Values.keycloak_realm }}
     REACT_APP_KEYCLOAK_CLIENTID = "frontend"
-    REACT_APP_BACKEND_URL = http://{{ .Release.Name }}-{{ .Values.backend.name }}.{{ .Release.Namespace }}.svc.local
+    REACT_APP_BACKEND_URL = https://{{ .Values.ingress.host }}
 

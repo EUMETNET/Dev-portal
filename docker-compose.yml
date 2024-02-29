@@ -22,16 +22,20 @@ services:
     image: quay.io/keycloak/keycloak
     ports:
       - "8080:8080"
+      - "8000:8000"
     environment:
       KEYCLOAK_ADMIN: admin 
       KEYCLOAK_ADMIN_PASSWORD: admin
       PROXY_ADDRESS_FORWARDING: false
       KEYCLOAK_LOGLEVEL: DEBUG
+      DEBUG: "true"
+      DEBUG_PORT: "*:8000"
     command: 
       - start-dev 
       - --import-realm
     volumes:
       - /home/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+      - ./keycloak/providers:/opt/keycloak/providers/
     networks:
       apisix:
       

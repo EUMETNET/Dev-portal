@@ -29,10 +29,13 @@ public class VaultService {
     @Value("${apisix.keyName}")
     private String keyName;
 
+    @Value("${vault.path}")
+    private String vaultPath;
+
     public String saveUserToVault(String userName) {
         String generatedApiKey = apiKeyService.generateMD5Hashvalue(userName);
         VaultOperations operations = vaultTemplate;
-        VaultKeyValueOperations keyValueOperations = operations.opsForKeyValue("apisix",
+        VaultKeyValueOperations keyValueOperations = operations.opsForKeyValue(vaultPath,
                 VaultKeyValueOperationsSupport.KeyValueBackend.unversioned());
 
         Map vaultValues = new HashMap<>();
@@ -42,6 +45,7 @@ public class VaultService {
         try {
             keyValueOperations.put(userName, vaultValues);
         } catch (Exception e) {
+            System.out.println("vault error " +e);
             throw e;
         }
         return generatedApiKey;
@@ -52,12 +56,15 @@ public class VaultService {
 
         VaultResponse read = null;
         try {
-            read = operations.read("apisix/" +username);
+            read = operations.read(vaultPath +"/" +username);
         } catch (HttpStatusCodeException e) {
+            System.out.println("vault error: " +e);
             throw e;
         } catch (RestClientException e) {
+            System.out.println("vault error: " +e);
             throw e;
         } catch (NoSuchMethodError e) {
+            System.out.println("vault error: " +e);
             return null;
         }
         return read;
@@ -70,7 +77,7 @@ public class VaultService {
             return null;
         }
         VaultApiInfo vaultApiInfo = new VaultApiInfo();
-        vaultApiInfo.setApiKey(vaultResponse.getData().get("api-key").toString());
+        vaultApiInfo.setApiKey(vaultResponse.getData().get(keyName).toString());
         vaultApiInfo.setDate(vaultResponse.getData().get("date").toString());
         return vaultApiInfo;
     }

@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 import java.util.List;
@@ -46,6 +47,8 @@ public class ApikeyController {
 
         //check if servers are online and if user exists
         ServerStatus serverStatus = checkVaultAndApisix(userName);
+
+
 
         //if vault or apisix is offline we should not save any new user information
         if (!serverStatus.isApisixOnline() || !serverStatus.isVaultOnline()) {
@@ -113,7 +116,13 @@ public class ApikeyController {
             serverStatus.setApisixUserFound(found);
             serverStatus.setApisixOnline(true);
         } catch (RestClientException e) {
-            serverStatus.setApisixOnline(false);
+            System.out.println("apisix error: " +e);
+            if (((HttpClientErrorException.NotFound) e).getRawStatusCode() == 404) {
+                serverStatus.setApisixOnline(true);
+            }
+            else {
+                serverStatus.setApisixOnline(false);
+            }
         }
         try {
             VaultApiInfo vaultApiInfo = vaultService.checkIfUserExists(userName);

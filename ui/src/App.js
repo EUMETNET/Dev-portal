@@ -105,7 +105,7 @@ function App() {
           <Button onClick={() => { setInfoMessage(JSON.stringify(kc.tokenParsed)) }} className="m-1" label='Show Parsed Access token' severity="info" />
           <Button onClick={() => { setInfoMessage(kc.isTokenExpired(5).toString()) }} className="m-1" label='Check Token expired' severity="warning" />
           <Button onClick={() => { kc.updateToken(10).then((refreshed)=>{ setInfoMessage('Token Refreshed: ' + refreshed.toString()) }, (e)=>{setInfoMessage('Refresh Error')}) }} className="m-1" label='Update Token (if about to expire)' />  {/** 10 seconds */}
-          <Button onClick={() => { kc.logout({ redirectUri: 'http://localhost:3002/' }) }} className="m-1" label='Logout' severity="danger" />
+          <Button onClick={() => { kc.logout({ redirectUri: process.env.REACT_APP_LOGOUT_URL }) }} className="m-1" label='Logout' severity="danger" />
           
         </div>
       </div>
