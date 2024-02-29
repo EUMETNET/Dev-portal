@@ -1,22 +1,31 @@
-FROM node:21-alpine as build
+# ---- Build Stage ----
+FROM node:21-alpine AS build
 
 WORKDIR /portal-ui/
 
-COPY public/ /portal-ui/public
-COPY src/ /portal-ui/src
-COPY package.json /portal-ui/
+COPY package*.json .
+COPY public/ ./public
+COPY src/ ./src
 
-COPY dev.env /portal-ui/
-COPY .env /portal-ui/
+# Define args
+ARG REACT_APP_ENV=PRODUCTION
+ARG REACT_APP_KEYCLOAK_URL
+ARG REACT_APP_KEYCLOAK_REALM
+ARG REACT_APP_KEYCLOAK_CLIENTID
+ARG REACT_APP_LOGOUT_URL
+ARG REACT_APP_BACKEND_URL
 
-RUN npm install
+# TODO change npm i --> npm ci to respect the package-lock once the vulnerabilites are fixed
+RUN npm i
 RUN npm run build
 
-
-FROM build as deploy
+# ---- Runtime stage ----
+FROM node:21-alpine AS runtime
 
 WORKDIR /portal-ui/
+COPY --from=build /portal-ui/build ./build
 
+# For now install serve to serve the React app
 RUN npm install -g serve
 
 EXPOSE 443
