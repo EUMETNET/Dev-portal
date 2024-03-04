@@ -22,8 +22,8 @@ spec:
         - containerPort: {{ .Values.frontend.containerport}}
         volumeMounts:
         - name: env-file
-          mountPath: "/portal-ui/.env"
-          subPath: ".env"
+          mountPath: "/portal-ui/build/env-config.js"
+          subPath: "env-config.js"
       volumes:
       - name: env-file
         configMap: 

@@ -32,7 +32,7 @@ frontend:
   image:
     repository: joonahalonencgi/eurodeo-dev-portal-frontend
     pullPolicy: Always
-    tag: ewc-latest
+    tag: latest
   replicaCount: 1
   containerport: 443
   service:
