@@ -21,7 +21,7 @@ export const keyApi = {
   // -- Axios
   const instance = axios.create({
     //baseURL: config.url.API_BASE_URL,
-    baseURL: process.env.REACT_APP_BACKEND_URL,
+    baseURL: window.REACT_APP_BACKEND_URL,
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'

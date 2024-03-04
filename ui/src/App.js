@@ -12,9 +12,9 @@ import Keycloak from 'keycloak-js';
 import { keyApi } from './Services/KeyService';
 
 let initOptions = {
-  url: process.env.REACT_APP_KEYCLOAK_URL,
-  realm: process.env.REACT_APP_KEYCLOAK_REALM,
-  clientId: process.env.REACT_APP_KEYCLOAK_CLIENTID,
+  url: window.REACT_APP_KEYCLOAK_URL,
+  realm: window.REACT_APP_KEYCLOAK_REALM,
+  clientId: window.REACT_APP_KEYCLOAK_CLIENTID,
   onLoad: 'check-sso', // check-sso | login-required
   KeycloakResponseType: 'code id_token token',
 
@@ -105,7 +105,7 @@ function App() {
           <Button onClick={() => { setInfoMessage(JSON.stringify(kc.tokenParsed)) }} className="m-1" label='Show Parsed Access token' severity="info" />
           <Button onClick={() => { setInfoMessage(kc.isTokenExpired(5).toString()) }} className="m-1" label='Check Token expired' severity="warning" />
           <Button onClick={() => { kc.updateToken(10).then((refreshed)=>{ setInfoMessage('Token Refreshed: ' + refreshed.toString()) }, (e)=>{setInfoMessage('Refresh Error')}) }} className="m-1" label='Update Token (if about to expire)' />  {/** 10 seconds */}
-          <Button onClick={() => { kc.logout({ redirectUri: process.env.REACT_APP_LOGOUT_URL }) }} className="m-1" label='Logout' severity="danger" />
+          <Button onClick={() => { kc.logout({ redirectUri: window.REACT_APP_LOGOUT_URL }) }} className="m-1" label='Logout' severity="danger" />
           
         </div>
       </div>
