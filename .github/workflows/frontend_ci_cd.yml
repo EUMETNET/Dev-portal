@@ -12,6 +12,7 @@ on:
 
 jobs:
   # Currently there are no tests to run before build
+
   build:
     runs-on: ubuntu-latest
 
@@ -31,7 +32,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        file: ui/Dockerfile
+        file: ui/prod.Dockerfile
         context: ./ui
         push: true
         # for now cache to github actions
@@ -39,5 +40,3 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPO_NAME }}:latest
-        #secret-files: |
-        #  files here if any
