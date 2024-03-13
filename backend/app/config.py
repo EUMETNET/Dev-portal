@@ -9,14 +9,17 @@ class APISixSettings(BaseSettings):
     key_path: str
     key_name: str
 
+
 class VaultSettings(BaseSettings):
     base_url: str
     base_path: str
     token: str
 
+
 class KeyCloakSettings(BaseSettings):
     keycloak_url: str
     realm: str
+
 
 class Settings(BaseSettings):
     apisix: APISixSettings

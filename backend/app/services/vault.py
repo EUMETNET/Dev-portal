@@ -34,16 +34,11 @@ def generate_md5_hash_value(user_name: str) -> str:
 def save_user_to_vault(user_name: str) -> str:
     generated_api_key = generate_md5_hash_value(user_name)
 
-    vault_values = {
-        config.apisix.key_name: generated_api_key,
-        'date': get_date()
-    }
+    vault_values = {config.apisix.key_name: generated_api_key, "date": get_date()}
 
     try:
         client.secrets.kv.v1.create_or_update_secret(
-            path=user_name,
-            secret=vault_values,
-            mount_point=config.vault.base_path
+            path=user_name, secret=vault_values, mount_point=config.vault.base_path
         )
         return generated_api_key
     except VaultError as e:
@@ -53,11 +48,8 @@ def save_user_to_vault(user_name: str) -> str:
 def get_user_info_from_vault(user_name: str) -> Optional[VaultUser]:
     try:
         # response looks e.g. like this
-        # {'request_id': '2e1de3e3-6f3b-ccc6-28ae-20bc1b620b4f', 'lease_id': '', 'renewable': False, 'lease_duration': 2764800, 'data': {'as': 'as', 'dfdf': 'dfdf'}, 'wrap_info': None, 'warnings': None, 'auth': None} 
-        response = client.secrets.kv.v1.read_secret(
-            path=user_name,
-            mount_point=config.vault.base_path
-        )
+        # {'request_id': '2e1de3e3-6f3b-ccc6-28ae-20bc1b620b4f', 'lease_id': '', 'renewable': False, 'lease_duration': 2764800, 'data': {'as': 'as', 'dfdf': 'dfdf'}, 'wrap_info': None, 'warnings': None, 'auth': None}
+        response = client.secrets.kv.v1.read_secret(path=user_name, mount_point=config.vault.base_path)
         return VaultUser(**response["data"])
     except InvalidPath:
         return None

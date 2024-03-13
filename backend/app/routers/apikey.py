@@ -15,17 +15,23 @@ router = APIRouter()
 
 config = settings()
 
+
 def handle_exceptions(func):
     """
     Handle all the exceptions that are not caught by the route
     """
+
     @wraps(func)
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
         except Exception as e:
             print("Uncaught error: ", e)
-            raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail="General service error")
+            raise HTTPException(
+                status_code=HTTPStatus.SERVICE_UNAVAILABLE,
+                detail="General service error",
+            )
+
     return wrapper
 
 
@@ -33,7 +39,10 @@ def handle_exceptions(func):
 # Either naming this route differently or creating routes for routes and user
 @router.get("/getapikey")
 @handle_exceptions
-async def get_api_key(token: AccessToken = Depends(validate_token), client: AsyncClient = Depends(get_http_client)):
+async def get_api_key(
+    token: AccessToken = Depends(validate_token),
+    client: AsyncClient = Depends(get_http_client),
+):
     username = token.preferred_username
     try:
         vault_user = get_user_info_from_vault(username)
@@ -44,7 +53,7 @@ async def get_api_key(token: AccessToken = Depends(validate_token), client: Asyn
     except HTTPException as e:
         print("Error communicating with APISix, error: ", e)
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail="APISix service error")
-    
+
     api_key = vault_user.get(config.apisix.key_name)
 
     if not vault_user:
@@ -61,7 +70,10 @@ async def get_api_key(token: AccessToken = Depends(validate_token), client: Asyn
             await create_apisix_consumer(username)
         except HTTPException as e:
             print("Error saving user to APISIX: ", e)
-            raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail="APISix service error")
+            raise HTTPException(
+                status_code=HTTPStatus.SERVICE_UNAVAILABLE,
+                detail="APISix service error",
+            )
 
     print("retrieving all the routes that requires key authentication")
     routes = await get_routes()

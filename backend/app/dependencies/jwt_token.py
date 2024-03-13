@@ -14,10 +14,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="tokenUrl")
 
 config = settings()
 
+
 class AccessToken(BaseModel):
     """
     Decoded access token provided by user
     """
+
     preferred_username: str
     realm_access: dict[str, list[str]]
 

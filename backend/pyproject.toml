@@ -25,3 +25,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 start-dev = "uvicorn app.main:app --reload"
+
+[tool.black]
+line-length = 120

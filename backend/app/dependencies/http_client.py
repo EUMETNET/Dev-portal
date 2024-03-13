@@ -5,6 +5,7 @@ HTTP client dependency to make (a)sync http requests
 from typing import AsyncGenerator
 from httpx import AsyncClient
 
+
 async def get_http_client() -> AsyncGenerator[AsyncClient, None]:
     """
     Asynchronous generator function that yields an instance of httpx.AsyncClient.
