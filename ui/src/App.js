@@ -28,19 +28,16 @@ let apiKey ='';
 kc.init({
   onLoad: initOptions.onLoad,
   KeycloakResponseType: 'code id_token token',
-  silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html", checkLoginIframe: false,
+  silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html",
   pkceMethod: 'S256'
 }).then((auth) => {
-  if (!auth) {
-    window.location.reload();
-  } else {
-    console.info("Authenticated");
-    console.log('auth', auth)
-    console.log('Keycloak', kc)
-    kc.onTokenExpired = () => {
-      console.log('token expired')
-    }
+  console.info("Authenticated");
+  console.log('auth', auth)
+  console.log('Keycloak', kc)
+  kc.onTokenExpired = () => {
+    console.log('token expired')
   }
+  
 }, () => {
   console.error("Authenticated Failed");
 });
