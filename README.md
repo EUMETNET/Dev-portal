@@ -15,5 +15,6 @@ helm install [RELEASE_NAME] rodeo/dev-portal -namespace dev-portal --create-name
 helm delete [RELEASE_NAME] --namespace dev-portal
 ```
 
+# Rep Index
 For the raw Helm repo index, see:
 [index.yaml](index.yaml)
