@@ -38,21 +38,27 @@ jobs:
           
         - name: Install dependencies
           run: poetry install
+          working-directory: ./backend
 
         - name: Run format Black
-          run: poetry run black ./backend/app --check
+          run: poetry run black app/ --check
+          working-directory: ./backend
 
         - name: Run Pylint
-          run: poetry run pylint ./backend/app
+          run: poetry run pylint app/
+          working-directory: ./backend
         
         - name: Run Mypy
-          run: poetry run mypy ./backend/app
+          run: poetry run mypy app/
+          working-directory: ./backend
 
         - name: Run Bandit
-          run: poetry run bandit -r ./backend/app
+          run: poetry run bandit -r app
+          working-directory: ./backend
 
         - name: Run tests
-          run: poetry run pytest ./backend
+          run: poetry run pytest
+          working-directory: ./backend
 
   #build:
   #  needs: test
