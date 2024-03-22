@@ -2,38 +2,23 @@
 JWT Token dependency
 """
 
-from jose import jwt, JWTError
-from pydantic import BaseModel, validator, ValidationError
+from typing import Dict, List
+from http import HTTPStatus
+from jose import jwt, JWTError, ExpiredSignatureError
+from pydantic import ValidationError
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-import requests
-from http import HTTPStatus
-from app.config import settings
+from httpx import AsyncClient
+from app.config import settings, logger
+from app.dependencies.http_client import get_http_client, http_request
+from app.models.access_token import AccessToken
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="tokenUrl")
 
 config = settings()
 
 
-class AccessToken(BaseModel):
-    """
-    Decoded access token provided by user
-    """
-
-    preferred_username: str
-    realm_access: dict[str, list[str]]
-
-    @validator("realm_access", pre=True)
-    def validate_admin_role(cls, v):
-        """
-        Validate that ADMIN is found from roles
-        """
-        if "ADMIN" not in v.get("roles"):
-            raise ValueError()
-        return v
-
-
-def get_jwk(token: str):
+async def get_jwk(client: AsyncClient, token: str) -> Dict[str, str]:
     """
     Retrieve the JSON Web Key (JWK) from a Keycloak server.
 
@@ -48,29 +33,51 @@ def get_jwk(token: str):
     """
 
     header = jwt.get_unverified_header(token)
-    jwks_url = f"{config.keycloak.keycloak_url}/realms/{config.keycloak.realm}/protocol/openid-connect/certs"
-    jwks = requests.get(jwks_url).json()
-    for key in jwks["keys"]:
-        if key["kid"] == header["kid"]:
-            return key
-    return {}
+    jwks_url = (
+        f"{config.keycloak.keycloak_url}/realms/{config.keycloak.realm}"
+        "/protocol/openid-connect/certs"
+    )
+    try:
+        response = await http_request(client, "GET", jwks_url)
+        jwks: Dict[str, List[Dict[str, str]]] = response.json()
+        for key in jwks["keys"]:
+            if key["kid"] == header["kid"]:
+                return key
+        return {}
+    except Exception as e:
+        logger.exception("Fetching JWK error: %s", e)
+        raise HTTPException(
+            status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail="Keycloak service error"
+        ) from e
 
 
-async def validate_token(token: str = Depends(oauth2_scheme)) -> AccessToken:
+async def validate_token(
+    token: str = Depends(oauth2_scheme), client: AsyncClient = Depends(get_http_client)
+) -> AccessToken:
     """
     Validate and decode given token
     """
-    if not token or token == "undefined":
-        print("Token has not been provided")
-        raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail="Token has not been provided")
+    if not token or token == "undefined":  # nosec
+        logger.exception("Token has not been provided")
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED, detail="Token has not been provided"
+        )
     try:
-        jwk = get_jwk(token)
+        jwk = await get_jwk(client, token)
         payload = jwt.decode(token, jwk, algorithms=["RS256"], audience="account")
-        token = AccessToken(**payload)
-        return token
+        return AccessToken(**payload)
+    except ExpiredSignatureError as e:
+        logger.exception("JWT Token has expired: %s", e)
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED, detail="Token signature has expired"
+        ) from e
     except JWTError as e:
-        print("JW Token validation failed: ", e)
-        raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail="Token validation failed")
-    except ValidationError:
-        print("User does not have valid ADMIN role")
-        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="User does not have valid ADMIN role")
+        logger.exception("JW Token validation failed with error: %s", e)
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED, detail="Token validation failed"
+        ) from e
+    except ValidationError as e:
+        logger.exception("User does not have valid ADMIN role")
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN, detail="User does not have valid ADMIN role"
+        ) from e

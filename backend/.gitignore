@@ -34,6 +34,8 @@ build/
 
 ### PYTHON ###
 __pycache__/
+.mypy_cache/
+.pytest_cache/
 
 ### ENV ###
-.env
+*config.yaml
