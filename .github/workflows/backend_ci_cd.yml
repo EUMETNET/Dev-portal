@@ -27,14 +27,14 @@ jobs:
         #- name: Setup Vault
         #  run: docker exec vault_test sh /vault/config/setup.sh
         
+        - name: Install Poetry
+          run: curl -sSL https://install.python-poetry.org | python3 -
+
         - name: Set up Python environment
           uses: actions/setup-python@v5
           with:
             python-version: '3.12'
             cache: 'poetry'
-
-        - name: Install Poetry
-          run: curl -sSL https://install.python-poetry.org | python3 -
           
         - name: Install dependencies
           run: poetry install
