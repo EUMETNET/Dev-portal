@@ -73,7 +73,7 @@ async def save_user_to_vault(client: AsyncClient, identifier: str) -> VaultUser:
     await http_request(
         client,
         "POST",
-        f"{config.vault.base_url}/v1/{config.vault.base_path}/{identifier}",
+        f"{config.vault.url}/v1/{config.vault.base_path}/{identifier}",
         headers={"X-Vault-Token": config.vault.token},
         data=vault_user.model_dump(),
     )
@@ -97,7 +97,7 @@ async def get_user_info_from_vault(client: AsyncClient, identifier: str) -> Vaul
     #'lease_id': '', 'renewable': False, 'lease_duration': 2764800,
     #'data': {'as': 'as', 'dfdf': 'dfdf'}, 'wrap_info': None, 'warnings': None, 'auth': None}
 
-    url = f"{config.vault.base_url}/v1/{config.vault.base_path}/{identifier}"
+    url = f"{config.vault.url}/v1/{config.vault.base_path}/{identifier}"
     headers = {"X-Vault-Token": config.vault.token}
     response = await http_request(
         client, "GET", url, headers=headers, valid_status_codes=(200, 404)
@@ -116,6 +116,6 @@ async def delete_user_from_vault(client: AsyncClient, identifier: str) -> None:
     await http_request(
         client,
         "DELETE",
-        f"{config.vault.base_url}/v1/{config.vault.base_path}/{identifier}",
+        f"{config.vault.url}/v1/{config.vault.base_path}/{identifier}",
         headers={"X-Vault-Token": config.vault.token},
     )

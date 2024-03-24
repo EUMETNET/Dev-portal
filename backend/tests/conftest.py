@@ -50,7 +50,7 @@ async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     data = {
         "type": "kv",
     }
-    url = f"{config.vault.base_url}/v1/sys/mounts/apisix-dev"
+    url = f"{config.vault.url}/v1/sys/mounts/apisix-dev"
     await client.post(url, json=data, headers=VAULT_HEADERS)
 
     yield
@@ -68,7 +68,7 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
 
     # Add secrets config for Vault
 
-    url = f"{config.apisix.admin_api_url}/apisix/admin/secrets/vault/dev"
+    url = f"{config.apisix.admin_url}/apisix/admin/secrets/vault/dev"
     data = {
         "uri": "http://vault:8200",
         "prefix": config.vault.base_path,
@@ -76,7 +76,7 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     }
 
     # Add some test routes
-    routes_url = f"{config.apisix.admin_api_url}/apisix/admin/routes"
+    routes_url = f"{config.apisix.admin_url}/apisix/admin/routes"
     routes = apisix.ROUTES
 
     await asyncio.gather(
@@ -99,13 +99,13 @@ async def clean_up_api6_consumers(client: AsyncClient) -> AsyncGenerator[None, N
     yield
 
     response = await client.get(
-        f"{config.apisix.admin_api_url}/apisix/admin/consumers", headers=API6_HEADERS
+        f"{config.apisix.admin_url}/apisix/admin/consumers", headers=API6_HEADERS
     )
     data = response.json()
     if data["total"]:
         tasks = [
             client.delete(
-                f"{config.apisix.admin_api_url}/apisix/admin/consumers/{user['value']['username']}",
+                f"{config.apisix.admin_url}/apisix/admin/consumers/{user['value']['username']}",
                 headers=API6_HEADERS,
             )
             for user in data["list"]
@@ -128,7 +128,7 @@ async def get_keycloak_admin_token(client: AsyncClient) -> str:
     Returns:
         str: The access token for the user.
     """
-    token_url = f"{config.keycloak.keycloak_url}/realms/master/protocol/openid-connect/token"
+    token_url = f"{config.keycloak.url}/realms/master/protocol/openid-connect/token"
     data = keycloak.KEYCLOAK_ADMIN_USER_TOKEN_DATA
     response = await client.post(token_url, data=data)
     access_token = response.json()["access_token"]
@@ -151,12 +151,12 @@ async def keycloak_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
         realm_json = json.load(f)
 
     await client.post(
-        f"{config.keycloak.keycloak_url}/admin/realms", json=realm_json, headers=auth_header
+        f"{config.keycloak.url}/admin/realms", json=realm_json, headers=auth_header
     )
 
     users = keycloak.KEYCLOAK_USERS
 
-    user_url = f"{config.keycloak.keycloak_url}/admin/realms/{config.keycloak.realm}/users"
+    user_url = f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
 
     await asyncio.gather(*[client.post(user_url, json=user, headers=auth_header) for user in users])
 
@@ -201,7 +201,7 @@ async def get_keycloak_user_token(client: AsyncClient) -> str:
         str: The access token for the user.
     """
     token_url = (
-        f"{config.keycloak.keycloak_url}/realms/{config.keycloak.realm}"
+        f"{config.keycloak.url}/realms/{config.keycloak.realm}"
         "/protocol/openid-connect/token"
     )
     data = {
@@ -234,7 +234,7 @@ async def get_keycloak_user_2_token_no_role(client: AsyncClient) -> str:
 
     await remove_keycloak_realm_role_from_user(client)
     token_url = (
-        f"{config.keycloak.keycloak_url}/realms/{config.keycloak.realm}"
+        f"{config.keycloak.url}/realms/{config.keycloak.realm}"
         "/protocol/openid-connect/token"
     )
     data = {
@@ -270,7 +270,7 @@ async def remove_keycloak_realm_role_from_user(client: AsyncClient) -> None:
     }
     user = keycloak.KEYCLOAK_USERS[1]
 
-    user_url = f"{config.keycloak.keycloak_url}/admin/realms/{config.keycloak.realm}/users"
+    user_url = f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
 
     r = await client.get(f"{user_url}?username={user['username']}", headers=auth_header)
 
@@ -281,7 +281,7 @@ async def remove_keycloak_realm_role_from_user(client: AsyncClient) -> None:
 
     # Delete the role from the user
     role_url = (
-        f"{config.keycloak.keycloak_url}/admin/realms/{config.keycloak.realm}/users"
+        f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
         f"/{user_id}/role-mappings/realm"
     )
 

@@ -23,7 +23,7 @@ class APISixSettings(BaseSettings):
     APISix settings model
     """
 
-    admin_api_url: str
+    admin_url: str
     gateway_url: str
     admin_api_key: str
     key_path: str
@@ -35,7 +35,7 @@ class VaultSettings(BaseSettings):
     Vault settings model
     """
 
-    base_url: str
+    url: str
     base_path: str
     token: str
     secret_phase: str
@@ -46,7 +46,7 @@ class KeyCloakSettings(BaseSettings):
     Keycloak settings model
     """
 
-    keycloak_url: str
+    url: str
     realm: str
 
 

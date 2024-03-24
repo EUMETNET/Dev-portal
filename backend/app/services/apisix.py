@@ -45,7 +45,7 @@ async def create_apisix_consumer(client: AsyncClient, identifier: str) -> APISix
     await http_request(
         client,
         "PUT",
-        f"{config.apisix.admin_api_url}/apisix/admin/consumers",
+        f"{config.apisix.admin_url}/apisix/admin/consumers",
         headers=HEADERS,
         data=create_consumer(identifier).model_dump(),
     )
@@ -66,7 +66,7 @@ async def get_apisix_consumer(client: AsyncClient, identifier: str) -> APISixCon
     response = await http_request(
         client,
         "GET",
-        f"{config.apisix.admin_api_url}/apisix/admin/consumers/{identifier}",
+        f"{config.apisix.admin_url}/apisix/admin/consumers/{identifier}",
         headers=HEADERS,
         valid_status_codes=(200, 404),
     )
@@ -90,7 +90,7 @@ async def get_routes(client: AsyncClient) -> APISixRoutes:
         list[str]: A list of routes.
     """
     response = await http_request(
-        client, "GET", f"{config.apisix.admin_api_url}/apisix/admin/routes", headers=HEADERS
+        client, "GET", f"{config.apisix.admin_url}/apisix/admin/routes", headers=HEADERS
     )
     routes = response.json().get("list", [])
     # {'total': 1,
@@ -116,6 +116,6 @@ async def delete_apisix_consumer(client: AsyncClient, identifier: str) -> None:
     await http_request(
         client,
         "DELETE",
-        f"{config.apisix.admin_api_url}/apisix/admin/consumers/{identifier}",
+        f"{config.apisix.admin_url}/apisix/admin/consumers/{identifier}",
         headers=HEADERS,
     )
