@@ -28,9 +28,6 @@ freezegun = "^1.4.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-start-dev = "app.main:start"
-
 # Mypy rules
 # Based on this https://careers.wolt.com/en/blog/tech/professional-grade-mypy-configuration
 [tool.mypy]
@@ -48,7 +45,15 @@ warn_unused_ignores = true
 [tool.black]
 line-length = 100
 
-# Make Pylint happy with pydantic
 [tool.pylint]
 load-plugins = "pylint_pydantic"
 min-similarity-lines=10
+
+[tool.poetry.scripts]
+start-dev = "app.main:start_dev"
+format = "scripts:format_code"
+format-check = "scripts:format_code_check"
+lint = "scripts:lint_code"
+type-check = "scripts:type_check"
+sec-check = "scripts:security_check"
+test = "scripts:run_tests"
