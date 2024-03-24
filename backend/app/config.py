@@ -64,7 +64,7 @@ class Settings(BaseSettings):
     keycloak: KeyCloakSettings
 
     # Look first for specific config file and fall back to the default config.yaml
-    model_config = SettingsConfigDict(yaml_file=os.getenv("CONFIG_YAML", "config.yaml"))
+    model_config = SettingsConfigDict(yaml_file=os.getenv("CONFIG_FILE", "config.yaml"))
 
     # pylint: disable=too-many-arguments
     @classmethod

@@ -38,8 +38,8 @@ app.add_exception_handler(Exception, general_exception_handler)
 app.include_router(apikey.router)
 
 
-# Start the server using poetry script
-def start() -> None:
+# Start the dev server using poetry script
+def start_dev() -> None:
     """
     Start the Uvicorn server
     """

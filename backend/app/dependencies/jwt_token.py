@@ -2,7 +2,6 @@
 JWT Token dependency
 """
 
-from typing import Dict, List
 from http import HTTPStatus
 from jose import jwt, JWTError, ExpiredSignatureError
 from pydantic import ValidationError
@@ -18,7 +17,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="tokenUrl")
 config = settings()
 
 
-async def get_jwk(client: AsyncClient, token: str) -> Dict[str, str]:
+async def get_jwk(client: AsyncClient, token: str) -> dict[str, str]:
     """
     Retrieve the JSON Web Key (JWK) from a Keycloak server.
 
@@ -39,7 +38,7 @@ async def get_jwk(client: AsyncClient, token: str) -> Dict[str, str]:
     )
     try:
         response = await http_request(client, "GET", jwks_url)
-        jwks: Dict[str, List[Dict[str, str]]] = response.json()
+        jwks: dict[str, list[dict[str, str]]] = response.json()
         for key in jwks["keys"]:
             if key["kid"] == header["kid"]:
                 return key

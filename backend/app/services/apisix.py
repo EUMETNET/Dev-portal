@@ -87,7 +87,7 @@ async def get_routes(client: AsyncClient) -> APISixRoutes:
         client (AsyncClient): The HTTP client to use for making the request.
 
     Returns:
-        List[str]: A list of routes.
+        list[str]: A list of routes.
     """
     response = await http_request(
         client, "GET", f"{config.apisix.admin_api_url}/apisix/admin/routes", headers=HEADERS

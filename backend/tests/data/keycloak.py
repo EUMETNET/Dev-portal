@@ -2,7 +2,7 @@
 Keycloak test data
 """
 
-from typing import List, TypedDict
+from typing import TypedDict
 
 
 class Credential(TypedDict):
@@ -22,7 +22,7 @@ class KeycloakUser(TypedDict):
 
     username: str
     enabled: bool
-    credentials: List[Credential]
+    credentials: list[Credential]
     firstName: str
     lastName: str
     email: str
@@ -36,7 +36,7 @@ KEYCLOAK_ADMIN_USER_TOKEN_DATA = {
     "grant_type": "password",
 }
 
-KEYCLOAK_USERS: List[KeycloakUser] = [
+KEYCLOAK_USERS: list[KeycloakUser] = [
     {
         "username": "tester",
         "enabled": True,
