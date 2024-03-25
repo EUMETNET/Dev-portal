@@ -50,6 +50,17 @@ class KeyCloakSettings(BaseSettings):
     realm: str
 
 
+class ServerSettings(BaseSettings):
+    """
+    FastAPI server settings model
+    """
+
+    host: str = Field(default="127.0.0.1")
+    port: int = Field(default=8082)
+    log_level: str = Field(default="INFO")
+    allowed_origins: list[str] = Field(default=["*"])
+
+
 # Link to docs where this is explained
 # https://docs.pydantic.dev/latest/concepts/pydantic_settings/#other-settings-source
 class Settings(BaseSettings):
@@ -57,8 +68,7 @@ class Settings(BaseSettings):
     Application settings model
     """
 
-    port: int = Field(default=8082)
-    log_level: str = Field(default="INFO")
+    server: ServerSettings
     apisix: APISixSettings
     vault: VaultSettings
     keycloak: KeyCloakSettings
@@ -89,4 +99,4 @@ def settings() -> Settings:
 
 # Set the log level
 logger = logging.getLogger("uvicorn")
-logger.setLevel(logging.getLevelName(settings().log_level))
+logger.setLevel(logging.getLevelName(settings().server.log_level))

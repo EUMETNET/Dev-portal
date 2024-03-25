@@ -5,8 +5,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   config.yaml: |
-    port: {{ .Values.backend.containerport }}
-    log_level: INFO
+    server:
+      host: {{ .Values.ingress.host }} 
+      port: {{ .Values.backend.containerport }}
+      log_level: INFO
 
     keycloak:
       url: {{ .Values.backend.keycloak_cluster_url }}

@@ -14,7 +14,7 @@ pytestmark = pytest.mark.anyio
 
 config = settings()
 
-BASE_URL = f"http://localhost:{config.port}"
+BASE_URL = f"http://localhost:{config.server.port}"
 
 
 async def test_get_api_key_without_token_fails() -> None:

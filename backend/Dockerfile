@@ -45,4 +45,4 @@ EXPOSE 8082
 
 # Run the application
 # Might need to include --proxy-headers if behind a load balancer like nginx etc
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8082"]
+CMD ["python", "-m", "app.main"]

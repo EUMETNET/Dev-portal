@@ -1,6 +1,8 @@
 cat <<EOF
-port: 8082
-log_level: "INFO"
+server:
+  port: 8082
+  log_level: "INFO"
+  allowed_origins: ["*"]
 apisix:
   admin_url: http://127.0.0.1:9180
   gateway_url: http://127.0.0.1:9080

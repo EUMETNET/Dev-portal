@@ -33,8 +33,7 @@ async def get_jwk(client: AsyncClient, token: str) -> dict[str, str]:
 
     header = jwt.get_unverified_header(token)
     jwks_url = (
-        f"{config.keycloak.url}/realms/{config.keycloak.realm}"
-        "/protocol/openid-connect/certs"
+        f"{config.keycloak.url}/realms/{config.keycloak.realm}" "/protocol/openid-connect/certs"
     )
     try:
         response = await http_request(client, "GET", jwks_url)

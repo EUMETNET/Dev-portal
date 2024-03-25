@@ -15,16 +15,9 @@ config = settings()
 app = FastAPI()
 
 # Middleware
-origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:3002",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=config.server.allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -38,9 +31,13 @@ app.add_exception_handler(Exception, general_exception_handler)
 app.include_router(apikey.router)
 
 
-# Start the dev server using poetry script
 def start_dev() -> None:
     """
-    Start the Uvicorn server
+    Start the Uvicorn server with Poetry script for development using hot reload
     """
-    uvicorn.run("app.main:app", port=config.port, reload=True)
+    uvicorn.run("app.main:app", host=config.server.host, port=config.server.port, reload=True)
+
+
+if __name__ == "__main__":
+    # Start the Uvicorn server in docker by running this module python -m app.main
+    uvicorn.run("app.main:app", host=config.server.host, port=config.server.port)
