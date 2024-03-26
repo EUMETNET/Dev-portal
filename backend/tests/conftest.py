@@ -7,13 +7,15 @@ import json
 import asyncio
 import pytest
 from httpx import AsyncClient
-from app.config import settings
+from app.config import settings, APISixInstanceSettings
 from tests.data import apisix, keycloak
 
 config = settings()
 
+APISIX_INSTANCE = config.apisix.instances[0]
+
 VAULT_HEADERS = {"X-Vault-Token": config.vault.token}
-API6_HEADERS = {"Content-Type": "application/json", "X-API-KEY": config.apisix.admin_api_key}
+API6_HEADERS = {"Content-Type": "application/json", "X-API-KEY": APISIX_INSTANCE.admin_api_key}
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -60,6 +62,14 @@ async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
 
 
 # ------- APISIX SETUP ---------
+@pytest.fixture(scope="session")
+def apisix_instance() -> APISixInstanceSettings:
+    """
+    Return the APISix instance settings.
+    """
+    return APISIX_INSTANCE   
+
+
 @pytest.fixture(scope="session", autouse=True)
 async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     """
@@ -68,7 +78,7 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
 
     # Add secrets config for Vault
 
-    url = f"{config.apisix.admin_url}/apisix/admin/secrets/vault/dev"
+    url = f"{APISIX_INSTANCE.admin_url}/apisix/admin/secrets/vault/dev"
     data = {
         "uri": "http://vault:8200",
         "prefix": config.vault.base_path,
@@ -76,7 +86,7 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     }
 
     # Add some test routes
-    routes_url = f"{config.apisix.admin_url}/apisix/admin/routes"
+    routes_url = f"{APISIX_INSTANCE.admin_url}/apisix/admin/routes"
     routes = apisix.ROUTES
 
     await asyncio.gather(
@@ -99,13 +109,13 @@ async def clean_up_api6_consumers(client: AsyncClient) -> AsyncGenerator[None, N
     yield
 
     response = await client.get(
-        f"{config.apisix.admin_url}/apisix/admin/consumers", headers=API6_HEADERS
+        f"{APISIX_INSTANCE.admin_url}/apisix/admin/consumers", headers=API6_HEADERS
     )
     data = response.json()
     if data["total"]:
         tasks = [
             client.delete(
-                f"{config.apisix.admin_url}/apisix/admin/consumers/{user['value']['username']}",
+                f"{APISIX_INSTANCE.admin_url}/apisix/admin/consumers/{user['value']['username']}",
                 headers=API6_HEADERS,
             )
             for user in data["list"]

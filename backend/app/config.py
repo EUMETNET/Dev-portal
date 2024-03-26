@@ -18,16 +18,25 @@ from pydantic_settings import (
 VAULT_API_KEY_FIELD_NAME = "auth_key"
 
 
+class APISixInstanceSettings(BaseSettings):
+    """
+    APISix instance settings model
+    """
+
+    name: str
+    admin_url: str
+    gateway_url: str
+    admin_api_key: str
+
+
 class APISixSettings(BaseSettings):
     """
     APISix settings model
     """
 
-    admin_url: str
-    gateway_url: str
-    admin_api_key: str
     key_path: str
     key_name: str = VAULT_API_KEY_FIELD_NAME
+    instances: list[APISixInstanceSettings]
 
 
 class VaultSettings(BaseSettings):

@@ -114,4 +114,4 @@ async def test_delete_api_key_succeeds(get_keycloak_user_token) -> None:
         )
 
     assert response.status_code == 200
-    assert response.json() == "OK"
+    assert response.json() == {"message": "OK"}
