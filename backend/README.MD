@@ -98,3 +98,7 @@ Dockerize the backend app and run it with local dev stack with command
 
 Here we connect the dockerized backend app to services container. Using also different config.yaml to this (urls diffs when using docker or not)
 
+## TODO
+
+- Implement atomicity and rollback mechanism in the `apikey` router functions. 
+E.g. Currently, if the user deletion fails for one or more APISIX instances but succeeds for others, the system ends up in an inconsistent state. To handle this, we need to implement a rollback mechanism. If the deletion fails for any instance, we should attempt to recreate the user in the instances where deletion was successful. This way, if anything goes wrong, we can revert back to the original state.
