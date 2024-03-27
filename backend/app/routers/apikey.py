@@ -28,11 +28,11 @@ async def get_user_from_vault_and_apisixes(
 
     Args:
         client (AsyncClient): The HTTP client to use for making requests.
-        uuid (str): The user's UUID.
+        uuid_not_dashes (str): The user's UUID without dashes.
 
     Returns:
         tuple[vault.VaultUser | None, list[str]]:
-            The user's information from Vault and the APISix instances where the user is missing.
+            The user's information from Vault and the APISix instances where the user exists.
     """
     try:
         results = await asyncio.gather(
@@ -78,16 +78,12 @@ async def get_api_key(
     uuid = token.sub
     uuid_not_dashes = remove_dashes(uuid)
 
-    vault_and_apisix_users = await get_user_from_vault_and_apisixes(client, uuid_not_dashes)
+    vault_user, apisix_users = await get_user_from_vault_and_apisixes(client, uuid_not_dashes)
 
-    logger.debug("vault_and_apisix_users: %s", vault_and_apisix_users)
-
-    vault_user = vault_and_apisix_users[0]
-
-    apisix_instances_with_no_user = apisix.apisix_instances_missing_user(vault_and_apisix_users[1])
+    apisix_instances_with_no_user = apisix.apisix_instances_missing_user(apisix_users)
 
     if not vault_user:
-        logger.debug("User %s not found in vault --> Saving user to vault", uuid)
+        logger.debug("User '%s' not found in vault --> Saving user to vault", uuid)
         try:
             vault_user = await vault.save_user_to_vault(client, uuid_not_dashes)
         except HTTPError as e:
@@ -156,16 +152,14 @@ async def delete_user(
     uuid = token.sub
     uuid_not_dashes = remove_dashes(uuid)
 
-    vault_and_apisix_users = await get_user_from_vault_and_apisixes(client, uuid_not_dashes)
-
-    vault_user = vault_and_apisix_users[0]
+    vault_user, apisix_users = await get_user_from_vault_and_apisixes(client, uuid_not_dashes)
 
     apisix_instances_with_user = set(
-        user.instance_name for user in vault_and_apisix_users[1] if user
+        user.instance_name for user in apisix_users if user
     )
 
     if vault_user:
-        logger.debug("User found from Vault --> Deleting user from Vault")
+        logger.debug("User '%s'found from Vault --> Deleting user from Vault", uuid_not_dashes)
         try:
             await vault.delete_user_from_vault(client, uuid_not_dashes)
         except HTTPException as e:
