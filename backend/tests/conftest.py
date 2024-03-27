@@ -67,7 +67,7 @@ def apisix_instance() -> APISixInstanceSettings:
     """
     Return the APISix instance settings.
     """
-    return APISIX_INSTANCE   
+    return APISIX_INSTANCE
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -160,9 +160,7 @@ async def keycloak_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     with open("tests/data/realm-export.json", encoding="utf-8") as f:
         realm_json = json.load(f)
 
-    await client.post(
-        f"{config.keycloak.url}/admin/realms", json=realm_json, headers=auth_header
-    )
+    await client.post(f"{config.keycloak.url}/admin/realms", json=realm_json, headers=auth_header)
 
     users = keycloak.KEYCLOAK_USERS
 
@@ -211,8 +209,7 @@ async def get_keycloak_user_token(client: AsyncClient) -> str:
         str: The access token for the user.
     """
     token_url = (
-        f"{config.keycloak.url}/realms/{config.keycloak.realm}"
-        "/protocol/openid-connect/token"
+        f"{config.keycloak.url}/realms/{config.keycloak.realm}" "/protocol/openid-connect/token"
     )
     data = {
         "client_id": "frontend",
@@ -244,8 +241,7 @@ async def get_keycloak_user_2_token_no_role(client: AsyncClient) -> str:
 
     await remove_keycloak_realm_role_from_user(client)
     token_url = (
-        f"{config.keycloak.url}/realms/{config.keycloak.realm}"
-        "/protocol/openid-connect/token"
+        f"{config.keycloak.url}/realms/{config.keycloak.realm}" "/protocol/openid-connect/token"
     )
     data = {
         "client_id": "frontend",

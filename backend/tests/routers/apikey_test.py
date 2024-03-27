@@ -105,7 +105,7 @@ async def test_get_api_key_for_existing_user_succeeds(get_keycloak_user_token: C
     assert len(data["routes"]) == 2
 
 
-async def test_delete_api_key_succeeds(get_keycloak_user_token) -> None:
+async def test_delete_api_key_succeeds(get_keycloak_user_token: Callable) -> None:
     async with AsyncClient(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
