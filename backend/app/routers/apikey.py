@@ -78,16 +78,18 @@ async def get_api_key(
     uuid = token.sub
     uuid_not_dashes = remove_dashes(uuid)
 
+    logger.debug("Got request to retrieve API key for user '%s'", uuid_not_dashes)
+
     vault_user, apisix_users = await get_user_from_vault_and_apisixes(client, uuid_not_dashes)
 
     apisix_instances_with_no_user = apisix.apisix_instances_missing_user(apisix_users)
 
     if not vault_user:
-        logger.debug("User '%s' not found in vault --> Saving user to vault", uuid)
+        logger.debug("User '%s' not found in Vault --> Saving user to Vault", uuid_not_dashes)
         try:
             vault_user = await vault.save_user_to_vault(client, uuid_not_dashes)
         except HTTPError as e:
-            logger.exception("Error saving user to Vault", exc_info=e)
+            logger.exception("Error saving user '%s' to Vault", uuid_not_dashes, exc_info=e)
             raise HTTPException(
                 status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail="Vault service error"
             ) from e
@@ -109,7 +111,12 @@ async def get_api_key(
                 )
             )
         except HTTPError as e:
-            logger.exception("Error saving user to APISIX: %s", e)
+            logger.exception(
+                "Error saving user '%s' to APISIX instances: %s",
+                uuid_not_dashes,
+                apisix_instances_with_no_user,
+                exc_info=e,
+            )
             raise HTTPException(
                 status_code=HTTPStatus.SERVICE_UNAVAILABLE,
                 detail="APISix service error",
@@ -152,14 +159,14 @@ async def delete_user(
     uuid = token.sub
     uuid_not_dashes = remove_dashes(uuid)
 
+    logger.debug("Got request to retrieve API key for user '%s'", uuid_not_dashes)
+
     vault_user, apisix_users = await get_user_from_vault_and_apisixes(client, uuid_not_dashes)
 
-    apisix_instances_with_user = set(
-        user.instance_name for user in apisix_users if user
-    )
+    apisix_instances_with_user = set(user.instance_name for user in apisix_users if user)
 
     if vault_user:
-        logger.debug("User '%s'found from Vault --> Deleting user from Vault", uuid_not_dashes)
+        logger.debug("User '%s' found from Vault --> Deleting user from Vault", uuid_not_dashes)
         try:
             await vault.delete_user_from_vault(client, uuid_not_dashes)
         except HTTPException as e:
@@ -184,7 +191,12 @@ async def delete_user(
                 )
             )
         except HTTPException as e:
-            logger.exception("Error deleting user from APISix: %s", e)
+            logger.exception(
+                "Error deleting user '%s' from APISix instances: %s",
+                uuid_not_dashes,
+                apisix_instances_with_user,
+                exc_info=e,
+            )
             raise HTTPException(
                 status_code=HTTPStatus.SERVICE_UNAVAILABLE,
                 detail="APISix service error",

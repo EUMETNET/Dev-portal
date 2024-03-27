@@ -21,6 +21,7 @@ class VaultUser(BaseModel):
         auth_key (str): The key name used for api key.
         date (str): The date user was created.
     """
+
     # The key name for 'auth_key' field must match with value of
     # app.config.settings.VAULT_API_KEY_FIELD_NAME
     auth_key: str
