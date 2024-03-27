@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12.2-slim as builder
+FROM python:3.12.2-alpine as builder
 
 # Set environment varibles
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -8,9 +8,6 @@ ENV PYTHONUNBUFFERED 1
 # Set work directory
 WORKDIR /tmp
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends gcc
-
 # Install Poetry
 # https://python-poetry.org/docs/cli/#export
 RUN pip install poetry poetry-plugin-export
@@ -18,10 +15,10 @@ COPY ./pyproject.toml ./poetry.lock* ./
 RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
 # Multi-stage build: create a slim image
-FROM python:3.12.2-slim
+FROM python:3.12.2-alpine
 
 # Create a non-root user
-RUN useradd appuser && mkdir -p /code/app && chown -R appuser /code
+RUN adduser -D appuser && mkdir -p /code/app && chown -R appuser /code
 
 # Copy only Poetry generated requirements.txt
 COPY --from=builder /tmp/requirements.txt /code/requirements.txt
