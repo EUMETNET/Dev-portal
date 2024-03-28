@@ -26,8 +26,8 @@ COPY --from=builder /tmp/requirements.txt /code/requirements.txt
 # Set work directory
 WORKDIR /code
 
-# Create an empty config file to be mounted by k8
-RUN touch ./config.yaml
+# Copy a default config file. Override this by mounting a config.yaml
+COPY ./config.default.yaml ./config.default.yaml
 
 RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
 

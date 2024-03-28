@@ -73,8 +73,11 @@ class Settings(BaseSettings):
     vault: VaultSettings
     keycloak: KeyCloakSettings
 
-    # Look first for specific config file and fall back to the default config.yaml
-    model_config = SettingsConfigDict(yaml_file=os.getenv("CONFIG_FILE", "config.yaml"))
+    # Look first for specific config file or config.yaml
+    # and fall back to the default config.default.yaml
+    model_config = SettingsConfigDict(
+        yaml_file=["config.default.yaml", os.getenv("CONFIG_FILE", "config.yaml")]
+    )
 
     # pylint: disable=too-many-arguments
     @classmethod
