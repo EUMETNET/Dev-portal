@@ -5,48 +5,18 @@ API key route handlers
 from http import HTTPStatus
 import asyncio
 from fastapi import APIRouter, Depends, HTTPException
-from httpx import AsyncClient, HTTPError
+from httpx import AsyncClient
 from app.config import settings, logger
 from app.dependencies.jwt_token import validate_token, AccessToken
 from app.dependencies.http_client import get_http_client
-from app.services import vault, apisix
+from app.services import apisix, apikey
 from app.utils.uuid import remove_dashes
-from app.models.apisix import APISixConsumer
-from app.models.vault import VaultUser
 from app.models.responses import GetAPIKey, DeleteAPIKey
+from app.exceptions import APISIXError, VaultError
 
 router = APIRouter()
 
 config = settings()
-
-
-async def get_user_from_vault_and_apisixes(
-    client: AsyncClient, uuid_not_dashes: str
-) -> tuple[VaultUser | None, list[APISixConsumer | None]]:
-    """
-    Get user info from Vault and APISix instances.
-
-    Args:
-        client (AsyncClient): The HTTP client to use for making requests.
-        uuid_not_dashes (str): The user's UUID without dashes.
-
-    Returns:
-        tuple[vault.VaultUser | None, list[str]]:
-            The user's information from Vault and the APISix instances where the user exists.
-    """
-    try:
-        results = await asyncio.gather(
-            vault.get_user_info_from_vault(client, uuid_not_dashes),
-            *apisix.create_tasks(apisix.get_apisix_consumer, client, uuid_not_dashes),
-        )
-        return results[0], results[1:]
-    except HTTPError as e:
-        logger.exception(
-            "Error getting user '%s' from APISix or Vault.", uuid_not_dashes, exc_info=e
-        )
-        raise HTTPException(
-            status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail="APISix and or Vault service error"
-        ) from e
 
 
 # For now just refactor the existing endpoint as is
@@ -59,9 +29,9 @@ async def get_api_key(
     """
     Retrieve the API key for a user.
 
-    This function retrieves the user's API key from Vault and APISix.
+    This function retrieves the user's API key from Vault and APISIX.
     If the user does not exist in Vault, it saves the user to Vault.
-    If the user does not exist in APISix, it creates the user in APISix.
+    If the user does not exist in APISIX, it creates the user in APISIX.
 
     Args:
         token (AccessToken): The access token of the user.
@@ -72,63 +42,35 @@ async def get_api_key(
                       and the routes that require key authentication.
 
     Raises:
-        HTTPException: If there is an error getting user info from APISix or Vault,
-                       or if there is an error saving the user to Vault or APISix.
+        HTTPException: If there is an error getting user info from APISIX or Vault,
+                       or if there is an error saving the user to Vault or APISIX.
     """
     uuid = token.sub
-    uuid_not_dashes = remove_dashes(uuid)
+    uuid_no_dashes = remove_dashes(uuid)
 
-    logger.debug("Got request to retrieve API key for user '%s'", uuid_not_dashes)
+    logger.debug("Got request to retrieve API key for user '%s'", uuid_no_dashes)
 
-    vault_user, apisix_users = await get_user_from_vault_and_apisixes(client, uuid_not_dashes)
-
-    apisix_instances_with_no_user = apisix.apisix_instances_missing_user(apisix_users)
-
-    if not vault_user:
-        logger.debug("User '%s' not found in Vault --> Saving user to Vault", uuid_not_dashes)
-        try:
-            vault_user = await vault.save_user_to_vault(client, uuid_not_dashes)
-        except HTTPError as e:
-            logger.exception("Error saving user '%s' to Vault", uuid_not_dashes, exc_info=e)
-            raise HTTPException(
-                status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail="Vault service error"
-            ) from e
-
-    if apisix_instances_with_no_user:
-        logger.debug(
-            "User '%s' not found in following APISix instances: %s -->"
-            "Creating user to these instances",
-            uuid_not_dashes,
-            ",".join(apisix_instances_with_no_user),
+    try:
+        vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(
+            client, uuid_no_dashes
         )
-        try:
-            await asyncio.gather(
-                *apisix.create_tasks(
-                    apisix.create_apisix_consumer,
-                    client,
-                    uuid_not_dashes,
-                    instances=apisix_instances_with_no_user,
-                )
+
+        if not vault_user or any(user is None for user in apisix_users):
+            logger.debug("User '%s' not found in Vault or APISIX --> Creating user", uuid_no_dashes)
+            vault_user = await apikey.create_user_to_vault_and_apisixes(
+                client, uuid_no_dashes, vault_user, apisix_users
             )
-        except HTTPError as e:
-            logger.exception(
-                "Error saving user '%s' to APISIX instances: %s",
-                uuid_not_dashes,
-                apisix_instances_with_no_user,
-                exc_info=e,
-            )
-            raise HTTPException(
-                status_code=HTTPStatus.SERVICE_UNAVAILABLE,
-                detail="APISix service error",
-            ) from e
+
+        logger.debug("retrieving all the routes that requires key authentication")
+        routes_responses = await asyncio.gather(*apisix.create_tasks(apisix.get_routes, client))
+
+        routes = [route for response in routes_responses for route in response.routes]
+        logger.debug("found %s routes: %s", len(routes), routes)
+
+    except (VaultError, APISIXError) as e:
+        raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
     api_key = vault_user.auth_key
-
-    logger.debug("retrieving all the routes that requires key authentication")
-    routes_responses = await asyncio.gather(*apisix.create_tasks(apisix.get_routes, client))
-
-    routes = [route for response in routes_responses for route in response.routes]
-    logger.debug("found %s routes: %s", len(routes), routes)
 
     return GetAPIKey(apiKey=api_key, routes=routes)
 
@@ -139,11 +81,11 @@ async def delete_user(
     client: AsyncClient = Depends(get_http_client),
 ) -> DeleteAPIKey:
     """
-    Delete a user from both Vault and APISix.
+    Delete a user from both Vault and APISIX.
 
-    This function first retrieves the user's information from both Vault and APISix.
+    This function first retrieves the user's information from both Vault and APISIX.
     If the user exists in Vault, it deletes the user from Vault.
-    If the user exists in APISix, it deletes the user from APISix.
+    If the user exists in APISIX, it deletes the user from APISIX.
 
     Args:
         token (AccessToken): The access token of the user to be deleted.
@@ -153,53 +95,25 @@ async def delete_user(
         JSONResponse: A response indicating whether the deletion was successful.
 
     Raises:
-        HTTPException: If there is an error getting user info from APISix or Vault,
-                       or if there is an error deleting the user from Vault or APISix.
+        HTTPException: If there is an error getting user info from APISIX or Vault,
+                       or if there is an error deleting the user from Vault or APISIX.
     """
     uuid = token.sub
-    uuid_not_dashes = remove_dashes(uuid)
+    uuid_no_dashes = remove_dashes(uuid)
 
-    logger.debug("Got request to retrieve API key for user '%s'", uuid_not_dashes)
+    logger.debug("Got request to delete API key for user '%s'", uuid_no_dashes)
 
-    vault_user, apisix_users = await get_user_from_vault_and_apisixes(client, uuid_not_dashes)
-
-    apisix_instances_with_user = set(user.instance_name for user in apisix_users if user)
-
-    if vault_user:
-        logger.debug("User '%s' found from Vault --> Deleting user from Vault", uuid_not_dashes)
-        try:
-            await vault.delete_user_from_vault(client, uuid_not_dashes)
-        except HTTPException as e:
-            logger.exception("Error deleting user from Vault: %s", e)
-            raise HTTPException(
-                status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail="Vault service error"
-            ) from e
-
-    if apisix_instances_with_user:
-        logger.debug(
-            "User '%s' found in following APISix instances: %s --> Deleting user from those",
-            uuid_not_dashes,
-            ",".join(apisix_instances_with_user),
+    try:
+        vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(
+            client, uuid_no_dashes
         )
-        try:
-            await asyncio.gather(
-                *apisix.create_tasks(
-                    apisix.delete_apisix_consumer,
-                    client,
-                    uuid_not_dashes,
-                    instances=apisix_instances_with_user,
-                )
+        if vault_user or any(apisix_users):
+            logger.debug("User '%s' found in Vault or APISIX --> Deleting user", uuid_no_dashes)
+            await apikey.delete_user_from_vault_and_apisixes(
+                client, uuid_no_dashes, vault_user, apisix_users
             )
-        except HTTPException as e:
-            logger.exception(
-                "Error deleting user '%s' from APISix instances: %s",
-                uuid_not_dashes,
-                apisix_instances_with_user,
-                exc_info=e,
-            )
-            raise HTTPException(
-                status_code=HTTPStatus.SERVICE_UNAVAILABLE,
-                detail="APISix service error",
-            ) from e
+
+    except (VaultError, APISIXError) as e:
+        raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
     return DeleteAPIKey()

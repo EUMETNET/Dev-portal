@@ -9,6 +9,7 @@ from app.services.apisix import (
     get_routes,
     delete_apisix_consumer,
 )
+from app.exceptions import APISIXError
 
 config = settings()
 
@@ -46,7 +47,7 @@ async def test_delete_api6_user_not_found_should_raise_error(
     client: AsyncClient, apisix_instance: APISixInstanceSettings
 ) -> None:
     identifier = "testuser"
-    with pytest.raises(HTTPStatusError):
+    with pytest.raises(APISIXError):
         await delete_apisix_consumer(client, apisix_instance, identifier)
 
 

@@ -2,13 +2,13 @@
 Service for interacting with the APISIX API.
 """
 
-from typing import Awaitable, Callable, Coroutine, Any
+from typing import Callable, Coroutine, Any
 from functools import lru_cache
-import asyncio
-from httpx import AsyncClient
-from app.config import settings, APISixInstanceSettings
+from httpx import AsyncClient, HTTPError
+from app.config import settings, APISixInstanceSettings, logger
 from app.dependencies.http_client import http_request
 from app.models.apisix import APISixConsumer, APISixRoutes
+from app.exceptions import APISIXError
 
 config = settings()
 
@@ -44,24 +44,36 @@ async def create_apisix_consumer(
 
     Returns:
         APISixConsumer: A Pydantic model representing the created consumer.
+
+    Raises:
+        APISIXError: If there is an HTTP error while creating the consumer.
     """
-    apisix_consumer = APISixConsumer(
-        instance_name=instance.name,
-        username=identifier,
-        plugins={
-            "key-auth": {"key": f"{config.apisix.key_path}{identifier}/{config.apisix.key_name}"}
-        },
-    )
-    await http_request(
-        client,
-        "PUT",
-        f"{instance.admin_url}/apisix/admin/consumers",
-        headers=create_headers(instance.admin_api_key),
-        data=apisix_consumer.model_dump(
-            exclude={"instance_name"}
-        ),  # APISix does not expect the instance_name field
-    )
-    return apisix_consumer
+    try:
+        apisix_consumer = APISixConsumer(
+            instance_name=instance.name,
+            username=identifier,
+            plugins={
+                "key-auth": {
+                    "key": f"{config.apisix.key_path}{identifier}/{config.apisix.key_name}"
+                }
+            },
+        )
+        await http_request(
+            client,
+            "PUT",
+            f"{instance.admin_url}/apisix/admin/consumers",
+            headers=create_headers(instance.admin_api_key),
+            data=apisix_consumer.model_dump(
+                exclude={"instance_name"}
+            ),  # APISix does not expect the instance_name field
+        )
+        logger.info("Created APISIX user '%s' in instance '%s'", identifier, instance.name)
+        return apisix_consumer
+    except HTTPError as e:
+        logger.exception(
+            "Error creating APISIX user '%s' to instance '%s'", identifier, instance.name
+        )
+        raise APISIXError("APISIX service error") from e
 
 
 async def get_apisix_consumer(
@@ -76,25 +88,34 @@ async def get_apisix_consumer(
 
     Returns:
         APISixConsumer: A dictionary representing the consumer if found, None otherwise.
+
+    Raises:
+        APISIXError: If there is an HTTP error while retrieving the consumer.
     """
-    response = await http_request(
-        client,
-        "GET",
-        f"{instance.admin_url}/apisix/admin/consumers/{identifier}",
-        headers=create_headers(instance.admin_api_key),
-        valid_status_codes=(200, 404),
-    )
-    # response = make_request("GET", f"consumers/{username}", accepted_status_codes=[200, 404])
-    # {'key': '/apisix/consumers/foobar',
-    #'value': {'create_time': 1710165806, 'plugins':
-    # {'key-auth': {'key': '$secret://vault/dev/foobar/key-auth'}},
-    # 'username': 'foobar', 'update_time': 1710232230}}
-    data = response.json()
-    return (
-        APISixConsumer(instance_name=instance.name, **data["value"])
-        if response.status_code in {200, 201}
-        else None
-    )
+    try:
+        response = await http_request(
+            client,
+            "GET",
+            f"{instance.admin_url}/apisix/admin/consumers/{identifier}",
+            headers=create_headers(instance.admin_api_key),
+            valid_status_codes=(200, 404),
+        )
+        # response = make_request("GET", f"consumers/{username}", accepted_status_codes=[200, 404])
+        # {'key': '/apisix/consumers/foobar',
+        #'value': {'create_time': 1710165806, 'plugins':
+        # {'key-auth': {'key': '$secret://vault/dev/foobar/key-auth'}},
+        # 'username': 'foobar', 'update_time': 1710232230}}
+        data = response.json()
+        return (
+            APISixConsumer(instance_name=instance.name, **data["value"])
+            if response.status_code in {200, 201}
+            else None
+        )
+    except HTTPError as e:
+        logger.exception(
+            "Error retrieving APISIX user '%s' from instance '%s'", identifier, instance.name
+        )
+        raise APISIXError("APISIX service error") from e
 
 
 async def get_routes(client: AsyncClient, instance: APISixInstanceSettings) -> APISixRoutes:
@@ -106,24 +127,31 @@ async def get_routes(client: AsyncClient, instance: APISixInstanceSettings) -> A
 
     Returns:
         list[str]: A list of routes.
+
+    Raises:
+        APISIXError: If there is an HTTP error while retrieving the routes.
     """
-    response = await http_request(
-        client,
-        "GET",
-        f"{instance.admin_url}/apisix/admin/routes",
-        headers=create_headers(instance.admin_api_key),
-    )
-    routes = response.json().get("list", [])
-    # {'total': 1,
-    #'list': [{'value':
-    # {'update_time': 1710230570, 'plugins':
-    # {'key-auth': {'hide_credentials': False, 'query': 'apikey', 'header': 'apikey'},
-    #'proxy-rewrite': {'use_real_request_uri_unsafe': False, 'uri': '/'}},
-    #'priority': 0, 'uri': '/foo', 'create_time': 1710225526, 'upstream':
-    # {'type': 'roundrobin', 'pass_host': 'pass', 'nodes': {'httpbin.org:80': 1},
-    #'hash_on': 'vars', 'scheme': 'http'}, 'status': 1, 'id': 'foo'},
-    #'createdIndex': 101, 'key': '/apisix/routes/foo', 'modifiedIndex': 128}]}
-    return APISixRoutes(gateway_url=instance.gateway_url, routes=routes)
+    try:
+        response = await http_request(
+            client,
+            "GET",
+            f"{instance.admin_url}/apisix/admin/routes",
+            headers=create_headers(instance.admin_api_key),
+        )
+        routes = response.json().get("list", [])
+        # {'total': 1,
+        #'list': [{'value':
+        # {'update_time': 1710230570, 'plugins':
+        # {'key-auth': {'hide_credentials': False, 'query': 'apikey', 'header': 'apikey'},
+        #'proxy-rewrite': {'use_real_request_uri_unsafe': False, 'uri': '/'}},
+        #'priority': 0, 'uri': '/foo', 'create_time': 1710225526, 'upstream':
+        # {'type': 'roundrobin', 'pass_host': 'pass', 'nodes': {'httpbin.org:80': 1},
+        #'hash_on': 'vars', 'scheme': 'http'}, 'status': 1, 'id': 'foo'},
+        #'createdIndex': 101, 'key': '/apisix/routes/foo', 'modifiedIndex': 128}]}
+        return APISixRoutes(gateway_url=instance.gateway_url, routes=routes)
+    except HTTPError as e:
+        logger.exception("Error retrieving APISIX routes from instance '%s'", instance.name)
+        raise APISIXError("APISIX service error") from e
 
 
 async def delete_apisix_consumer(
@@ -135,33 +163,45 @@ async def delete_apisix_consumer(
     Args:
         client (AsyncClient): The HTTP client to use for making the request.
         identifier (str): The identifier for the consumer.
+
+    Raises:
+        APISIXError: If there is an HTTP error while deleting the consumer.
     """
-    await http_request(
-        client,
-        "DELETE",
-        f"{instance.admin_url}/apisix/admin/consumers/{identifier}",
-        headers=create_headers(instance.admin_api_key),
-    )
+    try:
+        await http_request(
+            client,
+            "DELETE",
+            f"{instance.admin_url}/apisix/admin/consumers/{identifier}",
+            headers=create_headers(instance.admin_api_key),
+        )
+        logger.info("Deleted APISIX user '%s' from instance '%s'", identifier, instance.name)
+    except HTTPError as e:
+        logger.exception(
+            "Error deleting APISIX user '%s' from instance '%s'", identifier, instance.name
+        )
+        raise APISIXError("APISIX service error") from e
 
 
-def apisix_instances_missing_user(users: list[APISixConsumer | None]) -> set[str]:
+def apisix_instances_missing_user(users: list[APISixConsumer | None]) -> list[str]:
     """
     Find the APISIX instances where the user is missing.
 
     Args:
-        user (APISixConsumer): The user to check for.
+        users (list[APISixConsumer | None]): The users to check for.
 
     Returns:
-        set(str): A set of instance names where the user is missing.
+        list(str): A list of instance names where the user is missing.
     """
-    all_instance_names = set(instance.name for instance in config.apisix.instances)
-    instances_with_user = set(user.instance_name for user in users if user is not None)
-    return all_instance_names - instances_with_user
+    return [
+        instance.name
+        for instance, user in zip(config.apisix.instances, users)
+        if user is None or instance.name != user.instance_name
+    ]
 
 
 def create_tasks(
     func: Callable[..., Coroutine], client: AsyncClient, *args: Any, **kwargs: Any
-) -> list[Awaitable]:
+) -> list[Coroutine]:
     """
     Create tasks to execute a function multiple times.
 
@@ -169,13 +209,13 @@ def create_tasks(
         func (Callable[..., Awaitable]): The function to execute.
 
     Returns:
-        List[Awaitable]: A list of tasks, each of which is a call to `func` for an APISix instance.
+        List[Task]: A list of tasks, each of which is a call to `func` for an APISix instance.
             If 'instances' is provided in kwargs, tasks are created only for those instances.
             If 'instances' is not provided, tasks are created for all APISix instances.
     """
     instances = kwargs.pop("instances", set())
     return [
-        asyncio.create_task(func(client, instance, *args, **kwargs))
+        func(client, instance, *args, **kwargs)
         for instance in config.apisix.instances
         if not instances or instance.name in instances
     ]

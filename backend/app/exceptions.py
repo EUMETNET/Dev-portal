@@ -1,5 +1,5 @@
 """
-Exception handlers
+Global exceptions for the application
 """
 
 from typing import cast
@@ -8,6 +8,18 @@ from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
 
 from app.config import logger
+
+
+class APISIXError(Exception):
+    """
+    Custom exception for APISIX errors
+    """
+
+
+class VaultError(Exception):
+    """
+    Custom exception for Vault errors
+    """
 
 
 async def http_exception_handler(_request: Request, exc: Exception) -> JSONResponse:
