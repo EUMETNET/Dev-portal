@@ -52,7 +52,8 @@ jobs:
         # generate Docker tags based on the following events/attributes
         tags: |
           type=schedule,pattern={{date 'YYYYMMDD-HHmmss'}}
-          type=sha 
+          type=sha
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
