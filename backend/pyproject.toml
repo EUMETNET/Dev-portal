@@ -9,7 +9,7 @@ readme = "README.MD"
 python = "^3.12"
 fastapi = "^0.110.1"
 python-jose = "^3.3.0"
-uvicorn = {extras = ["standard"], version = "^0.27.1"}
+uvicorn = "^0.29.0"
 httpx = "^0.27.0"
 pydantic-settings = "^2.2.1"
 
