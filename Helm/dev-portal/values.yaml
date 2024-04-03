@@ -21,7 +21,7 @@ backend:
     apisix_admin_url: "http://apisix-admin.apisix.svc.cluster.local:9180"
     apisix_gateway_url: "https://apisixdev.eumetnet-femdi.eumetsat.ewcloud.host"
     apisix_apikey: ""
-    apisix_keypath: $secret://vault/dev/
+    apisix_keypath: "$secret://vault/dev/"
     keycloak_cluster_url: http://keycloack-keycloak.keycloack.svc.cluster.local
     # Provide a existing secret. If empty, one is created
     secretName: ""
