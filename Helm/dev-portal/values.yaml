@@ -10,22 +10,21 @@ backend:
     tag: latest
   replicaCount: 1
   containerport: 8082
-  debugport: 5005
   service:
     type: ClusterIP
     port: 80
-    debugport: 5005
-  args: ["--spring.profiles.active=ewc-dev"]
-  vault_url: "vault.vault.svc.cluster.local"
-  vault_port: 8200
-  vault_token: ""
-  vault_path: apisix-dev/consumers/ewc
-  apisix_admin_url: "http://apisix-admin.apisix.svc.cluster.local:9180"
-  apisix_gateway_url: "https://apisixdev.eumetnet-femdi.eumetsat.ewcloud.host"
-  apisix_apikey: ""
-  apisix_keypath: $secret://vault/dev/
-  apisix_keyname: key-auth
-  keycloak_cluster_url: http://keycloack-keycloak.keycloack.svc.cluster.local
+  config:
+    vault_url: "http://vault.vault.svc.cluster.local:8200"
+    vault_token: ""
+    vault_path: apisix-dev/consumers/ewc
+    vault_phase: "geeks" # This one might need to be empty string as well
+    apisix_admin_url: "http://apisix-admin.apisix.svc.cluster.local:9180"
+    apisix_gateway_url: "https://apisixdev.eumetnet-femdi.eumetsat.ewcloud.host"
+    apisix_apikey: ""
+    apisix_keypath: $secret://vault/dev/
+    keycloak_cluster_url: http://keycloack-keycloak.keycloack.svc.cluster.local
+    # Provide a existing secret. If empty, one is created
+    secretName: ""
 
 frontend:
   name: dev-portal-frontend
@@ -56,4 +55,3 @@ ingress:
     - secretName: devportal-tls
       hosts:
         - devportal-apisixdev.eumetnet-femdi.eumetsat.ewcloud.host
-

@@ -11,6 +11,8 @@ spec:
       app: {{ .Values.backend.name }}
   template:
     metadata:
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/backend-secret.yaml") . | sha256sum }}
       labels:
         app: {{ .Values.backend.name }}
     spec:
@@ -21,12 +23,17 @@ spec:
         args: {{.Values.backend.args}}
         ports:
         - containerPort: {{ .Values.backend.containerport}}
-        - containerPort: {{ .Values.backend.debugport}}
         volumeMounts:
         - name: config
-          mountPath: "/config/application-ewc-dev.yaml"
-          subPath: "application-ewc-dev.yaml"
+          mountPath: "/code/config.yaml"
+          subPath: "config.yaml"
       volumes:
+      {{- if (not .Values.backend.config.secretName) }}
       - name: config
-        configMap: 
-          name: backend-config 
+        secret: 
+          secretName: {{ .Release.Name }}-backend-secret
+      {{- else }}
+      - name: config
+        secret: 
+          secretName: {{ .Values.backend.config.secretName }}
+      {{- end }}
