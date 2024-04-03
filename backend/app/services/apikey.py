@@ -79,7 +79,7 @@ async def handle_rollback(
     Raises:
         HTTPException: If there is an error during the rollback process.
     """
-    tasks: list[Coroutine[Any, Any, Any]] = []
+    tasks: list[Coroutine[Any, Any, VaultUser | None | APISixConsumer]] = []
 
     if vault_user:
         if rollback_from == "CREATE":
