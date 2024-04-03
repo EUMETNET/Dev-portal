@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ApikeyControllerSecurityE2ETest {
 
     @Container
-    private static final GenericContainer keycloak = new GenericContainer(DockerImageName.parse("jboss/keycloak:11.0.2"))
+    private static final GenericContainer keycloak = new GenericContainer(DockerImageName.parse("quay.io/keycloak/keycloak:24.0"))
             .withExposedPorts(8080)
             .withEnv("KEYCLOAK_USER", "admin")
             .withEnv("KEYCLOAK_PASSWORD", "admin")
