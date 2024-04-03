@@ -22,7 +22,7 @@ spec:
         imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
         args: {{.Values.backend.args}}
         ports:
-        - containerPort: {{ .Values.backend.containerport}}
+        - containerPort: {{ .Values.backend.containerport }}
         volumeMounts:
         - name: config
           mountPath: "/code/config.yaml"

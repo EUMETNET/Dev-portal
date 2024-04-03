@@ -8,8 +8,7 @@ spec:
   type: {{ .Values.backend.service.type }}
   ports:
     - port: {{ .Values.backend.service.port }}
-      targetPort: {{ .Values.backend.containerport}}
+      targetPort: {{ .Values.backend.containerport }}
       protocol: TCP
-      name: {{ .Values.backend.name }}
   selector:
     app: {{ .Values.backend.name }}
