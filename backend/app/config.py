@@ -6,7 +6,7 @@ import os
 from typing import Type, Tuple
 from functools import lru_cache
 import logging
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -28,6 +28,12 @@ class APISixInstanceSettings(BaseSettings):
     admin_url: str
     gateway_url: str
     admin_api_key: str
+
+    @field_validator("name")
+    def must_be_uppercase(cls, value: str) -> str:
+        if not value.isupper():
+            raise ValueError("APISIX instance name must be in uppercase")
+        return value
 
 
 class APISixSettings(BaseSettings):
@@ -102,7 +108,11 @@ class Settings(BaseSettings):
 @lru_cache
 def settings() -> Settings:
     """
-    Load and cache the settings from a .env file.
+    Load and cache the settings from given yaml config file.
+
+    Returns:
+        Settings: The loaded and cached settings.
+
     """
     return Settings()
 
