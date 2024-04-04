@@ -3,10 +3,10 @@ Application configurations
 """
 
 import os
-from typing import Type, Tuple
+from typing import Type
 from functools import lru_cache
 import logging
-from pydantic import Field, field_validator
+from pydantic import Field
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -28,12 +28,6 @@ class APISixInstanceSettings(BaseSettings):
     admin_url: str
     gateway_url: str
     admin_api_key: str
-
-    @field_validator("name")
-    def must_be_uppercase(cls, value: str) -> str:
-        if not value.isupper():
-            raise ValueError("APISIX instance name must be in uppercase")
-        return value
 
 
 class APISixSettings(BaseSettings):
@@ -104,7 +98,7 @@ class Settings(BaseSettings):
         env_settings: PydanticBaseSettingsSource,
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
-    ) -> Tuple[PydanticBaseSettingsSource, ...]:
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
         return (YamlConfigSettingsSource(settings_cls),)
 
 
