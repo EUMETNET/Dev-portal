@@ -87,7 +87,7 @@ async def test_get_api_key_for_new_user_succeeds(get_keycloak_user_token: Callab
     assert response.status_code == 200
     data = response.json()
     assert "apiKey" in data
-    assert len(data["routes"]) == 2
+    assert len(data["routes"]) == 4
 
 
 async def test_get_api_key_for_existing_user_succeeds(get_keycloak_user_token: Callable) -> None:
@@ -102,7 +102,7 @@ async def test_get_api_key_for_existing_user_succeeds(get_keycloak_user_token: C
     assert response.status_code == 200
     data = response.json()
     assert "apiKey" in data
-    assert len(data["routes"]) == 2
+    assert len(data["routes"]) == 4
 
 
 async def test_delete_api_key_succeeds(get_keycloak_user_token: Callable) -> None:
