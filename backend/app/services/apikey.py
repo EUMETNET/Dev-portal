@@ -87,10 +87,10 @@ async def handle_rollback(
         else:
             tasks.append(vault.save_user_to_vault(client, uuid_no_dashes, vault_user))
 
-    errored_apisix_instances = [
+    not_errored_apisix_instances = [
         instance
         for instance, response in zip(apisix_instances, apisix_responses)
-        if isinstance(response, APISIXError)
+        if not isinstance(response, APISIXError)
     ]
 
     if rollback_from == "CREATE":
@@ -99,7 +99,7 @@ async def handle_rollback(
                 apisix.delete_apisix_consumer,
                 client,
                 uuid_no_dashes,
-                instances=errored_apisix_instances,
+                instances=not_errored_apisix_instances,
             )
         )
     else:
@@ -108,7 +108,7 @@ async def handle_rollback(
                 apisix.create_apisix_consumer,
                 client,
                 uuid_no_dashes,
-                instances=errored_apisix_instances,
+                instances=not_errored_apisix_instances,
             )
         )
 

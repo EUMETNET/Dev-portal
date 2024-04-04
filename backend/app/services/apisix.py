@@ -209,7 +209,8 @@ def create_tasks(
         func (Callable[..., Awaitable]): The function to execute.
 
     Returns:
-        List[Task]: A list of tasks, each of which is a call to `func` for an APISix instance.
+        List[Coroutine]: A list of coroutines,
+            each of which is a call to `func` for an APISix instance.
             If 'instances' is provided in kwargs, tasks are created only for those instances.
             If 'instances' is not provided, tasks are created for all APISix instances.
     """
