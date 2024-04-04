@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "app"
+name = "Dev Portal API"
 version = "0.3.0"
-description = ""
+description = "API to manage user API key"
 authors = ["Your Name <you@example.com>"]
 readme = "README.MD"
 
