@@ -8,6 +8,9 @@ ENV PYTHONUNBUFFERED 1
 # Set work directory
 WORKDIR /tmp
 
+# Install system dependencies
+RUN apk update && apk add --no-cache gcc libc-dev libffi-dev
+
 # Install Poetry
 # https://python-poetry.org/docs/cli/#export
 RUN pip install poetry poetry-plugin-export
