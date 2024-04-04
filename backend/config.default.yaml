@@ -1,4 +1,3 @@
-cat <<EOF
 server:
   port: 8082
   log_level: "INFO"
@@ -18,4 +17,3 @@ vault:
 keycloak:
   url: http://127.0.0.1:8080
   realm: test
-EOF

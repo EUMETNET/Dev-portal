@@ -43,9 +43,11 @@ To initialize the project, follow these steps:
 
 
 ### Configurations
-By default the application looks for config file in path `backend/config.yaml`. To generate config.yaml file you can run `./generate_config-yaml.sh > ./config.yaml`. This will create config file that looks like the example file described below.
+By default the application looks for config file in path `backend/config.default.yaml`.
+You can override these settings by creating a file called `backend/config.yaml` or using an environment variable `CONFIG_FILE` for example `CONFIG_FILE=better-config.yaml`
+`CONFIG_FILE` takes priority over the file paths.
 
-#### Example config.yaml
+#### Example config.default.yaml
 ```yaml
 port: 8082
 log_level: "INFO"
@@ -84,7 +86,7 @@ There are couple of analyze tools used. All the tool specific configurations if 
 
 4. [Bandit](https://bandit.readthedocs.io/en/latest/) to find common security issues in Python code. To run bandit type `poetry run sec-check`
 
-5. [Pytest](https://docs.pytest.org/en/8.0.x/index.html) to run tests. Before running tests make sure that external services are up and running by running the docker-compose.ymland then running tests with `poetry run test`
+5. [Pytest](https://docs.pytest.org/en/8.0.x/index.html) to run tests. Before running tests make sure that external services are up and running by running the docker-compose.yml and then running tests with `poetry run test`
 
 All of these are run also in ci cd pipeline before building the image.
 
