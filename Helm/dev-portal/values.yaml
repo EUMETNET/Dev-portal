@@ -16,12 +16,18 @@ backend:
   config:
     vault_url: "http://vault.vault.svc.cluster.local:8200"
     vault_token: ""
-    vault_path: apisix-dev/consumers/ewc
+    vault_path: apisix-dev/consumers
     vault_phase: "geeks" # This one might need to be empty string as well
-    apisix_admin_url: "http://apisix-admin.apisix.svc.cluster.local:9180"
-    apisix_gateway_url: "https://apisixdev.eumetnet-femdi.eumetsat.ewcloud.host"
-    apisix_apikey: ""
     apisix_keypath: "$secret://vault/dev/"
+    apisix_instances:
+      - name: "EWC"
+        admin_url: "http://apisix-admin.apisix.svc.cluster.local:9180"
+        gateway_url: "https://apisixdev.eumetnet-femdi.eumetsat.ewcloud.host"
+        admin_api_key: ""
+      - name: "AWS"
+        admin_url: "https://apisixdev.devlyfe.fi:9180"
+        gateway_url: "https://apisixdev.devlyfe.fi"
+        admin_api_key: ""
     keycloak_cluster_url: http://keycloack-keycloak.keycloack.svc.cluster.local
     # Provide a existing secret. If empty, one is created
     secretName: ""
