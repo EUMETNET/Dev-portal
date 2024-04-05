@@ -1,5 +1,5 @@
 """
-Tests for getapikey route
+Tests for apikey routes
 """
 
 from typing import Callable, cast
@@ -21,7 +21,7 @@ async def test_get_api_key_without_token_fails() -> None:
     async with AsyncClient(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
-        response = await ac.get("/getapikey")
+        response = await ac.get("/apikey")
 
     assert response.status_code == 401
     data = response.json()
@@ -36,7 +36,7 @@ async def test_get_api_key_with_invalid_token_fails(get_keycloak_user_token: Cal
     async with AsyncClient(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
-        response = await ac.get("/getapikey", headers={"Authorization": f"Bearer {modified_token}"})
+        response = await ac.get("/apikey", headers={"Authorization": f"Bearer {modified_token}"})
 
     assert response.status_code == 401
     data = response.json()
@@ -51,7 +51,7 @@ async def test_get_api_key_with_expired_token_fails(get_keycloak_user_token: Cal
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
         response = await ac.get(
-            "/getapikey", headers={"Authorization": f"Bearer {get_keycloak_user_token}"}
+            "/apikey", headers={"Authorization": f"Bearer {get_keycloak_user_token}"}
         )
 
     assert response.status_code == 401
@@ -67,7 +67,7 @@ async def test_get_api_key_with_invalid_role_fails(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
         response = await ac.get(
-            "/getapikey", headers={"Authorization": f"Bearer {get_keycloak_user_2_token_no_role}"}
+            "/apikey", headers={"Authorization": f"Bearer {get_keycloak_user_2_token_no_role}"}
         )
 
     assert response.status_code == 403
@@ -81,28 +81,25 @@ async def test_get_api_key_for_new_user_succeeds(get_keycloak_user_token: Callab
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
         response = await ac.get(
-            "/getapikey", headers={"Authorization": f"Bearer {get_keycloak_user_token}"}
+            "/apikey", headers={"Authorization": f"Bearer {get_keycloak_user_token}"}
         )
 
     assert response.status_code == 200
     data = response.json()
     assert "apiKey" in data
-    assert len(data["routes"]) == 4
 
 
 async def test_get_api_key_for_existing_user_succeeds(get_keycloak_user_token: Callable) -> None:
     async with AsyncClient(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
-        await ac.get("/getapikey", headers={"Authorization": f"Bearer {get_keycloak_user_token}"})
         response = await ac.get(
-            "/getapikey", headers={"Authorization": f"Bearer {get_keycloak_user_token}"}
+            "/apikey", headers={"Authorization": f"Bearer {get_keycloak_user_token}"}
         )
 
     assert response.status_code == 200
     data = response.json()
     assert "apiKey" in data
-    assert len(data["routes"]) == 4
 
 
 async def test_delete_api_key_succeeds(get_keycloak_user_token: Callable) -> None:

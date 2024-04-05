@@ -3,15 +3,14 @@ API key route handlers
 """
 
 from http import HTTPStatus
-import asyncio
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient
 from app.config import settings, logger
 from app.dependencies.jwt_token import validate_token, AccessToken
 from app.dependencies.http_client import get_http_client
-from app.services import apisix, apikey
+from app.services import apikey
 from app.utils.uuid import remove_dashes
-from app.models.responses import GetAPIKey, DeleteAPIKey
+from app.models.responses import GetAPIKey, MessageResponse
 from app.exceptions import APISIXError, VaultError
 
 router = APIRouter()
@@ -21,7 +20,7 @@ config = settings()
 
 # For now just refactor the existing endpoint as is
 # Either naming this route differently or creating routes for routes and apikey
-@router.get("/getapikey", response_model=GetAPIKey)
+@router.get("/apikey", response_model=GetAPIKey)
 async def get_api_key(
     token: AccessToken = Depends(validate_token),
     client: AsyncClient = Depends(get_http_client),
@@ -38,8 +37,7 @@ async def get_api_key(
         client (AsyncClient): The HTTP client to use for making requests.
 
     Returns:
-        JSONResponse: A response containing the user's API key
-                      and the routes that require key authentication.
+        GetAPIKey: A response containing the user's API key.
 
     Raises:
         HTTPException: If there is an error getting user info from APISIX or Vault,
@@ -61,25 +59,19 @@ async def get_api_key(
                 client, uuid_no_dashes, vault_user, apisix_users
             )
 
-        logger.debug("retrieving all the routes that requires key authentication")
-        routes_responses = await asyncio.gather(*apisix.create_tasks(apisix.get_routes, client))
-
-        routes = [route for response in routes_responses for route in response.routes]
-        logger.debug("found %s routes: %s", len(routes), routes)
-
     except (VaultError, APISIXError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
     api_key = vault_user.auth_key
 
-    return GetAPIKey(apiKey=api_key, routes=routes)
+    return GetAPIKey(apiKey=api_key)
 
 
-@router.delete("/apikey", response_model=DeleteAPIKey)
+@router.delete("/apikey", response_model=MessageResponse)
 async def delete_user(
     token: AccessToken = Depends(validate_token),
     client: AsyncClient = Depends(get_http_client),
-) -> DeleteAPIKey:
+) -> MessageResponse:
     """
     Delete a user from both Vault and APISIX.
 
@@ -92,7 +84,7 @@ async def delete_user(
         client (AsyncClient): The HTTP client to use for making requests.
 
     Returns:
-        JSONResponse: A response indicating whether the deletion was successful.
+        MessageResponse: A response indicating whether the deletion was successful.
 
     Raises:
         HTTPException: If there is an error getting user info from APISIX or Vault,
@@ -116,4 +108,4 @@ async def delete_user(
     except (VaultError, APISIXError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
-    return DeleteAPIKey()
+    return MessageResponse(message="OK")
