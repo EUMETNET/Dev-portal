@@ -53,7 +53,6 @@ function App() {
       const response = await keyApi.getApiKey(token);
       debugger
       apiKey = response.data.apiKey;
-      routes = response.data.routes;
       return apiKey;
 
    
@@ -66,19 +65,19 @@ function App() {
 
   const  handleDeleteApiKey = async (token) => {
     try {
-      debugger
       await keyApi.deleteApiKey(token);
-      debugger
-
+      setInfoMessage('API key deleted successfully');
 
     } catch (error) {
-      debugger
+      setInfoMessage('Error deleting API key');
     } finally {
 
     }
   }
 
-  const handleRoutes = async (routes) => {
+  const handleRoutes = async (token) => {
+    const response = await keyApi.getRoutes(token);
+    routes = response.data.routes;
     const listItems = routes.map((currElement, index) => {
       return {id:index, route:currElement}
     });
@@ -110,7 +109,7 @@ function App() {
          
           <Button onClick={() => { kc.login() }} className='m-1' label='Login' severity="success" />
           <Button onClick={() => { handleApiCall(kc.token).then(response => {setInfoMessage('ApiKey: ' +response)}, (e)=>{setInfoMessage('Are you logged in?')}) }} className='m-1' label='Get API key' severity="success" />
-          <Button onClick={() => { handleRoutes(routes) }} className="m-1" label='Show routes' severity="info" />
+          <Button onClick={() => { handleRoutes(kc.token) }} className="m-1" label='Show routes' severity="info" />
           <Button onClick={() => { handleDeleteApiKey(kc.token) }} className="m-1" label='Delete API key' severity="danger" />
           <Button onClick={() => { setInfoMessage(JSON.stringify(kc.tokenParsed)) }} className="m-1" label='Show Parsed Access token' severity="info" />
           <Button onClick={() => { setInfoMessage(kc.isTokenExpired(5).toString()) }} className="m-1" label='Check Token expired' severity="warning" />
