@@ -49,6 +49,7 @@ You can override these settings by creating a file called `backend/config.yaml` 
 
 #### Example config.default.yaml
 ```yaml
+host: 0.0.0.0
 port: 8082
 log_level: "INFO"
 apisix:
