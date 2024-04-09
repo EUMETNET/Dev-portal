@@ -3,7 +3,53 @@ name: Lint and Test Charts
 on: pull_request
 
 jobs:
-  lint-test:
+  test-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+    
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Start external services stack
+          run: docker compose -f docker-compose.yml up -d --wait
+        
+        - name: Install Poetry
+          run: curl -sSL https://install.python-poetry.org | python3 -
+
+        - name: Set up Python environment
+          uses: actions/setup-python@v5
+          with:
+            python-version: '3.12'
+            cache: 'poetry'
+          
+        - name: Install dependencies
+          run: poetry install
+          working-directory: ./backend
+
+        - name: Run format Black
+          run: poetry run black app/ --check
+          working-directory: ./backend
+
+        - name: Run Pylint
+          run: poetry run pylint app/
+          working-directory: ./backend
+        
+        - name: Run Mypy
+          run: poetry run mypy app/
+          working-directory: ./backend
+
+        - name: Run Bandit
+          run: poetry run bandit -r app
+          working-directory: ./backend
+
+        - name: Run tests
+          run: poetry run pytest
+          working-directory: ./backend
+
+  lint-helm:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,3 +89,5 @@ jobs:
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }}
+
+# TODO: Add Test for frontend
