@@ -4,10 +4,11 @@ Service for interacting with the Vault.
 
 import hashlib
 from datetime import datetime, timezone
-from httpx import AsyncClient
+from httpx import AsyncClient, HTTPError
 from app.config import settings, logger
 from app.dependencies.http_client import http_request
 from app.models.vault import VaultUser
+from app.exceptions import VaultError
 
 config = settings()
 
@@ -53,7 +54,9 @@ def generate_api_key(identifier: str) -> str:
     return api_key
 
 
-async def save_user_to_vault(client: AsyncClient, identifier: str) -> VaultUser:
+async def save_user_to_vault(
+    client: AsyncClient, identifier: str, user: VaultUser | None = None
+) -> VaultUser:
     """
     Save a user to Vault.
 
@@ -63,22 +66,32 @@ async def save_user_to_vault(client: AsyncClient, identifier: str) -> VaultUser:
 
     Returns:
         VaultUser: A dictionary representing the saved user.
+
+    Raises:
+        VaultError: If there is an HTTP error while creating the user.
     """
-    generated_api_key = generate_api_key(identifier)
+    if not user:
+        generated_api_key = generate_api_key(identifier)
 
-    vault_user = VaultUser(
-        auth_key=generated_api_key, date=get_formatted_str_date("%Y/%m/%d %H:%M:%S")
-    )
+        vault_user = VaultUser(
+            auth_key=generated_api_key, date=get_formatted_str_date("%Y/%m/%d %H:%M:%S")
+        )
+    else:
+        vault_user = user
 
-    await http_request(
-        client,
-        "POST",
-        f"{config.vault.url}/v1/{config.vault.base_path}/{identifier}",
-        headers={"X-Vault-Token": config.vault.token},
-        data=vault_user.model_dump(),
-    )
-
-    return vault_user
+    try:
+        await http_request(
+            client,
+            "POST",
+            f"{config.vault.url}/v1/{config.vault.base_path}/{identifier}",
+            headers={"X-Vault-Token": config.vault.token},
+            data=vault_user.model_dump(),
+        )
+        logger.info("Saved user '%s' to Vault", identifier)
+        return vault_user
+    except HTTPError as e:
+        logger.exception("Error saving user '%s' to Vault", identifier)
+        raise VaultError("Vault service error") from e
 
 
 async def get_user_info_from_vault(client: AsyncClient, identifier: str) -> VaultUser | None:
@@ -91,18 +104,25 @@ async def get_user_info_from_vault(client: AsyncClient, identifier: str) -> Vaul
 
     Returns:
         VaultUser: A dictionary representing the user if found, None otherwise.
+
+    Raises:
+        VaultError: If there is an HTTP error while retrieving the user.
+            404 Not Found is not considered as an error.
     """
     # response looks e.g. like this
     # {'request_id': '2e1de3e3-6f3b-ccc6-28ae-20bc1b620b4f',
     #'lease_id': '', 'renewable': False, 'lease_duration': 2764800,
     #'data': {'as': 'as', 'dfdf': 'dfdf'}, 'wrap_info': None, 'warnings': None, 'auth': None}
-
-    url = f"{config.vault.url}/v1/{config.vault.base_path}/{identifier}"
-    headers = {"X-Vault-Token": config.vault.token}
-    response = await http_request(
-        client, "GET", url, headers=headers, valid_status_codes=(200, 404)
-    )
-    return VaultUser(**response.json()["data"]) if response.status_code == 200 else None
+    try:
+        url = f"{config.vault.url}/v1/{config.vault.base_path}/{identifier}"
+        headers = {"X-Vault-Token": config.vault.token}
+        response = await http_request(
+            client, "GET", url, headers=headers, valid_status_codes=(200, 404)
+        )
+        return VaultUser(**response.json()["data"]) if response.status_code == 200 else None
+    except HTTPError as e:
+        logger.exception("Error retrieving user '%s' from Vault", identifier)
+        raise VaultError("Vault service error") from e
 
 
 async def delete_user_from_vault(client: AsyncClient, identifier: str) -> None:
@@ -112,10 +132,18 @@ async def delete_user_from_vault(client: AsyncClient, identifier: str) -> None:
     Args:
         client (AsyncClient): The HTTP client to use for making the request.
         identifier (str): The identifier for the user.
+
+    Raises:
+        VaultError: If there is an HTTP error while deleting the user.
     """
-    await http_request(
-        client,
-        "DELETE",
-        f"{config.vault.url}/v1/{config.vault.base_path}/{identifier}",
-        headers={"X-Vault-Token": config.vault.token},
-    )
+    try:
+        await http_request(
+            client,
+            "DELETE",
+            f"{config.vault.url}/v1/{config.vault.base_path}/{identifier}",
+            headers={"X-Vault-Token": config.vault.token},
+        )
+        logger.info("Deleted user '%s' from Vault", identifier)
+    except HTTPError as e:
+        logger.exception("Error deleting user '%s' from Vault", identifier)
+        raise VaultError("Vault service error") from e

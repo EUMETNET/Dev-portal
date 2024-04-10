@@ -91,4 +91,3 @@ jobs:
         run: ct install --target-branch ${{ github.event.repository.default_branch }}
 
 # TODO: Add Test for frontend
-

@@ -3,7 +3,7 @@ Application configurations
 """
 
 import os
-from typing import Type, Tuple
+from typing import Type
 from functools import lru_cache
 import logging
 from pydantic import Field
@@ -14,8 +14,20 @@ from pydantic_settings import (
     YamlConfigSettingsSource,
 )
 
-
+# This value must match with the key name in VaultUser (app.models.vault.VaultUser)
+# In other words there must be a key that equals this value
 VAULT_API_KEY_FIELD_NAME = "auth_key"
+
+
+class APISixInstanceSettings(BaseSettings):
+    """
+    APISix instance settings model
+    """
+
+    name: str
+    admin_url: str
+    gateway_url: str
+    admin_api_key: str
 
 
 class APISixSettings(BaseSettings):
@@ -23,11 +35,9 @@ class APISixSettings(BaseSettings):
     APISix settings model
     """
 
-    admin_url: str
-    gateway_url: str
-    admin_api_key: str
     key_path: str
     key_name: str = VAULT_API_KEY_FIELD_NAME
+    instances: list[APISixInstanceSettings]
 
 
 class VaultSettings(BaseSettings):
@@ -76,7 +86,12 @@ class Settings(BaseSettings):
     # Look first for specific config file or config.yaml
     # and fall back to the default config.default.yaml
     model_config = SettingsConfigDict(
-        yaml_file=["config.default.yaml", os.getenv("CONFIG_FILE", "config.yaml")]
+        yaml_file=[
+            "config.default.yaml",
+            "secrets.default.yaml",
+            os.getenv("CONFIG_FILE", "config.yaml"),
+            os.getenv("SECRETS_FILE", "secrets.yaml"),
+        ]
     )
 
     # pylint: disable=too-many-arguments
@@ -88,14 +103,18 @@ class Settings(BaseSettings):
         env_settings: PydanticBaseSettingsSource,
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
-    ) -> Tuple[PydanticBaseSettingsSource, ...]:
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
         return (YamlConfigSettingsSource(settings_cls),)
 
 
 @lru_cache
 def settings() -> Settings:
     """
-    Load and cache the settings from a .env file.
+    Load and cache the settings from given yaml config file.
+
+    Returns:
+        Settings: The loaded and cached settings.
+
     """
     return Settings()
 

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-backend-config
+  namespace: {{ .Release.Namespace }}
+data:
+  config.yaml: |
+    server:
+      port: {{ .Values.backend.containerport }}
+      log_level: {{ .Values.backend.config.log_level }}
+
+    keycloak:
+      url: {{ .Values.backend.config.keycloak_cluster_url }}
+      realm: {{ .Values.keycloak_realm }}

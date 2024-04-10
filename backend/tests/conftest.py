@@ -7,13 +7,17 @@ import json
 import asyncio
 import pytest
 from httpx import AsyncClient
-from app.config import settings
+from app.config import settings, APISixInstanceSettings
 from tests.data import apisix, keycloak
 
 config = settings()
 
 VAULT_HEADERS = {"X-Vault-Token": config.vault.token}
-API6_HEADERS = {"Content-Type": "application/json", "X-API-KEY": config.apisix.admin_api_key}
+
+
+def get_apisix_headers(instance: APISixInstanceSettings) -> dict[str, str]:
+    """ """
+    return {"Content-Type": "application/json", "X-API-KEY": instance.admin_api_key}
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -21,7 +25,7 @@ def anyio_backend() -> str:
     """
     Pytest fixture that sets the backend for AnyIO to 'asyncio' for the entire test session.
 
-    ßThis fixture is automatically used (due to `autouse=True`) for all tests in the session.
+    This fixture is automatically used (due to `autouse=True`) for all tests in the session.
     It ensures that AnyIO, a library for asynchronous I/O, uses the 'asyncio' library as its backend
 
     Returns:
@@ -67,27 +71,56 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     """
 
     # Add secrets config for Vault
-
-    url = f"{config.apisix.admin_url}/apisix/admin/secrets/vault/dev"
     data = {
-        "uri": "http://vault:8200",
+        "uri": "http://vault:8200",  # use the docker network since this is for apisix
         "prefix": config.vault.base_path,
         "token": config.vault.token,
     }
 
     # Add some test routes
-    routes_url = f"{config.apisix.admin_url}/apisix/admin/routes"
     routes = apisix.ROUTES
 
+    secret_requests = [
+        client.put(
+            f"{instance.admin_url}/apisix/admin/secrets/vault/dev",
+            json=data,
+            headers=get_apisix_headers(instance),
+        )
+        for instance in config.apisix.instances
+    ]
+
+    routes_requests = [
+        client.put(
+            f"{instance.admin_url}/apisix/admin/routes",
+            json=route,
+            headers=get_apisix_headers(instance),
+        )
+        for route in routes
+        for instance in config.apisix.instances
+    ]
+
     await asyncio.gather(
-        client.put(url, json=data, headers=API6_HEADERS),
-        *[client.put(routes_url, json=route, headers=API6_HEADERS) for route in routes],
+        *secret_requests,
+        *routes_requests,
     )
 
     yield
 
+    # Clean up created resources
     await asyncio.gather(
-        client.delete(url, headers=API6_HEADERS), client.delete(routes_url, headers=API6_HEADERS)
+        *[
+            client.delete(
+                f"{instance.admin_url}/apisix/admin/secrets/vault/dev",
+                headers=get_apisix_headers(instance),
+            )
+            for instance in config.apisix.instances
+        ],
+        *[
+            client.delete(
+                f"{instance.admin_url}/apisix/admin/routes", headers=get_apisix_headers(instance)
+            )
+            for instance in config.apisix.instances
+        ],
     )
 
 
@@ -98,19 +131,30 @@ async def clean_up_api6_consumers(client: AsyncClient) -> AsyncGenerator[None, N
     """
     yield
 
-    response = await client.get(
-        f"{config.apisix.admin_url}/apisix/admin/consumers", headers=API6_HEADERS
-    )
-    data = response.json()
-    if data["total"]:
-        tasks = [
-            client.delete(
-                f"{config.apisix.admin_url}/apisix/admin/consumers/{user['value']['username']}",
-                headers=API6_HEADERS,
+    consumer_responses = await asyncio.gather(
+        *[
+            client.get(
+                f"{instance.admin_url}/apisix/admin/consumers", headers=get_apisix_headers(instance)
             )
-            for user in data["list"]
+            for instance in config.apisix.instances
         ]
-        await asyncio.gather(*tasks)
+    )
+
+    delete_tasks = []
+
+    for response, instance in zip(consumer_responses, config.apisix.instances):
+        data = response.json()
+        if data["total"]:
+            delete_tasks.extend(
+                [
+                    client.delete(
+                        f"{instance.admin_url}/apisix/admin/consumers/{user['value']['username']}",
+                        headers=get_apisix_headers(instance),
+                    )
+                    for user in data["list"]
+                ]
+            )
+    await asyncio.gather(*delete_tasks)
 
 
 # ------- KEYCLOAK SETUP ---------
@@ -150,9 +194,7 @@ async def keycloak_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     with open("tests/data/realm-export.json", encoding="utf-8") as f:
         realm_json = json.load(f)
 
-    await client.post(
-        f"{config.keycloak.url}/admin/realms", json=realm_json, headers=auth_header
-    )
+    await client.post(f"{config.keycloak.url}/admin/realms", json=realm_json, headers=auth_header)
 
     users = keycloak.KEYCLOAK_USERS
 
@@ -201,8 +243,7 @@ async def get_keycloak_user_token(client: AsyncClient) -> str:
         str: The access token for the user.
     """
     token_url = (
-        f"{config.keycloak.url}/realms/{config.keycloak.realm}"
-        "/protocol/openid-connect/token"
+        f"{config.keycloak.url}/realms/{config.keycloak.realm}" "/protocol/openid-connect/token"
     )
     data = {
         "client_id": "frontend",
@@ -234,8 +275,7 @@ async def get_keycloak_user_2_token_no_role(client: AsyncClient) -> str:
 
     await remove_keycloak_realm_role_from_user(client)
     token_url = (
-        f"{config.keycloak.url}/realms/{config.keycloak.realm}"
-        "/protocol/openid-connect/token"
+        f"{config.keycloak.url}/realms/{config.keycloak.realm}" "/protocol/openid-connect/token"
     )
     data = {
         "client_id": "frontend",
