@@ -29,8 +29,8 @@ spec:
           mountPath: "/code/config.yaml"
           subPath: "config.yaml"
         - name: secret
-          mountPath: "/code/secret.yaml"
-          subPath: "secret.yaml"
+          mountPath: "/code/secrets.yaml"
+          subPath: "secrets.yaml"
       volumes:
       {{- if (not .Values.backend.secrets.secretName) }}
       - name: secret
