@@ -6,8 +6,10 @@ metadata:
 data:
   config.yaml: |
     server:
+      host: 0.0.0.0
       port: {{ .Values.backend.containerport }}
       log_level: {{ .Values.backend.config.log_level }}
+      allowed_origins: ["*"]
 
     keycloak:
       url: {{ .Values.backend.config.keycloak_cluster_url }}
