@@ -31,7 +31,7 @@ WORKDIR /code
 
 # Copy a default config file. Override this by mounting a config.yaml
 COPY ./config.default.yaml ./config.default.yaml
-COPY ./secrets.yaml ./secrets.yaml
+COPY ./secrets.default.yaml ./secrets.default.yaml
 
 RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
 
