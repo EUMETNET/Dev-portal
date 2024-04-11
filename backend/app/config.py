@@ -86,7 +86,12 @@ class Settings(BaseSettings):
     # Look first for specific config file or config.yaml
     # and fall back to the default config.default.yaml
     model_config = SettingsConfigDict(
-        yaml_file=["config.default.yaml", os.getenv("CONFIG_FILE", "config.yaml")]
+        yaml_file=[
+            "config.default.yaml",
+            "secrets.default.yaml",
+            os.getenv("CONFIG_FILE", "config.yaml"),
+            os.getenv("SECRETS_FILE", "secrets.yaml"),
+        ]
     )
 
     # pylint: disable=too-many-arguments
