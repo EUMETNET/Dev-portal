@@ -28,6 +28,7 @@ async def http_request(
     headers: Mapping[str, str] | None = None,
     params: Mapping[str, Any] | None = None,
     data: Mapping[str, Any] | None = None,
+    json: Mapping[str, Any] | None = None,
     valid_status_codes: Tuple[int, ...] | None = None,
 ) -> Response:
     """
@@ -44,6 +45,9 @@ async def http_request(
         headers (Mapping[str, str], optional): The headers to include in the request.
         params (Mapping[str, Any], optional): The query parameters to include in the request.
         data (Mapping[str, Any], optional): The data to include in the request body.
+            This data will be form-encoded before being sent.
+        json (Mapping[str, Any], optional): The JSON serializable
+            payload to include in the request body.
         valid_status_codes (Tuple[int, ...], optional):
             The status codes that indicate a successful request.
 
@@ -55,11 +59,7 @@ async def http_request(
                       or if the response status code is not valid.
     """
     response: Response = await client.request(
-        method=method,
-        url=url,
-        headers=headers,
-        params=params,
-        json=data,
+        method=method, url=url, headers=headers, params=params, json=json, data=data
     )
 
     if valid_status_codes is None or response.status_code not in valid_status_codes:

@@ -63,7 +63,7 @@ async def create_apisix_consumer(
             "PUT",
             f"{instance.admin_url}/apisix/admin/consumers",
             headers=create_headers(instance.admin_api_key),
-            data=apisix_consumer.model_dump(
+            json=apisix_consumer.model_dump(
                 exclude={"instance_name"}
             ),  # APISix does not expect the instance_name field
         )
