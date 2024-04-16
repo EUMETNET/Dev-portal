@@ -53,4 +53,12 @@ KEYCLOAK_USERS: list[KeycloakUser] = [
         "lastName": "User2",
         "email": "test-user2@example.com",
     },
+    {
+        "username": "test_admin",
+        "enabled": True,
+        "credentials": [{"type": "password", "value": "test_admin", "temporary": False}],
+        "firstName": "admin1",
+        "lastName": "admin1",
+        "email": "admin1@example.com",
+    },
 ]
