@@ -25,10 +25,11 @@ class AccessToken(BaseModel):
     realm_access: dict[str, list[str]]
 
     @field_validator("realm_access")
-    def validate_admin_role(cls, v: dict[str, list[str]]) -> dict[str, list[str]]:
+    def validate_roles(cls, v: dict[str, list[str]]) -> dict[str, list[str]]:
         """
-        Validates that ADMIN is found from roles
+        Validates that user has at least one of 'USER' | 'ADMIN' role(s).
         """
-        if "ADMIN" not in v.get("roles", []):
+        user_roles = v.get("roles", [])
+        if not any(role in user_roles for role in ("USER", "ADMIN")):
             raise ValueError()
         return v

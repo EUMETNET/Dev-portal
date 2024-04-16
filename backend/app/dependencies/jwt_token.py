@@ -75,7 +75,21 @@ async def validate_token(
             status_code=HTTPStatus.UNAUTHORIZED, detail="Token validation failed"
         ) from e
     except ValidationError as e:
-        logger.exception("User does not have valid ADMIN role")
+        logger.exception("User does not have valid role(s). Valid roles are 'USER' and/or 'ADMIN'")
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN, detail="User does not have valid role(s)"
+        ) from e
+
+
+async def validate_admin_role(
+    token: AccessToken = Depends(validate_token),
+) -> AccessToken:
+    """
+    Validate that the user has the ADMIN role
+    """
+    if "ADMIN" not in token.realm_access.get("roles", []):
+        logger.exception("User '%s' does not have valid ADMIN role", token.sub)
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN, detail="User does not have valid ADMIN role"
-        ) from e
+        )
+    return token
