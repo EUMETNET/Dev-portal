@@ -22,6 +22,12 @@ class VaultError(Exception):
     """
 
 
+class KeycloakError(Exception):
+    """
+    Custom exception for Vault errors
+    """
+
+
 async def http_exception_handler(_request: Request, exc: Exception) -> JSONResponse:
     """
     Handle raised HTTP exceptions
