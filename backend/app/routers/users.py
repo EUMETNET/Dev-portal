@@ -47,6 +47,4 @@ async def delete_user(
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
-    logger.info("User '%s' successfully deleted", user_uuid)
-
     return DeleteAPIKey()
