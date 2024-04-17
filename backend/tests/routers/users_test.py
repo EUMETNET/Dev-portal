@@ -4,7 +4,6 @@ Tests for users routes
 
 from typing import Callable, cast
 import pytest
-import asyncio
 from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.config import settings
@@ -12,6 +11,7 @@ from app.services import keycloak, apikey
 from app.models.keycloak import User
 from app.exceptions import KeycloakError
 from app.utils.uuid import remove_dashes
+from tests.data.keycloak import KEYCLOAK_USERS
 
 pytestmark = pytest.mark.anyio
 
@@ -35,7 +35,7 @@ async def test_delete_user_without_admin_role_fails(get_keycloak_user_token: Cal
 async def test_delete_user_with_admin_role_succeeds(
     client: AsyncClient, get_keycloak_realm_admin_token: Callable
 ) -> None:
-    uuid = await keycloak.create_user(client, User(username="superTester", enabled=True))
+    uuid = await keycloak.create_user(client, User(**KEYCLOAK_USERS[3]))
 
     async with AsyncClient(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
@@ -53,11 +53,8 @@ async def test_delete_user_with_admin_role_succeeds(
 async def test_delete_user_and_apikey(
     client: AsyncClient, get_keycloak_realm_admin_token: Callable
 ) -> None:
-    user = User(
-        username="superTester",
-        enabled=True,
-        credentials=[{"type": "password", "value": "superTester", "temporary": False}],
-    )
+    user = User(**KEYCLOAK_USERS[3])
+
     uuid = await keycloak.create_user(client, user)
 
     token_url = (
@@ -95,11 +92,7 @@ async def test_delete_user_exception_rolls_user_api_key_back(
     async def mock_delete_user(client: AsyncClient, user_uuid: str) -> None:
         raise KeycloakError()
 
-    user = User(
-        username="superTester",
-        enabled=True,
-        credentials=[{"type": "password", "value": "superTester", "temporary": False}],
-    )
+    user = User(**KEYCLOAK_USERS[3])
     uuid = await keycloak.create_user(client, user)
 
     token_url = (

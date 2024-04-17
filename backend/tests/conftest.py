@@ -200,29 +200,28 @@ async def keycloak_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
 
     user_url = f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
 
-    await asyncio.gather(*[client.post(user_url, json=user, headers=auth_header) for user in users])
+    await asyncio.gather(*[client.post(user_url, json=user, headers=auth_header) for user in users if "skip_init_creation" not in user])
 
     yield
 
     # Get test user's id and delete it
     admin_access_token = await get_keycloak_admin_token(client)
 
-    id_responses = await asyncio.gather(
-        *[
-            client.get(f"{user_url}?username={user['username']}", headers=auth_header)
-            for user in users
-        ]
-    )
+    kc_users = await client.get(user_url, headers=auth_header)
 
-    # user_id = r.json()[0]["id"]
+    user_ids_to_delete = [
+        kc_user["id"]
+        for kc_user in kc_users.json()
+        if kc_user["username"] in [user["username"] for user in users]
+    ]
 
     await asyncio.gather(
         *[
             client.delete(
-                f"{user_url}/{response.json()[0]['id']}",
+                f"{user_url}/{id}",
                 headers={"Authorization": f"Bearer {admin_access_token}"},
             )
-            for response in id_responses
+            for id in user_ids_to_delete
         ]
     )
 
