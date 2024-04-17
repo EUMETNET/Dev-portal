@@ -24,7 +24,7 @@ class VaultError(Exception):
 
 class KeycloakError(Exception):
     """
-    Custom exception for Vault errors
+    Custom exception for Keycloak errors
     """
 
 
