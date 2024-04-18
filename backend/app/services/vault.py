@@ -85,7 +85,7 @@ async def save_user_to_vault(
             "POST",
             f"{config.vault.url}/v1/{config.vault.base_path}/{identifier}",
             headers={"X-Vault-Token": config.vault.token},
-            data=vault_user.model_dump(),
+            json=vault_user.model_dump(),
         )
         logger.info("Saved user '%s' to Vault", identifier)
         return vault_user

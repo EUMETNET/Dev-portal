@@ -53,4 +53,21 @@ KEYCLOAK_USERS: list[KeycloakUser] = [
         "lastName": "User2",
         "email": "test-user2@example.com",
     },
+    {
+        "username": "test_admin",
+        "enabled": True,
+        "credentials": [{"type": "password", "value": "test_admin", "temporary": False}],
+        "firstName": "admin1",
+        "lastName": "admin1",
+        "email": "admin1@example.com",
+    },
+    {
+        "skip_init_creation": True,  # Skip creation in conftest.py
+        "username": "tester3",
+        "enabled": True,
+        "credentials": [{"type": "password", "value": "tester3", "temporary": False}],
+        "firstName": "tester3",
+        "lastName": "tester3",
+        "email": "tester3@example.com",
+    },
 ]

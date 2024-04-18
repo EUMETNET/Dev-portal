@@ -100,7 +100,7 @@ async def delete_user(
             client, uuid_no_dashes
         )
         if vault_user or any(apisix_users):
-            logger.debug("User '%s' found in Vault or APISIX --> Deleting user", uuid_no_dashes)
+            logger.debug("User '%s' found in Vault and/or APISIX --> Deleting user", uuid_no_dashes)
             await apikey.delete_user_from_vault_and_apisixes(
                 client, uuid_no_dashes, vault_user, apisix_users
             )

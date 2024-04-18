@@ -22,7 +22,6 @@ backend:
     vault_url: "http://vault.vault.svc.cluster.local:8200"
     vault_token: ""
     vault_path: apisix-dev/consumers
-    vault_phase: "geeks" # This one might need to be empty string as well
     apisix_keypath: "$secret://vault/dev/"
     apisix_instances:
       - name: "EWC"
@@ -33,6 +32,8 @@ backend:
         admin_url: "https://apisixdev.devlyfe.fi:9180"
         gateway_url: "https://apisixdev.devlyfe.fi"
         admin_api_key: ""
+    keycloak_client_id: "dev-portal-api"
+    keycloak_client_secret: ""
 
 frontend:
   name: dev-portal-frontend

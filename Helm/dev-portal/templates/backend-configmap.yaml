@@ -8,9 +8,5 @@ data:
     server:
       host: 0.0.0.0
       port: {{ .Values.backend.containerport }}
-      log_level: {{ .Values.backend.config.log_level }}
+      log_level: {{ .Values.backend.config.log_level | quote }}
       allowed_origins: ["*"]
-
-    keycloak:
-      url: {{ .Values.backend.config.keycloak_cluster_url }}
-      realm: {{ .Values.keycloak_realm }}
