@@ -17,12 +17,6 @@ FROM node:21-alpine AS runtime
 WORKDIR /portal-ui/
 COPY --from=build /portal-ui/dist ./dist
 
-# Copy the script to generate empty env-config.js file that will be mounted by k8
-COPY generate_env-config.sh .
-
-RUN chmod +x generate_env-config.sh
-RUN ./generate_env-config.sh > ./dist/env-config.js
-
 # For now install serve to serve the React app
 RUN npm install -g serve
 
