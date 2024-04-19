@@ -8,7 +8,6 @@ COPY public/ ./public
 COPY index.html .
 COPY src/ ./src
 
-# TODO change npm i --> npm ci to respect the package-lock once the vulnerabilites are fixed
 RUN npm ci
 RUN npm run build
 
