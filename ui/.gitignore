@@ -10,6 +10,8 @@
 
 # production
 /build
+dist
+dist-ssr
 
 # env
 /public/env-config.js
