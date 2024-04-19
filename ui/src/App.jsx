@@ -63,7 +63,7 @@ function App() {
   function generateTable(routes) {
     return(
     <DataTable value={routes}>
-    <Column field="route" header="Route"></Column>
+    <Column field="route" header="Routes"></Column>
     </DataTable>);
   }
 
@@ -117,20 +117,18 @@ function App() {
         </div>
       </div>
 
-      <div className='grid'>
-        <div className='col-2'></div>
-        <div className='col-8'>
-        <h3>Info Pane</h3>
-          <Card>
-   
+      {auth.isAuthenticated && (
+        <div className='grid'>
+          <div className='col-2'></div>
+          <div className='col-8'>
+            <h3>Info Pane</h3>
+            <Card>
               {infoMessage}
-       
-          </Card>
+            </Card>
+          </div>
+          <div className='col-2'></div>
         </div>
-        <div className='col-2'></div>
-      </div>
-
-
+      )}
 
     </div>
   );
