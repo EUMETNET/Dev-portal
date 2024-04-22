@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
@@ -18,13 +18,24 @@ function App() {
   const [routes, setRoutes] = useState([]);
   const [infoMessage, setInfoMessage] = useState('');
 
-    
+  useEffect(() => {
+    // send user back to Keycloak login screen if there is silentRenewError
+    // e.g. when refresh token is expired it will throw silentRenewError
+    const onSilentRenewError = () => {
+      auth.signinRedirect();
+    };
+
+    auth.events.addSilentRenewError(onSilentRenewError);
+
+    return () => {
+      auth.events.removeSilentRenewError(onSilentRenewError);
+    };
+  }, [auth]);
 
   const handleGetAPIKey = async () => {
     try {
-      const response = await getAPIKey()
-      const data = await response.json();
-      if (response.ok) {
+      const { data, isError} = await getAPIKey()
+      if (!isError) {
         const apiKey = data.apiKey;
         setRoutes(data.routes)
         setInfoMessage(`API key: ${apiKey}`)
@@ -33,22 +44,27 @@ function App() {
       }
     } catch (error) {
       console.error(error)
+      if (error.message === 'User is not logged in') {
+        await auth.signinRedirect();
+        console.log('User is not logged in')
+      }
       showToaster("Unable to communicate with the API server");
     }
   }
 
-  const  handleDeleteApiKey = async (token) => {
+  const  handleDeleteApiKey = async () => {
     try {
-      const response = await deleteAPIKey(token);
-      console.log(response)
-      const data = await response.json();
-      if (response.ok) {
+      const { data, isError} = await deleteAPIKey();
+      if (!isError) {
         setInfoMessage('API key deleted successfully')
       } else {
         showToaster(data?.message ?? "Undefined error message");
       }
     } catch (error) {
       console.error(error)
+      if (error.message === 'User is not logged in') {
+        await auth.signinRedirect();
+      }
       showToaster("Unable to communicate with the API server");
     } 
   }
@@ -93,7 +109,7 @@ function App() {
       {/* <Auth /> */}
       <div className='grid'>
         <div className='col-12'>
-          <h1>Developer portal prototype</h1>
+          <h1>Developer Portal prototype</h1>
         </div>
         <div className='col-12'>
           <h1 id='app-header-2'>Secured with Keycloak</h1>
