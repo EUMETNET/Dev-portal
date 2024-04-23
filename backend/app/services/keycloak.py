@@ -109,7 +109,7 @@ async def create_user(client: AsyncClient, user: User) -> str:
         # Keycloak provides the user location in headers which contains the uuid
         return extract_uuid_from_url(response.headers["location"])
     except HTTPError as e:
-        logger.exception("Error creating user with username '%s' in Keycloak.", user)
+        logger.exception("Error creating user '%s' to Keycloak.", user)
         raise KeycloakError("Keycloak service error") from e
 
 
@@ -130,5 +130,5 @@ async def delete_user(client: AsyncClient, user_uuid: str) -> None:
         user_url = f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users/{user_uuid}"
         await http_request(client, "DELETE", user_url, headers=headers)
     except HTTPError as e:
-        logger.exception("Error deleting user '%s' from Keycloak.", user_uuid)
+        logger.exception("Error deleting user with id '%s' from Keycloak.", user_uuid)
         raise KeycloakError("Keycloak service error") from e

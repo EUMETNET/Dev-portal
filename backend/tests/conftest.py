@@ -200,7 +200,13 @@ async def keycloak_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
 
     user_url = f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
 
-    await asyncio.gather(*[client.post(user_url, json=user, headers=auth_header) for user in users if "skip_init_creation" not in user])
+    await asyncio.gather(
+        *[
+            client.post(user_url, json=user, headers=auth_header)
+            for user in users
+            if "skip_init_creation" not in user
+        ]
+    )
 
     yield
 
