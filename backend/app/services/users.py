@@ -2,7 +2,7 @@
 Business logic for users handlers
 """
 
-from typing import cast
+from typing import cast, Literal
 import asyncio
 from httpx import AsyncClient
 from app.config import logger
@@ -10,18 +10,22 @@ from app.exceptions import KeycloakError, APISIXError
 from app.services import apikey, keycloak
 from app.utils.uuid import remove_dashes
 from app.models.apisix import APISixConsumer
+from app.models.keycloak import User
 
 
-async def delete_user(client: AsyncClient, user_uuid: str) -> None:
+async def delete_or_disable_user(
+    client: AsyncClient, user_uuid: str, action: Literal["DISABLE", "DELETE"]
+) -> None:
     """
     Deletes first user's API key from Vault and APISIX(es).
-    Then deletes the user from Keycloak.
+    Then deletes or disables the user from Keycloak based on required action.
     If there is an error while deleting the user from Keycloak,
     the user's API key is rolled back to Vault and APISIX(es).
 
     Args:
         client (AsyncClient): The HTTP client to use for making requests.
         user_uuid (str): The str UUID of the user to be deleted.
+        action (Literal["DISABLE", "DELETE"]): The action to perform on the user.
 
     Raises:
         KeycloakError: If there is an error while deleting the user from Keycloak.
@@ -45,7 +49,12 @@ async def delete_user(client: AsyncClient, user_uuid: str) -> None:
     if keycloak_user:
         logger.debug("User '%s' found in Keycloak --> Deleting user", user_uuid)
         try:
-            await keycloak.delete_user(client, user_uuid)
+            if action == "DISABLE":
+                # Mark the user as disabled
+                user = User(enabled=False)
+                await keycloak.update_user(client, user_uuid, user)
+            elif action == "DELETE":
+                await keycloak.delete_user(client, user_uuid)
 
         except KeycloakError as e:
             logger.warning(

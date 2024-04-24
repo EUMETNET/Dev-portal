@@ -176,4 +176,8 @@ async def test_delete_api_key(
         assert response.status_code == 200
         assert response.json() == {"message": "OK"}
 
+        user = await keycloak.get_user(client, uuid)
+
+        assert user.enabled == False
+
         await keycloak.delete_user(client, uuid)
