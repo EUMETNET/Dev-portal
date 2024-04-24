@@ -132,3 +132,32 @@ async def delete_user(client: AsyncClient, user_uuid: str) -> None:
     except HTTPError as e:
         logger.exception("Error deleting user with id '%s' from Keycloak.", user_uuid)
         raise KeycloakError("Keycloak service error") from e
+
+
+async def update_user(client: AsyncClient, user_uuid: str, user: User) -> User:
+    """
+    Updates a user in Keycloak.
+
+    Args:
+        client (AsyncClient): The HTTP client to use for making the request.
+        user_uuid (str): The UUID of the user to update.
+        user (dict[str, Any]): The user information to update.
+
+    Returns:
+        dict[str, Any]: The user information.
+
+    Raises:
+        KeycloakError: If there is an HTTP error while updating the user.
+    """
+    try:
+        token = await get_service_account_token(client)
+        headers = {"Authorization": f"Bearer {token}"}
+        users_url = f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users/{user_uuid}"
+
+        # Keycloak returns 200 OK
+        # https://www.keycloak.org/docs-api/22.0.1/rest-api/index.html#_users
+        await http_request(client, "PUT", users_url, headers=headers, json=user.model_dump())
+        return user
+    except HTTPError as e:
+        logger.exception("Error creating user '%s' to Keycloak.", user)
+        raise KeycloakError("Keycloak service error") from e
