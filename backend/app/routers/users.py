@@ -58,7 +58,7 @@ async def delete_user_apikey(
     client: AsyncClient = Depends(get_http_client),
 ) -> DeleteAPIKey:
     """
-    Delete a user's API key from Vault and APISIX(es).
+    Delete a user's API key from Vault and APISIX(es) also disables user in Keycloak.
 
     Args:
         user_uuid (str): The UUID of the user whose API key is to be deleted.
