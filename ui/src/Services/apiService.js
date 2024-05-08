@@ -55,7 +55,7 @@ async function httpRequest(path, options, retryCount = 0) {
 }
 
 export async function getAPIKey(retryCount = 0) {
-    const response = await httpRequest('/getapikey', { method: 'GET' });
+    const response = await httpRequest('/apikey', { method: 'GET' });
 
     const data = await response.json();
 
@@ -64,6 +64,14 @@ export async function getAPIKey(retryCount = 0) {
 
 export async function deleteAPIKey() {
     const response =  await httpRequest('/apikey', { method: 'DELETE' });
+
+    const data = await response.json();
+
+    return { data, isError: !response.ok };
+}
+
+export async function getRoutes(retryCount = 0) {
+    const response = await httpRequest('/routes', { method: 'GET' });
 
     const data = await response.json();
 

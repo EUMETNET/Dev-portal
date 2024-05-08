@@ -11,12 +11,21 @@ class GetAPIKey(BaseModel):
     """
 
     apiKey: str = Field(..., description="The API key for the user")
+
+
+class MessageResponse(BaseModel):
+    """
+    Response model for GET /health and DELETE /apikey endpoints
+
+    Can be used also as part of other response models
+    """
+
+    message: str = Field(..., description="The response message")
+
+
+class GetRoutes(BaseModel):
+    """
+    Response model for the GET /routes endpoint
+    """
+
     routes: list[str] = Field(..., description="The routes that require key authentication")
-
-
-class DeleteAPIKey(BaseModel):
-    """
-    Response model for the DELETE /apikey endpoint
-    """
-
-    message: str = Field(default="OK", description="The message indicating the API key was deleted")

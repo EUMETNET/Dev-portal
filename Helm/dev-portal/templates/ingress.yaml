@@ -37,14 +37,21 @@ spec:
                 name: {{ .Values.frontend.name }}
                 port:
                   number: {{.Values.frontend.service.port }}
-          - path: /getapikey
+          - path: /apikey
             pathType: Prefix
             backend:
               service:
                 name: {{ .Values.backend.name }}
                 port:
                   number: {{.Values.backend.service.port }}
-          - path: /apikey
+          - path: /users
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.backend.name }}
+                port:
+                  number: {{.Values.backend.service.port }}
+          - path: /routes
             pathType: Prefix
             backend:
               service:

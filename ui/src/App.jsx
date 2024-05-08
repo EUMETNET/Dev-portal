@@ -8,14 +8,13 @@ import { Card } from 'primereact/card';
 import { DataTable } from "primereact/datatable";
 import {Column} from 'primereact/column';
 
-import { getAPIKey, deleteAPIKey } from './Services/apiService';
+import { getAPIKey, deleteAPIKey, getRoutes } from './Services/apiService';
 import { useAuth } from 'react-oidc-context';
 import { toast } from 'react-toastify';
 
 
 function App() {
   const auth = useAuth();
-  const [routes, setRoutes] = useState([]);
   const [infoMessage, setInfoMessage] = useState('');
 
   useEffect(() => {
@@ -37,7 +36,6 @@ function App() {
       const { data, isError} = await getAPIKey()
       if (!isError) {
         const apiKey = data.apiKey;
-        setRoutes(data.routes)
         setInfoMessage(`API key: ${apiKey}`)
       } else {
         showToaster(data?.message ?? "Undefined error message");
@@ -70,10 +68,25 @@ function App() {
   }
 
   const handleRoutes = async () => {
-    const listItems = routes.map((currElement, index) => {
-      return {id:index, route:currElement}
-    });
-    setInfoMessage(generateTable(listItems));
+    try {
+      const { data, isError} = await getRoutes()
+      if (!isError) {
+        const routes = data.routes;
+        const listItems = routes.map((currElement, index) => {
+          return {id:index, route:currElement}
+        });
+        setInfoMessage(generateTable(listItems));
+      } else {
+        showToaster(data?.message ?? "Undefined error message");
+      }
+    } catch (error) {
+      console.error(error)
+      if (error.message === 'User is not logged in') {
+        await auth.signinRedirect();
+        console.log('User is not logged in')
+      }
+      showToaster("Unable to communicate with the API server");
+    }
   };
 
   function generateTable(routes) {

@@ -58,6 +58,8 @@ class KeyCloakSettings(BaseSettings):
 
     url: str
     realm: str
+    client_id: str
+    client_secret: str
 
 
 class ServerSettings(BaseSettings):

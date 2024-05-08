@@ -3,11 +3,12 @@ import { toast } from 'react-toastify';
 
 export const keyApi = {
     getApiKey,
-    deleteApiKey
+    deleteApiKey,
+    getRoutes
   }
   
   function getApiKey(token) {
-    return instance.get('/getapikey', {
+    return instance.get('/apikey', {
       headers: { 'Authorization': bearerAuth(token)}
     }).catch(err => { debugger 
       handleError(err);
@@ -23,6 +24,14 @@ export const keyApi = {
     return instance.delete('/apikey',{
       headers: { 'Authorization': bearerAuth(token),"Access-Control-Allow-Origin": "*"}
     }).catch(err => { debugger 
+      handleError(err);
+      });
+  }
+
+  function getRoutes(token) {
+    return instance.get('/routes', {
+      headers: { 'Authorization': bearerAuth(token)}
+    }).catch(err => {
       handleError(err);
       });
   }
