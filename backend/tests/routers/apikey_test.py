@@ -1,5 +1,5 @@
 """
-Tests for getapikey route
+Tests for apikey routes
 """
 
 from typing import Callable, cast
@@ -73,7 +73,7 @@ async def test_get_api_key_with_invalid_role_fails(
     assert response.status_code == 403
     data = response.json()
 
-    assert data == {"message": "User does not have valid ADMIN role"}
+    assert data == {"message": "User does not have valid role(s)"}
 
 
 async def test_get_api_key_for_new_user_succeeds(get_keycloak_user_token: Callable) -> None:

@@ -32,6 +32,8 @@ backend:
         admin_url: "https://apisixdev.devlyfe.fi:9180"
         gateway_url: "https://apisixdev.devlyfe.fi"
         admin_api_key: ""
+    keycloak_client_id: "dev-portal-api"
+    keycloak_client_secret: ""
 
 frontend:
   name: dev-portal-frontend

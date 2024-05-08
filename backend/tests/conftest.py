@@ -2,7 +2,7 @@
 Pytest fixtures for actual tests.
 """
 
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Any
 import json
 import asyncio
 import pytest
@@ -200,29 +200,34 @@ async def keycloak_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
 
     user_url = f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
 
-    await asyncio.gather(*[client.post(user_url, json=user, headers=auth_header) for user in users])
+    await asyncio.gather(
+        *[
+            client.post(user_url, json=user, headers=auth_header)
+            for user in users
+            if "skip_init_creation" not in user
+        ]
+    )
 
     yield
 
     # Get test user's id and delete it
     admin_access_token = await get_keycloak_admin_token(client)
 
-    id_responses = await asyncio.gather(
-        *[
-            client.get(f"{user_url}?username={user['username']}", headers=auth_header)
-            for user in users
-        ]
-    )
+    kc_users = await client.get(user_url, headers=auth_header)
 
-    # user_id = r.json()[0]["id"]
+    user_ids_to_delete = [
+        kc_user["id"]
+        for kc_user in kc_users.json()
+        if kc_user["username"] in [user["username"] for user in users]
+    ]
 
     await asyncio.gather(
         *[
             client.delete(
-                f"{user_url}/{response.json()[0]['id']}",
+                f"{user_url}/{id}",
                 headers={"Authorization": f"Bearer {admin_access_token}"},
             )
-            for response in id_responses
+            for id in user_ids_to_delete
         ]
     )
 
@@ -289,6 +294,37 @@ async def get_keycloak_user_2_token_no_role(client: AsyncClient) -> str:
     return access_token
 
 
+@pytest.fixture
+async def get_keycloak_realm_admin_token(client: AsyncClient) -> str:
+    """
+    Pytest fixture that retrieves a admin user's access token from Keycloak.
+
+    Adds a realm role "ADMIN" to the user before retrieving the token.
+
+    The access token can be used in other fixtures or tests
+    to authenticate requests to APIs that use Keycloak for authentication.
+
+    Returns:
+        str: The access token for the admin user.
+    """
+
+    await add_keycloak_realm_role_for_user(client)
+
+    token_url = (
+        f"{config.keycloak.url}/realms/{config.keycloak.realm}" "/protocol/openid-connect/token"
+    )
+    data = {
+        "client_id": "frontend",
+        "username": keycloak.KEYCLOAK_USERS[2]["username"],
+        "password": keycloak.KEYCLOAK_USERS[2]["credentials"][0]["value"],
+        "grant_type": "password",
+    }
+    response = await client.post(token_url, data=data)
+    access_token = response.json()["access_token"]
+    assert isinstance(access_token, str), "access_token is not a string"
+    return access_token
+
+
 async def remove_keycloak_realm_role_from_user(client: AsyncClient) -> None:
     """
     Asynchronously removes a realm role from a Keycloak user.
@@ -326,3 +362,43 @@ async def remove_keycloak_realm_role_from_user(client: AsyncClient) -> None:
     )
 
     await client.request("DELETE", role_url, json=role, headers=auth_header)
+
+
+async def add_keycloak_realm_role_for_user(client: AsyncClient) -> None:
+    """
+    Asynchronously adds a realm role to a Keycloak user.
+
+    This function first retrieves an admin access token from Keycloak,
+    then uses that token to authenticate a GET request to the Keycloak users endpoint.
+    It extracts the user ID from the response, then sends a POST request
+    to the user's role mappings endpoint to add the role.
+
+    The role to be added is defined within the function and is currently hardcoded.
+
+    Note: This function assumes that the Keycloak server, realm,
+    and user are all configured correctly.
+    """
+    admin_access_token = await get_keycloak_admin_token(client)
+
+    auth_header = {
+        "Authorization": f"Bearer {admin_access_token}",
+    }
+
+    user = keycloak.KEYCLOAK_USERS[2]
+
+    user_url = f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
+
+    r = await client.get(f"{user_url}?username={user['username']}", headers=auth_header)
+
+    user_id = r.json()[0]["id"]
+
+    # Define the role to add
+    role = [{"id": "80dc334f-6c01-4a1d-bbde-3950240c0a1c", "name": "ADMIN"}]
+
+    # Add the role to the user
+    role_url = (
+        f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
+        f"/{user_id}/role-mappings/realm"
+    )
+
+    await client.request("POST", role_url, json=role, headers=auth_header)
