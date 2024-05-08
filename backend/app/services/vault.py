@@ -147,3 +147,22 @@ async def delete_user_from_vault(client: AsyncClient, identifier: str) -> None:
     except HTTPError as e:
         logger.exception("Error deleting user '%s' from Vault", identifier)
         raise VaultError("Vault service error") from e
+
+
+async def healthcheck(client: AsyncClient) -> str:
+    """
+    Check the health of the Vault service.
+
+    Args:
+        client (AsyncClient): The HTTP client to use for making the request.
+
+    Raises:
+        VaultError: If there is an HTTP error while checking the health of the service.
+    """
+    try:
+        # https://developer.hashicorp.com/vault/api-docs/system/health
+        _response = await http_request(client, "GET", f"{config.vault.url}/v1/sys/health")
+        return "OK"
+    except HTTPError as e:
+        logger.exception("Error checking health of Vault service")
+        raise VaultError("Vault service error") from e

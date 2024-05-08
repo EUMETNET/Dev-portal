@@ -73,7 +73,7 @@ async def test_delete_user_and_apikey(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
         create_api_key_response = await ac.get(
-            "/getapikey", headers={"Authorization": f"Bearer {access_token}"}
+            "/apikey", headers={"Authorization": f"Bearer {access_token}"}
         )
 
         assert create_api_key_response.status_code == 200
@@ -117,7 +117,7 @@ async def test_delete_user_exception_rolls_user_api_key_back(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
         create_api_key_response = await ac.get(
-            "/getapikey", headers={"Authorization": f"Bearer {access_token}"}
+            "/apikey", headers={"Authorization": f"Bearer {access_token}"}
         )
 
         assert create_api_key_response.status_code == 200
@@ -163,7 +163,7 @@ async def test_delete_api_key(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
         create_api_key_response = await ac.get(
-            "/getapikey", headers={"Authorization": f"Bearer {access_token}"}
+            "/apikey", headers={"Authorization": f"Bearer {access_token}"}
         )
 
         assert create_api_key_response.status_code == 200

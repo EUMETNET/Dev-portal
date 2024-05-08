@@ -8,8 +8,8 @@ from httpx import AsyncClient
 from app.config import settings, logger
 from app.dependencies.jwt_token import validate_admin_role, AccessToken
 from app.dependencies.http_client import get_http_client
+from app.models.responses import MessageResponse
 from app.services import users
-from app.models.responses import DeleteAPIKey
 from app.exceptions import APISIXError, VaultError, KeycloakError
 
 router = APIRouter()
@@ -17,12 +17,12 @@ router = APIRouter()
 config = settings()
 
 
-@router.delete("/users/{user_uuid}", response_model=DeleteAPIKey)
+@router.delete("/users/{user_uuid}", response_model=MessageResponse)
 async def delete_user(
     user_uuid: str,
     token: AccessToken = Depends(validate_admin_role),
     client: AsyncClient = Depends(get_http_client),
-) -> DeleteAPIKey:
+) -> MessageResponse:
     """
     Delete a user from Keycloak and user's API key from Vault and APISIX(es).
 
@@ -48,15 +48,15 @@ async def delete_user(
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
-    return DeleteAPIKey()
+    return MessageResponse(message="OK")
 
 
-@router.delete("/users/{user_uuid}/apikey", response_model=DeleteAPIKey)
+@router.delete("/users/{user_uuid}/apikey", response_model=MessageResponse)
 async def delete_user_apikey(
     user_uuid: str,
     token: AccessToken = Depends(validate_admin_role),
     client: AsyncClient = Depends(get_http_client),
-) -> DeleteAPIKey:
+) -> MessageResponse:
     """
     Delete a user's API key from Vault and APISIX(es) also disables user in Keycloak.
 
@@ -82,4 +82,4 @@ async def delete_user_apikey(
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
-    return DeleteAPIKey()
+    return MessageResponse(message="OK")
