@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from 'react-oidc-context';
 
 const oidcConfig = {
-  authority: `${window.REACT_APP_KEYCLOAK_URL}realms/${window.REACT_APP_KEYCLOAK_REALM}`,
+  authority: `${window.REACT_APP_KEYCLOAK_URL}/realms/${window.REACT_APP_KEYCLOAK_REALM}`,
   client_id: window.REACT_APP_KEYCLOAK_CLIENTID,
   redirect_uri: window.location.origin,
   response_type: 'code',
