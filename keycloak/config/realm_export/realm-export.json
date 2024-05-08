@@ -1546,7 +1546,40 @@
   "enabledEventTypes": [],
   "adminEventsEnabled": false,
   "adminEventsDetailsEnabled": false,
-  "identityProviders": [],
+  "identityProviders": [
+    {
+      "alias": "google",
+      "internalId": "8e455dd6-fa05-44ed-83b4-ae1c4ab8c87a",
+      "providerId": "google",
+      "enabled": true,
+      "updateProfileFirstLoginMode": "on",
+      "trustEmail": false,
+      "storeToken": false,
+      "addReadTokenRoleOnCreate": false,
+      "authenticateByDefault": false,
+      "linkOnly": false,
+      "config": {
+        "clientSecret": "**********",
+        "clientId": "1054919297695-v480f46n6589cgo792193o9tdhrbu2hq.apps.googleusercontent.com"
+      }
+    },
+    {
+      "alias": "github",
+      "internalId": "6eb970d0-d69d-4632-93ce-bfc4137bdf5b",
+      "providerId": "github",
+      "enabled": true,
+      "updateProfileFirstLoginMode": "on",
+      "trustEmail": false,
+      "storeToken": false,
+      "addReadTokenRoleOnCreate": false,
+      "authenticateByDefault": false,
+      "linkOnly": false,
+      "config": {
+        "clientSecret": "**********",
+        "clientId": "Ov23ctCB2Xbm9MVAr9FZ"
+      }
+    }
+  ],
   "identityProviderMappers": [],
   "components": {
     "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
@@ -2370,7 +2403,7 @@
     "cibaInterval": "5",
     "realmReusableOtpCode": "false"
   },
-  "keycloakVersion": "24.0.1",
+  "keycloakVersion": "24.0.3",
   "userManagedAccessAllowed": false,
   "clientProfiles": {
     "profiles": []
