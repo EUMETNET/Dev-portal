@@ -6,7 +6,7 @@ backend:
   name: dev-portal-backend
   image:
     repository: joonahalonencgi/eurodeo-dev-portal-backend
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     tag: latest
   replicaCount: 2
   containerport: 8082
@@ -15,7 +15,7 @@ backend:
     port: 80
   config:
     log_level: INFO
-    keycloak_cluster_url: http://keycloack-keycloak.keycloack.svc.cluster.local
+    keycloak_cluster_url: http://keycloak.keycloak.svc.cluster.local
   secrets:
     # Provide a existing secret. If empty, one is created
     secretName: ""
@@ -34,12 +34,19 @@ backend:
         admin_api_key: ""
     keycloak_client_id: "dev-portal-api"
     keycloak_client_secret: ""
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 5
 
 frontend:
   name: dev-portal-frontend
   image:
     repository: joonahalonencgi/eurodeo-dev-portal-frontend
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     tag: latest
   replicaCount: 2
   containerport: 443
