@@ -1,7 +1,7 @@
 import { User } from "oidc-client-ts";
 
 function getUser() {
-    const key = `oidc.user:${window.REACT_APP_KEYCLOAK_URL}realms/${window.REACT_APP_KEYCLOAK_REALM}:${window.REACT_APP_KEYCLOAK_CLIENTID}`;
+    const key = `oidc.user:${window.REACT_APP_KEYCLOAK_URL}/realms/${window.REACT_APP_KEYCLOAK_REALM}:${window.REACT_APP_KEYCLOAK_CLIENTID}`;
     const oidcStorage = sessionStorage.getItem(key)
     if (!oidcStorage) {
         return null;
