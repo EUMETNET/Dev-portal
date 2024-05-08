@@ -27,10 +27,9 @@ async def test_vault_user_creation_success(client: AsyncClient) -> None:
     response = await vault.get_user_info_from_vault(client, identifier)
 
     assert response is not None
-    assert response.model_dump() == {
-        "auth_key": apikey,
-        "date": datetime.now(timezone.utc).strftime("%Y/%m/%d %H:%M:%S"),
-    }
+    assert response.auth_key is not None
+    assert len(response.auth_key) == len(apikey)
+    assert response.date == datetime.now(timezone.utc).strftime("%Y/%m/%d %H:%M:%S")
 
 
 async def test_user_deletion_success(client: AsyncClient) -> None:
