@@ -20,6 +20,25 @@ def get_apisix_headers(instance: APISixInstanceSettings) -> dict[str, str]:
     return {"Content-Type": "application/json", "X-API-KEY": instance.admin_api_key}
 
 
+def get_realm_group_id_by_name(group_name: str) -> str:
+    """
+    Get the group ID of a realm group by its name.
+
+    Args:
+        name (str): The name of the realm group.
+
+    Returns:
+        str: The group ID of the realm group.
+    """
+    with open("tests/data/realm-export.json", encoding="utf-8") as f:
+        realm_json = json.load(f)
+
+    for group in realm_json["groups"]:
+        if group["name"] == group_name:
+            return group["id"]
+    raise ValueError(f'Group "{group_name}" not found in the realm export data.')
+
+
 @pytest.fixture(scope="session", autouse=True)
 def anyio_backend() -> str:
     """
@@ -263,7 +282,7 @@ async def get_keycloak_user_token(client: AsyncClient) -> str:
 
 
 @pytest.fixture
-async def get_keycloak_user_2_token_no_role(client: AsyncClient) -> str:
+async def get_keycloak_user_2_token_no_groups(client: AsyncClient) -> str:
     """
     Pytest fixture that retrieves a user access token from Keycloak.
 
@@ -278,7 +297,7 @@ async def get_keycloak_user_2_token_no_role(client: AsyncClient) -> str:
         str: The access token for the user.
     """
 
-    await remove_keycloak_realm_role_from_user(client)
+    await remove_keycloak_user_from_group(client)
     token_url = (
         f"{config.keycloak.url}/realms/{config.keycloak.realm}" "/protocol/openid-connect/token"
     )
@@ -299,7 +318,7 @@ async def get_keycloak_realm_admin_token(client: AsyncClient) -> str:
     """
     Pytest fixture that retrieves a admin user's access token from Keycloak.
 
-    Adds a realm role "ADMIN" to the user before retrieving the token.
+    Adds user to the realm group "ADMIN" before retrieving the token.
 
     The access token can be used in other fixtures or tests
     to authenticate requests to APIs that use Keycloak for authentication.
@@ -308,7 +327,7 @@ async def get_keycloak_realm_admin_token(client: AsyncClient) -> str:
         str: The access token for the admin user.
     """
 
-    await add_keycloak_realm_role_for_user(client)
+    await add_keycloak_user_to_group(client)
 
     token_url = (
         f"{config.keycloak.url}/realms/{config.keycloak.realm}" "/protocol/openid-connect/token"
@@ -325,16 +344,16 @@ async def get_keycloak_realm_admin_token(client: AsyncClient) -> str:
     return access_token
 
 
-async def remove_keycloak_realm_role_from_user(client: AsyncClient) -> None:
+async def remove_keycloak_user_from_group(client: AsyncClient) -> None:
     """
-    Asynchronously removes a realm role from a Keycloak user.
+    Asynchronously removes a Keycloak user from a group.
 
     This function first retrieves an admin access token from Keycloak,
     then uses that token to authenticate a GET request to the Keycloak users endpoint.
     It extracts the user ID from the response, then sends a DELETE request
-    to the user's role mappings endpoint to remove the role.
+    to the user's groups endpoint to remove the user from the group.
 
-    The role to be removed is defined within the function and is currently hardcoded.
+    The group to be removed from is defined within the function and is currently hardcoded.
 
     Note: This function assumes that the Keycloak server, realm,
     and user are all configured correctly.
@@ -344,6 +363,7 @@ async def remove_keycloak_realm_role_from_user(client: AsyncClient) -> None:
     auth_header = {
         "Authorization": f"Bearer {admin_access_token}",
     }
+
     user = keycloak.KEYCLOAK_USERS[1]
 
     user_url = f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
@@ -352,28 +372,28 @@ async def remove_keycloak_realm_role_from_user(client: AsyncClient) -> None:
 
     user_id = r.json()[0]["id"]
 
-    # Define the role to remove
-    role = [{"id": "c8c93745-dbbd-49e8-af76-175bb2ca62a5", "name": "default-roles-test"}]
+    # Define the group ID to remove the user from
+    group_id = get_realm_group_id_by_name("USER")
 
-    # Delete the role from the user
-    role_url = (
+    # Remove the user from the group
+    group_url = (
         f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
-        f"/{user_id}/role-mappings/realm"
+        f"/{user_id}/groups/{group_id}"
     )
 
-    await client.request("DELETE", role_url, json=role, headers=auth_header)
+    await client.request("DELETE", group_url, headers=auth_header)
 
 
-async def add_keycloak_realm_role_for_user(client: AsyncClient) -> None:
+async def add_keycloak_user_to_group(client: AsyncClient) -> None:
     """
-    Asynchronously adds a realm role to a Keycloak user.
+    Asynchronously adds a Keycloak user to a group.
 
     This function first retrieves an admin access token from Keycloak,
     then uses that token to authenticate a GET request to the Keycloak users endpoint.
-    It extracts the user ID from the response, then sends a POST request
-    to the user's role mappings endpoint to add the role.
+    It extracts the user ID from the response, then sends a PUT request
+    to the user's groups endpoint to add the user to the group.
 
-    The role to be added is defined within the function and is currently hardcoded.
+    The group to be added to is defined within the function and is currently hardcoded.
 
     Note: This function assumes that the Keycloak server, realm,
     and user are all configured correctly.
@@ -392,13 +412,13 @@ async def add_keycloak_realm_role_for_user(client: AsyncClient) -> None:
 
     user_id = r.json()[0]["id"]
 
-    # Define the role to add
-    role = [{"id": "80dc334f-6c01-4a1d-bbde-3950240c0a1c", "name": "ADMIN"}]
+    # Define the group ID to add the user to
+    group_id = get_realm_group_id_by_name("ADMIN")
 
-    # Add the role to the user
-    role_url = (
+    # Add the user to the group
+    group_url = (
         f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/users"
-        f"/{user_id}/role-mappings/realm"
+        f"/{user_id}/groups/{group_id}"
     )
 
-    await client.request("POST", role_url, json=role, headers=auth_header)
+    await client.request("PUT", group_url, headers=auth_header)
