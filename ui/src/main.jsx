@@ -16,6 +16,10 @@ const oidcConfig = {
   automaticSilentRenew: true,
   loadUserInfo: false,
   silent_redirect_uri: window.location.origin,
+  // remove state, sessionState etc. params from query string after successful login
+  onSigninCallback: () => {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  },
   //userStore: window.sessionStorage is default
 };
 
