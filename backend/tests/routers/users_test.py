@@ -29,7 +29,7 @@ async def test_delete_user_without_admin_role_fails(get_keycloak_user_token: Cal
         )
 
         assert response.status_code == 403
-        assert response.json() == {"message": "User does not have valid ADMIN role"}
+        assert response.json() == {"message": "User does not belong to ADMIN group"}
 
 
 async def test_delete_user_with_admin_role_succeeds(

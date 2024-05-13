@@ -65,24 +65,6 @@
         "attributes": {}
       },
       {
-        "id": "80dc334f-6c01-4a1d-bbde-3950240c0a1c",
-        "name": "ADMIN",
-        "description": "",
-        "composite": false,
-        "clientRole": false,
-        "containerId": "42f99bdf-9cf1-420b-ae74-594e4f96faad",
-        "attributes": {}
-      },
-      {
-        "id": "530d1e94-b2c1-4150-bb78-afbe215cd5ce",
-        "name": "USER",
-        "description": "",
-        "composite": false,
-        "clientRole": false,
-        "containerId": "42f99bdf-9cf1-420b-ae74-594e4f96faad",
-        "attributes": {}
-      },
-      {
         "id": "c8c93745-dbbd-49e8-af76-175bb2ca62a5",
         "name": "default-roles-test",
         "description": "${role_default-roles}",
@@ -90,8 +72,7 @@
         "composites": {
           "realm": [
             "offline_access",
-            "uma_authorization",
-            "USER"
+            "uma_authorization"
           ],
           "client": {
             "account": [
@@ -424,7 +405,26 @@
       "dev-portal-api": []
     }
   },
-  "groups": [],
+  "groups": [
+    {
+      "id": "16a285ae-aefe-465d-8bbc-9ac3024b9bff",
+      "name": "ADMIN",
+      "path": "/ADMIN",
+      "subGroups": [],
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {}
+    },
+    {
+      "id": "343cfdfa-8264-488c-b63f-a376c1fe3604",
+      "name": "USER",
+      "path": "/USER",
+      "subGroups": [],
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {}
+    }
+  ],
   "defaultRole": {
     "id": "c8c93745-dbbd-49e8-af76-175bb2ca62a5",
     "name": "default-roles-test",
@@ -433,6 +433,9 @@
     "clientRole": false,
     "containerId": "42f99bdf-9cf1-420b-ae74-594e4f96faad"
   },
+  "defaultGroups": [
+    "/USER"
+  ],
   "requiredCredentials": [
     "password"
   ],
@@ -730,6 +733,7 @@
         "oidc.ciba.grant.enabled": "false",
         "client.secret.creation.time": "1713258412",
         "backchannel.logout.session.required": "true",
+        "post.logout.redirect.uris": "+",
         "oauth2.device.authorization.grant.enabled": "false",
         "display.on.consent.screen": "false",
         "backchannel.logout.revoke.offline.tokens": "false"
@@ -747,6 +751,7 @@
           "config": {
             "user.session.note": "clientAddress",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientAddress",
@@ -762,6 +767,7 @@
           "config": {
             "user.session.note": "clientHost",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientHost",
@@ -777,6 +783,7 @@
           "config": {
             "user.session.note": "client_id",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "client_id",
@@ -848,6 +855,7 @@
           "config": {
             "user.session.note": "clientAddress",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientAddress",
@@ -863,10 +871,28 @@
           "config": {
             "user.session.note": "clientHost",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientHost",
             "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "d7199694-1516-494b-ab6d-ba875313162b",
+          "name": "group-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "consentRequired": false,
+          "config": {
+            "full.path": "false",
+            "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "lightweight.claim": "false",
+            "access.token.claim": "true",
+            "claim.name": "groups"
           }
         },
         {
@@ -878,6 +904,7 @@
           "config": {
             "user.session.note": "client_id",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "client_id",
@@ -1626,14 +1653,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-full-name-mapper",
             "oidc-address-mapper",
-            "oidc-usermodel-attribute-mapper",
-            "oidc-usermodel-property-mapper",
-            "saml-user-property-mapper",
             "saml-user-attribute-mapper",
+            "saml-user-property-mapper",
+            "oidc-full-name-mapper",
+            "oidc-usermodel-property-mapper",
             "oidc-sha256-pairwise-sub-mapper",
-            "saml-role-list-mapper"
+            "saml-role-list-mapper",
+            "oidc-usermodel-attribute-mapper"
           ]
         }
       },
@@ -1677,14 +1704,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "saml-user-attribute-mapper",
-            "oidc-usermodel-attribute-mapper",
-            "oidc-full-name-mapper",
-            "oidc-address-mapper",
             "saml-user-property-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
+            "oidc-full-name-mapper",
+            "oidc-usermodel-attribute-mapper",
+            "oidc-address-mapper",
+            "saml-user-attribute-mapper",
             "oidc-usermodel-property-mapper",
-            "saml-role-list-mapper"
+            "saml-role-list-mapper",
+            "oidc-sha256-pairwise-sub-mapper"
           ]
         }
       }
