@@ -60,20 +60,20 @@ async def test_get_api_key_with_expired_token_fails(get_keycloak_user_token: Cal
     assert data == {"message": "Token signature has expired"}
 
 
-async def test_get_api_key_with_invalid_role_fails(
-    get_keycloak_user_2_token_no_role: Callable,
+async def test_get_api_key_with_invalid_groups_fails(
+    get_keycloak_user_2_token_no_groups: Callable,
 ) -> None:
     async with AsyncClient(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
         response = await ac.get(
-            "/apikey", headers={"Authorization": f"Bearer {get_keycloak_user_2_token_no_role}"}
+            "/apikey", headers={"Authorization": f"Bearer {get_keycloak_user_2_token_no_groups}"}
         )
 
     assert response.status_code == 403
     data = response.json()
 
-    assert data == {"message": "User does not have valid role(s)"}
+    assert data == {"message": "User does not belong to valid group(s)"}
 
 
 async def test_get_api_key_for_new_user_succeeds(get_keycloak_user_token: Callable) -> None:

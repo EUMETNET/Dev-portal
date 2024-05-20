@@ -46,6 +46,7 @@ async function httpRequest(path, options, retryCount = 0) {
             if (retryCount >= 3) {
               throw new Error('Unauthorized after 3 attempts');
             }
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
             return httpRequest(path, options, retryCount + 1);
         }
         return response
