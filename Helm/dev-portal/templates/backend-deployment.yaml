@@ -31,6 +31,25 @@ spec:
         - name: secret
           mountPath: "/code/secrets.yaml"
           subPath: "secrets.yaml"
+        {{- if .Values.backend.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.backend.containerport }}
+          failureThreshold: 2
+          initialDelaySeconds: {{ .Values.backend.readinessProbe.initialDelaySeconds }}
+          periodSeconds: 3
+          successThreshold: 1
+        {{- end }}
+        {{- if .Values.backend.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.backend.containerport }}
+          initialDelaySeconds: {{ .Values.backend.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.backend.livenessProbe.periodSeconds }}
+          successThreshold: 1
+        {{- end }}
       volumes:
       {{- if (not .Values.backend.secrets.secretName) }}
       - name: secret
