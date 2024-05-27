@@ -17,7 +17,7 @@ router = APIRouter()
 config = settings()
 
 
-@router.delete("/users/{user_uuid}", response_model=MessageResponse)
+@router.delete("/admin/users/{user_uuid}", response_model=MessageResponse)
 async def delete_user(
     user_uuid: str,
     token: AccessToken = Depends(validate_admin_role),
@@ -51,7 +51,7 @@ async def delete_user(
     return MessageResponse(message="OK")
 
 
-@router.put("/users/{user_uuid}/disable", response_model=MessageResponse)
+@router.put("/admin/users/{user_uuid}/disable", response_model=MessageResponse)
 async def disable_user(
     user_uuid: str,
     token: AccessToken = Depends(validate_admin_role),
