@@ -7,7 +7,7 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.config import settings
-from app.services import keycloak, apikey, vault
+from app.services import keycloak, apikey
 from app.models.keycloak import User
 from app.exceptions import KeycloakError
 from app.utils.uuid import remove_dashes
@@ -25,7 +25,8 @@ async def test_delete_user_without_admin_role_fails(get_keycloak_user_token: Cal
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
         response = await ac.delete(
-            "/users/123-456-789", headers={"Authorization": f"Bearer {get_keycloak_user_token}"}
+            "/admin/users/123-456-789",
+            headers={"Authorization": f"Bearer {get_keycloak_user_token}"},
         )
 
         assert response.status_code == 403
@@ -41,7 +42,8 @@ async def test_delete_user_with_admin_role_succeeds(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
         response = await ac.delete(
-            f"/users/{uuid}", headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"}
+            f"/admin/users/{uuid}",
+            headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
         )
 
         assert response.status_code == 200
@@ -79,7 +81,8 @@ async def test_delete_user_and_apikey(
         assert create_api_key_response.status_code == 200
 
         response = await ac.delete(
-            f"/users/{uuid}", headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"}
+            f"/admin/users/{uuid}",
+            headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
         )
 
         assert response.status_code == 200
@@ -123,7 +126,8 @@ async def test_delete_user_exception_rolls_user_api_key_back(
         assert create_api_key_response.status_code == 200
 
         response = await ac.delete(
-            f"/users/{uuid}", headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"}
+            f"/admin/users/{uuid}",
+            headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
         )
 
         assert response.status_code == 503
@@ -141,9 +145,7 @@ async def test_delete_user_exception_rolls_user_api_key_back(
         await og_delete_user_func(client, uuid)
 
 
-async def test_delete_api_key(
-    client: AsyncClient, get_keycloak_realm_admin_token: Callable
-) -> None:
+async def test_disable_user(client: AsyncClient, get_keycloak_realm_admin_token: Callable) -> None:
     user = User(**KEYCLOAK_USERS[3])
     uuid = await keycloak.create_user(client, user)
 
@@ -168,8 +170,8 @@ async def test_delete_api_key(
 
         assert create_api_key_response.status_code == 200
 
-        response = await ac.delete(
-            f"/users/{uuid}/apikey",
+        response = await ac.put(
+            f"/admin/users/{uuid}/disable",
             headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
         )
 

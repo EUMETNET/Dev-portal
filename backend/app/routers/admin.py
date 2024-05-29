@@ -17,7 +17,7 @@ router = APIRouter()
 config = settings()
 
 
-@router.delete("/users/{user_uuid}", response_model=MessageResponse)
+@router.delete("/admin/users/{user_uuid}", response_model=MessageResponse)
 async def delete_user(
     user_uuid: str,
     token: AccessToken = Depends(validate_admin_role),
@@ -51,14 +51,14 @@ async def delete_user(
     return MessageResponse(message="OK")
 
 
-@router.delete("/users/{user_uuid}/apikey", response_model=MessageResponse)
-async def delete_user_apikey(
+@router.put("/admin/users/{user_uuid}/disable", response_model=MessageResponse)
+async def disable_user(
     user_uuid: str,
     token: AccessToken = Depends(validate_admin_role),
     client: AsyncClient = Depends(get_http_client),
 ) -> MessageResponse:
     """
-    Delete a user's API key from Vault and APISIX(es) also disables user in Keycloak.
+    Disables a user in Keycloak and deletes user's existing API key from Vault and APISIX(es).
 
     Args:
         user_uuid (str): The UUID of the user whose API key is to be deleted.
@@ -66,15 +66,14 @@ async def delete_user_apikey(
         client (AsyncClient): The HTTP client to use for making requests.
 
     Returns:
-        JSONResponse: A response indicating whether the deletion was successful.
+        JSONResponse: A response indicating whether the operation was successful.
 
     Raises:
-        HTTPException: If there is an error getting user info from APISIX or Vault,
-                       or if there is an error deleting the user from Vault or APISIX.
+        HTTPException: If there is an error communicating with Keycloak, Vault or APISIX.
     """
     admin_uuid = token.sub
 
-    logger.info("Admin '%s' requested deletion of API key for user '%s'", admin_uuid, user_uuid)
+    logger.info("Admin '%s' requested disabling the user '%s'", admin_uuid, user_uuid)
 
     try:
         await users.delete_or_disable_user(client, user_uuid, "DISABLE")
