@@ -39,4 +39,4 @@ async def test_get_health_fails_with_vault(monkeypatch) -> None:
     assert response.status_code == 503
     data = response.json()
 
-    assert data == {"message": "Vault service error"}
+    assert data == {"message": "Vault and/or APISIX instances are not healthy"}

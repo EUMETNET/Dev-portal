@@ -37,12 +37,18 @@ async def health_check(client: AsyncClient = Depends(get_http_client)) -> Messag
     logger.debug("Got a request to perform health check")
     logger.debug("Checking the health of Vault and APISIX instances...")
 
-    try:
-        await asyncio.gather(
-            vault.healthcheck(client), *apisix.create_tasks(apisix.get_routes, client)
+    results = await asyncio.gather(
+        vault.healthcheck(client),
+        *apisix.create_tasks(apisix.get_routes, client),
+        return_exceptions=True,
+    )
+
+    if any(isinstance(result, (APISIXError, VaultError)) for result in results):
+        logger.error("Error(s) during health check")
+        raise HTTPException(
+            status_code=HTTPStatus.SERVICE_UNAVAILABLE,
+            detail="Vault and/or APISIX instances are not healthy",
         )
-    except (VaultError, APISIXError) as e:
-        raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
     logger.debug("Vault and APISIX instances are healthy")
     return MessageResponse(message="OK")
