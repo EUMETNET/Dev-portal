@@ -30,6 +30,7 @@ services:
       KEYCLOAK_LOGLEVEL: DEBUG
       DEBUG: "true"
       DEBUG_PORT: "*:8000"
+      KC_HEALTH_ENABLED: true
     command: 
       - start-dev 
       - --import-realm
