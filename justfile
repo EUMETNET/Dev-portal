@@ -22,3 +22,7 @@ setup-vault:
 setup-keycloak:
     ./keycloak/config/setup.sh
 
+# setup-apisix:
+#     do the needed configurations based on IaC
+#     either implement ./apisix_conf/setup.sh
+#     or modify config.yaml
