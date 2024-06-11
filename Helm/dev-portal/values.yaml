@@ -1,11 +1,15 @@
 # Default values for dev-portal.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
+imageCredentials:
+  enabled: true
+  registry: "ghcr.io"
+  username: ""
+  password: ""
 backend:
   name: dev-portal-backend
   image:
-    repository: joonahalonencgi/eurodeo-dev-portal-backend
+    repository: eurodeo/dev-portal/backend
     pullPolicy: IfNotPresent
     tag: latest
   replicaCount: 2
@@ -51,7 +55,7 @@ backend:
 frontend:
   name: dev-portal-frontend
   image:
-    repository: joonahalonencgi/eurodeo-dev-portal-frontend
+    repository: eurodeo/dev-portal/ui
     pullPolicy: IfNotPresent
     tag: latest
   replicaCount: 2
