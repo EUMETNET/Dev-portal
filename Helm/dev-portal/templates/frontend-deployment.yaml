@@ -16,7 +16,11 @@ spec:
     spec:
       containers:
       - name: {{ .Values.frontend.name }} 
+        {{- if .Values.imageCredentials.enabled }}
+        image: {{ .Values.imageCredentials.registry }}/{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
+        {{- else }}
         image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
+        {{- end }}
         imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.frontend.containerport }}
@@ -24,6 +28,10 @@ spec:
         - name: env-file
           mountPath: "/portal-ui/dist/env-config.js"
           subPath: "env-config.js"
+      {{- if .Values.imageCredentials.enabled }}
+      imagePullSecrets:
+      - name: registrykey
+      {{- end }}
       volumes:
       - name: env-file
         configMap: 
