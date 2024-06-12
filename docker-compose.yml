@@ -33,9 +33,11 @@ services:
       KC_HEALTH_ENABLED: true
     command: 
       - start-dev 
-      - --import-realm
+      - --import-realm # import realm(s) from /opt/keycloak/data/import
     volumes:
-      - /home/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+      # https://www.keycloak.org/server/importExport
+      # For the Keycloak containers, the import directory is /opt/keycloak/data/import
+      - ./keycloak/config/realm_export:/opt/keycloak/data/import
       - ./keycloak/providers:/opt/keycloak/providers/
     networks:
       apisix:
