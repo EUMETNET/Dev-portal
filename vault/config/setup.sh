@@ -1,14 +1,12 @@
 #!/bin/sh
 export VAULT_ADDR='http://127.0.0.1:8200'
 
-SE_NAME="apisix-dev"
-
-if ! vault secrets list | grep -q "${SE_NAME}/"; then
-  vault secrets enable -path="${SE_NAME}" -version=1 kv
+if ! vault secrets list | grep -q "${VAULT_SECRET_ENGINE}/"; then
+  vault secrets enable -path="${VAULT_SECRET_ENGINE}" -version=1 kv
 fi
 
 tee apisix-policy.hcl << EOF
-path "kv/${SE_NAME}/consumer/*" {
+path "kv/${VAULT_SECRET_ENGINE}/consumer/*" {
     capabilities = ["read"]
 }
 EOF

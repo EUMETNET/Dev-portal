@@ -1,8 +1,6 @@
 #!/bin/bash
 
 KEYCLOAK_URL="http://localhost:8080"
-KEYCLOAK_USERNAME="admin"
-KEYCLOAK_PASSWORD="admin"
 REALM_CONFIG_FILE="./keycloak/config/realm_export/realm-export.json"
 REALM_NAME="test"
 
@@ -30,8 +28,8 @@ done
 # Obtain an access token for admin
 TOKEN=$(curl -s -X POST "${KEYCLOAK_URL}/realms/master/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=${KEYCLOAK_USERNAME}" \
-  -d "password=${KEYCLOAK_PASSWORD}" \
+  -d "username=${KEYCLOAK_MASTER_ADMIN_USER}" \
+  -d "password=${KEYCLOAK_MASTER_ADMIN_PW}" \
   -d "grant_type=password" \
   -d "client_id=admin-cli" | jq -r '.access_token')
 
