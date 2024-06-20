@@ -2,15 +2,14 @@
 Business logic for users handlers
 """
 
-from typing import cast, Literal
+from typing import Literal
 import asyncio
 from httpx import AsyncClient
 from app.config import logger
-from app.exceptions import KeycloakError, APISIXError
+from app.exceptions import KeycloakError
 from app.services import apikey, keycloak
-from app.utils.uuid import remove_dashes
-from app.models.apisix import APISixConsumer
-from app.models.keycloak import User
+from app.models.keycloak import User as KeycloakUser
+from app.models.request import User
 
 
 async def delete_or_disable_user(
@@ -30,50 +29,37 @@ async def delete_or_disable_user(
     Raises:
         KeycloakError: If there is an error while deleting the user from Keycloak.
     """
-    user_uuid_no_dashes = remove_dashes(user_uuid)
 
-    vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(
-        client, user_uuid_no_dashes
-    )
+    user = User(id=user_uuid, groups=[])
+
+    vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
     if vault_user or any(apisix_users):
         logger.debug(
             "User '%s' found in Vault and/or APISIX --> Deleting user from those",
-            user_uuid_no_dashes,
+            user.id,
         )
-        await apikey.delete_user_from_vault_and_apisixes(
-            client, user_uuid_no_dashes, vault_user, apisix_users
+        await apikey.delete_user_from_vault_and_apisixes(client, user, vault_user, apisix_users)
+
+    logger.debug("User '%s' found in Keycloak --> Deleting user", user_uuid)
+    try:
+        if action == "DISABLE":
+            # Mark the user as disabled
+            keycloak_user = KeycloakUser(enabled=False)
+            await keycloak.update_user(client, user_uuid, keycloak_user)
+        elif action == "DELETE":
+            await keycloak.delete_user(client, user_uuid)
+
+    except KeycloakError as e:
+        logger.warning("Attempting to rollback the user's API key back to Vault and APISIX(es)...")
+
+        await asyncio.gather(
+            apikey.handle_rollback(
+                client,
+                user,
+                vault_user,
+                [apisix_user for apisix_user in apisix_users if apisix_user],
+                rollback_from="DELETE",
+            ),
         )
 
-    keycloak_user = await keycloak.get_user(client, user_uuid)
-
-    if keycloak_user:
-        logger.debug("User '%s' found in Keycloak --> Deleting user", user_uuid)
-        try:
-            if action == "DISABLE":
-                # Mark the user as disabled
-                user = User(enabled=False)
-                await keycloak.update_user(client, user_uuid, user)
-            elif action == "DELETE":
-                await keycloak.delete_user(client, user_uuid)
-
-        except KeycloakError as e:
-            logger.warning(
-                "Attempting to rollback the user's API key back to Vault and APISIX(es)..."
-            )
-
-            apisix_users, instance_names = map(
-                list,
-                zip(*((user, user.instance_name) for user in apisix_users if user is not None)),
-            )
-            await asyncio.gather(
-                apikey.handle_rollback(
-                    client,
-                    user_uuid_no_dashes,
-                    vault_user,
-                    cast(list[APISixConsumer | APISIXError], apisix_users),
-                    instance_names,
-                    rollback_from="DELETE",
-                ),
-            )
-
-            raise KeycloakError("Keycloak service error") from e
+        raise KeycloakError("Keycloak service error") from e

@@ -8,8 +8,9 @@ from httpx import AsyncClient
 from app.config import settings, logger
 from app.dependencies.jwt_token import validate_admin_role, AccessToken
 from app.dependencies.http_client import get_http_client
-from app.models.responses import MessageResponse
+from app.models.response import MessageResponse
 from app.services import users
+from app.services import keycloak
 from app.exceptions import APISIXError, VaultError, KeycloakError
 
 router = APIRouter()
@@ -43,7 +44,12 @@ async def delete_user(
     logger.info("Admin '%s' requested deletion of user '%s'", admin_uuid, user_uuid)
 
     try:
-        await users.delete_or_disable_user(client, user_uuid, "DELETE")
+        keycloak_user = await keycloak.get_user(client, user_uuid)
+
+        if keycloak_user is None or not keycloak_user.id:
+            raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found")
+
+        await users.delete_or_disable_user(client, keycloak_user.id, "DELETE")
 
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
@@ -76,7 +82,12 @@ async def disable_user(
     logger.info("Admin '%s' requested disabling the user '%s'", admin_uuid, user_uuid)
 
     try:
-        await users.delete_or_disable_user(client, user_uuid, "DISABLE")
+        keycloak_user = await keycloak.get_user(client, user_uuid)
+
+        if keycloak_user is None or not keycloak_user.id:
+            raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found")
+
+        await users.delete_or_disable_user(client, keycloak_user.id, "DISABLE")
 
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e

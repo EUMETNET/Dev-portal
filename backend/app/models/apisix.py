@@ -2,7 +2,7 @@
 Apisix models
 """
 
-from typing import Any
+from typing import Any, Optional
 from pydantic import BaseModel, field_validator, ValidationInfo
 from app.config import settings
 
@@ -17,11 +17,24 @@ class APISixConsumer(BaseModel):
         instance_name (str): The name of the APISIX instance.
         username (str): The username of the consumer.
         plugins (dict[str, dict[str, Any]]): The plugins associated with the consumer.
+        group_id (Optional[str]): The group ID of the consumer group.
     """
 
     instance_name: str
     username: str
     plugins: dict[str, dict[str, Any]]
+    group_id: Optional[str] = None
+
+    @field_validator("group_id", mode="before")
+    @classmethod
+    def set_group_id(cls, value: list[str]) -> Optional[str]:
+        """
+        Sets the group_id attribute to 'eumetnet' if token has corresponding
+        group or default to None.
+        """
+        if "EUMETNET_USER" in value:
+            return "eumetnet_user"
+        return None
 
 
 class APISixRoutes(BaseModel):

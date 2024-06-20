@@ -3,7 +3,7 @@ Keycloak models
 """
 
 from typing import Optional, Any
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from app.config import settings
 
 config = settings()
@@ -59,3 +59,15 @@ class User(BaseModel):
     requiredActions: Optional[list[str]] = None
     notBefore: Optional[int] = None
     access: Optional[dict] = None
+    groups: Optional[list[str]] = None
+
+    @field_validator("groups", mode="before")
+    @classmethod
+    def parse_groups(cls, value: list[dict[str, Any]]) -> list[str] | None:
+        """
+        Parses the groups from the user.
+        """
+        print(value)
+        if value:
+            return [group["name"] for group in value]
+        return None

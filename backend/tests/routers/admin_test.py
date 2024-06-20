@@ -8,9 +8,9 @@ from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.config import settings
 from app.services import keycloak, apikey
-from app.models.keycloak import User
+from app.models.keycloak import User as KeycloakUser
+from app.models.request import User
 from app.exceptions import KeycloakError
-from app.utils.uuid import remove_dashes
 from tests.data.keycloak import KEYCLOAK_USERS
 
 pytestmark = pytest.mark.anyio
@@ -36,7 +36,7 @@ async def test_delete_user_without_admin_role_fails(get_keycloak_user_token: Cal
 async def test_delete_user_with_admin_role_succeeds(
     client: AsyncClient, get_keycloak_realm_admin_token: Callable
 ) -> None:
-    uuid = await keycloak.create_user(client, User(**KEYCLOAK_USERS[3]))
+    uuid = await keycloak.create_user(client, KeycloakUser(**KEYCLOAK_USERS[3]))
 
     async with AsyncClient(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
@@ -55,7 +55,7 @@ async def test_delete_user_with_admin_role_succeeds(
 async def test_delete_user_and_apikey(
     client: AsyncClient, get_keycloak_realm_admin_token: Callable
 ) -> None:
-    user = User(**KEYCLOAK_USERS[3])
+    user = KeycloakUser(**KEYCLOAK_USERS[3])
 
     uuid = await keycloak.create_user(client, user)
 
@@ -97,8 +97,10 @@ async def test_delete_user_exception_rolls_user_api_key_back(
     async def mock_delete_user(client: AsyncClient, user_uuid: str) -> None:
         raise KeycloakError()
 
-    user = User(**KEYCLOAK_USERS[3])
+    user = KeycloakUser(**KEYCLOAK_USERS[3])
     uuid = await keycloak.create_user(client, user)
+
+    req_user = User(id=uuid, groups=["USER"])
 
     og_delete_user_func = keycloak.delete_user
 
@@ -134,7 +136,7 @@ async def test_delete_user_exception_rolls_user_api_key_back(
         assert response.json() == {"message": "Keycloak service error"}
 
         vault_user, apisix_consumers = await apikey.get_user_from_vault_and_apisixes(
-            client, remove_dashes(uuid)
+            client, req_user.id
         )
 
         assert vault_user is not None
@@ -146,7 +148,7 @@ async def test_delete_user_exception_rolls_user_api_key_back(
 
 
 async def test_disable_user(client: AsyncClient, get_keycloak_realm_admin_token: Callable) -> None:
-    user = User(**KEYCLOAK_USERS[3])
+    user = KeycloakUser(**KEYCLOAK_USERS[3])
     uuid = await keycloak.create_user(client, user)
 
     token_url = (

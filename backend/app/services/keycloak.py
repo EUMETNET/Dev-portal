@@ -78,7 +78,16 @@ async def get_user(client: AsyncClient, user_uuid: str) -> User | None:
             client, "GET", user_url, headers=headers, valid_status_codes=(200, 404)
         )
 
-        return User(**response.json()) if response.status_code == 200 else None
+        # Fetch the user's groups
+        if response.status_code == 200:
+            user_data = response.json()
+
+            groups_url = f"{user_url}/groups"
+            groups_response = await http_request(client, "GET", groups_url, headers=headers)
+            user_data["groups"] = groups_response.json()
+
+            return User(**user_data)
+        return None
     except HTTPError as e:
         logger.exception("Error getting user '%s' from Keycloak.", user_uuid)
         raise KeycloakError("Keycloak service error") from e
