@@ -93,3 +93,71 @@ async def disable_user(
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
     return MessageResponse(message="OK")
+
+
+@router.put("/admin/users/{user_uuid}/promote-group", response_model=MessageResponse)
+async def promote_user_to_group(
+    user_uuid: str,
+    token: AccessToken = Depends(validate_admin_role),
+    client: AsyncClient = Depends(get_http_client),
+) -> MessageResponse:
+    """
+    Promotes a user to the given group in Keycloak.
+    If user has existing API key, it will be promoted accordingly.
+
+    Args:
+        user_uuid (str): The UUID of the user to be promoted.
+        token (AccessToken): The access token of the user to be promoted.
+        client (AsyncClient): The HTTP client to use for making requests.
+
+    Returns:
+        JSONResponse: A response indicating whether the operation was successful.
+
+    Raises:
+        HTTPException: If there is an error communicating with Keycloak.
+    """
+    admin_uuid = token.sub
+
+    logger.info("Admin '%s' requested promoting user '%s' to X group", admin_uuid, user_uuid)
+
+    try:
+        pass
+
+    except KeycloakError as e:
+        raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
+
+    return MessageResponse(message="OK")
+
+
+@router.put("/admin/users/{user_uuid}/demote-group", response_model=MessageResponse)
+async def promote_user_to_group(
+    user_uuid: str,
+    token: AccessToken = Depends(validate_admin_role),
+    client: AsyncClient = Depends(get_http_client),
+) -> MessageResponse:
+    """
+    Demotes a user from the given group in Keycloak.
+    If user has existing API key, it will be demoted accordingly.
+
+    Args:
+        user_uuid (str): The UUID of the user to be promoted.
+        token (AccessToken): The access token of the user to be promoted.
+        client (AsyncClient): The HTTP client to use for making requests.
+
+    Returns:
+        JSONResponse: A response indicating whether the operation was successful.
+
+    Raises:
+        HTTPException: If there is an error communicating with Keycloak.
+    """
+    admin_uuid = token.sub
+
+    logger.info("Admin '%s' requested demoting user '%s' from group X", admin_uuid, user_uuid)
+
+    try:
+        pass
+
+    except KeycloakError as e:
+        raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
+
+    return MessageResponse(message="OK")
