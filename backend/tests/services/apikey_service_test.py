@@ -48,7 +48,7 @@ async def test_handling_rollback_from_create_succeeds(client: AsyncClient) -> No
     apisix_instance = settings().apisix.instances[0]
 
     vault_user = await vault.save_user_to_vault(client, user.id)
-    apisix_user_1 = await apisix.create_apisix_consumer(client, apisix_instance, user)
+    apisix_user_1 = await apisix.upsert_apisix_consumer(client, apisix_instance, user)
 
     mock_apisix_create_responses = [apisix_user_1, APISIXError()]
     apisix_instances = [instance.name for instance in settings().apisix.instances]
@@ -68,7 +68,7 @@ async def test_handling_rollback_from_delete_succeeds(client: AsyncClient) -> No
     apisix_instance = settings().apisix.instances[0]
 
     vault_user = await vault.save_user_to_vault(client, user.id)
-    apisix_user_1 = await apisix.create_apisix_consumer(client, apisix_instance, user)
+    apisix_user_1 = await apisix.upsert_apisix_consumer(client, apisix_instance, user)
 
     await vault.delete_user_from_vault(client, user.id)
     delete_response = await apisix.delete_apisix_consumer(client, apisix_instance, user)
@@ -98,7 +98,7 @@ async def test_handling_rollback_fails_with_vault(
     apisix_instance = settings().apisix.instances[0]
 
     vault_user = await vault.save_user_to_vault(client, user.id)
-    apisix_user_1 = await apisix.create_apisix_consumer(client, apisix_instance, user)
+    apisix_user_1 = await apisix.upsert_apisix_consumer(client, apisix_instance, user)
 
     mock_apisix_create_responses = [apisix_user_1, APISIXError()]
 

@@ -3,7 +3,7 @@ import pytest
 from httpx import AsyncClient
 from app.config import settings
 from app.services.apisix import (
-    create_apisix_consumer,
+    upsert_apisix_consumer,
     get_apisix_consumer,
     get_routes,
     delete_apisix_consumer,
@@ -29,14 +29,14 @@ async def test_create_api6_consumer_success(
 ) -> None:
     apisix_instance = config.apisix.instances[0]
     user = User(id="supermario", groups=["USER"])
-    response = await create_apisix_consumer(client, apisix_instance, user)
+    response = await upsert_apisix_consumer(client, apisix_instance, user)
     assert response.username == user.id
 
 
 async def test_delete_api6_consumer_success(client: AsyncClient) -> None:
     apisix_instance = config.apisix.instances[0]
     user = User(id="supermario", groups=["USER"])
-    response = await create_apisix_consumer(client, apisix_instance, user)
+    response = await upsert_apisix_consumer(client, apisix_instance, user)
     assert response.username == user.id
 
     await delete_apisix_consumer(client, apisix_instance, user)

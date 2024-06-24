@@ -3,11 +3,12 @@ Users route handlers
 """
 
 from http import HTTPStatus
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from httpx import AsyncClient
 from app.config import settings, logger
 from app.dependencies.jwt_token import validate_admin_role, AccessToken
 from app.dependencies.http_client import get_http_client
+from app.models.request import UserGroup
 from app.models.response import MessageResponse
 from app.services import users
 from app.services import keycloak
@@ -98,6 +99,7 @@ async def disable_user(
 @router.put("/admin/users/{user_uuid}/promote-group", response_model=MessageResponse)
 async def promote_user_to_group(
     user_uuid: str,
+    user_group: UserGroup = Body(...),
     token: AccessToken = Depends(validate_admin_role),
     client: AsyncClient = Depends(get_http_client),
 ) -> MessageResponse:
@@ -118,19 +120,41 @@ async def promote_user_to_group(
     """
     admin_uuid = token.sub
 
-    logger.info("Admin '%s' requested promoting user '%s' to X group", admin_uuid, user_uuid)
+    logger.info(
+        "Admin '%s' requested promoting user '%s' to '%s' group",
+        admin_uuid,
+        user_uuid,
+        user_group.group_name,
+    )
 
     try:
-        pass
+        groups = await keycloak.get_groups(client)
 
-    except KeycloakError as e:
+        if (
+            group := next((group for group in groups if group.name == user_group.group_name), None)
+        ) is None:
+            raise HTTPException(
+                status_code=HTTPStatus.NOT_FOUND,
+                detail=f"Group '{user_group.group_name}' not found",
+            )
+
+        keycloak_user = await keycloak.get_user(client, user_uuid)
+
+        if keycloak_user is None or not keycloak_user.id:
+            raise HTTPException(
+                status_code=HTTPStatus.NOT_FOUND, detail=f"User '{user_uuid}' not found"
+            )
+
+        await users.promote_user_to_group(client, user_uuid, group.id)
+
+    except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
     return MessageResponse(message="OK")
 
 
 @router.put("/admin/users/{user_uuid}/demote-group", response_model=MessageResponse)
-async def promote_user_to_group(
+async def demote_user_from_group(
     user_uuid: str,
     token: AccessToken = Depends(validate_admin_role),
     client: AsyncClient = Depends(get_http_client),
@@ -157,7 +181,7 @@ async def promote_user_to_group(
     try:
         pass
 
-    except KeycloakError as e:
+    except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
     return MessageResponse(message="OK")

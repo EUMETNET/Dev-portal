@@ -111,14 +111,13 @@ async def handle_rollback(
         }
         tasks.extend(
             apisix.create_tasks(
-                apisix.create_apisix_consumer,
+                apisix.upsert_apisix_consumer,
                 client,
                 consumers=existing_consumers,
             )
         )
 
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    print(results)
 
     if error := next(
         (error for error in results if isinstance(error, (APISIXError, VaultError))), None
@@ -173,7 +172,7 @@ async def create_user_to_vault_and_apisixes(
 
         apisix_responses: list[APISixConsumer | APISIXError] = await asyncio.gather(
             *apisix.create_tasks(
-                apisix.create_apisix_consumer,
+                apisix.upsert_apisix_consumer,
                 client,
                 user,
             ),

@@ -67,7 +67,20 @@ class User(BaseModel):
         """
         Parses the groups from the user.
         """
-        print(value)
         if value:
             return [group["name"] for group in value]
         return None
+
+
+class Group(BaseModel):
+    """
+    Represents a group in Keycloak.
+    https://www.keycloak.org/docs-api/22.0.1/rest-api/index.html#_grouprepresentation
+
+    Attributes:
+        id (str): The uuid of the group.
+        name (str): The name of the group.
+    """
+
+    id: str
+    name: str

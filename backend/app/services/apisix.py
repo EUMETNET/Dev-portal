@@ -33,11 +33,11 @@ def create_headers(api_key: str) -> dict[str, str]:
     return {"Content-Type": "application/json", "X-API-KEY": api_key}
 
 
-async def create_apisix_consumer(
+async def upsert_apisix_consumer(
     client: AsyncClient, instance: APISixInstanceSettings, user: User | APISixConsumer
 ) -> APISixConsumer:
     """
-    Create a consumer in APISIX.
+    Upsert a consumer in APISIX.
 
     Args:
         client (AsyncClient): The HTTP client to use for making the request.
@@ -78,12 +78,12 @@ async def create_apisix_consumer(
             ),  # APISix does not expect the instance_name nor not defined group_id field
         )
         logger.info(
-            "Created APISIX user '%s' in instance '%s'", apisix_consumer.username, instance.name
+            "Upserted APISIX user '%s' in instance '%s'", apisix_consumer.username, instance.name
         )
         return apisix_consumer
     except HTTPError as e:
         logger.exception(
-            "Error creating APISIX user '%s' to instance '%s'",
+            "Error upserting APISIX user '%s' to instance '%s'",
             apisix_consumer.username,
             instance.name,
         )

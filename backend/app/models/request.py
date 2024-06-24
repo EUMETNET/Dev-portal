@@ -2,7 +2,7 @@
 Access token model
 """
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, Field
 
 GROUPS = ["USER", "EUMETNET_USER", "ADMIN"]
 
@@ -51,3 +51,11 @@ class User(BaseModel):
         Removes dashes from the user's uuid.
         """
         return value.replace("-", "")
+
+
+class UserGroup(BaseModel):
+    """
+    Represents a user group.
+    """
+
+    group_name: str = Field(alias="groupName")
