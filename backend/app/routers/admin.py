@@ -145,7 +145,7 @@ async def update_user_to_group(
                 status_code=HTTPStatus.NOT_FOUND, detail=f"User '{user_uuid}' not found"
             )
 
-        await users.promote_user_to_group(client, user_uuid, group.id)
+        await users.modify_user_group(client, user_uuid, group, "PUT")
 
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
@@ -178,7 +178,7 @@ async def remove_user_from_group(
     admin_uuid = token.sub
 
     logger.info(
-        "Admin '%s' requested demoting user '%s' from group '%s'",
+        "Admin '%s' requested removing user '%s' from group '%s'",
         admin_uuid,
         user_uuid,
         user_group.group_name,
@@ -201,6 +201,8 @@ async def remove_user_from_group(
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND, detail=f"User '{user_uuid}' not found"
             )
+
+        await users.modify_user_group(client, user_uuid, group, "DELETE")
 
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e

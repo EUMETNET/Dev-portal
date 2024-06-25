@@ -8,7 +8,7 @@ from httpx import AsyncClient
 from app.config import logger
 from app.exceptions import KeycloakError
 from app.services import apikey, keycloak, apisix
-from app.models.keycloak import User as KeycloakUser
+from app.models.keycloak import User as KeycloakUser, Group
 from app.models.request import User
 from app.models.apisix import APISixConsumer
 from app.exceptions import APISIXError
@@ -67,33 +67,44 @@ async def delete_or_disable_user(
         raise KeycloakError("Keycloak service error") from e
 
 
-async def promote_user_to_group(client: AsyncClient, user_uuid: str, group_uuid: str) -> None:
+async def modify_user_group(
+    client: AsyncClient, user_uuid: str, group: Group, action: Literal["PUT", "DELETE"]
+) -> None:
     """
-    Promotes a user to a group in Keycloak.
-    If user has existing API key it will be promoted to the corresponding group in APISIX(es).
+    Add or remove a user from a given group in Keycloak.
+    If the user has an existing API key,
+    it will be either added to or removed from a given group based on the given action.
 
     Args:
         client (AsyncClient): The HTTP client to use for making requests.
-        user_uuid (str): The UUID of the user to promote.
-        group (str): The group to promote the user to.
+        user_uuid (str): The UUID of the user.
+        group_uuid (str): The UUID of the group to add/remove the user from.
+        action (Literal["PUT", "DELETE"]): The action to perform on the user's group membership.
 
     Raises:
-        KeycloakError: If there is an error while promoting the user to the group.
+        KeycloakError: If there is an error while adding/removing the user to the group.
+        APISIXError: If there is an error while adding/removing the user's API key
+        to given group in APISIX.
     """
 
     try:
-        await keycloak.modify_user_group_membership(client, user_uuid, group_uuid, "PUT")
+        await keycloak.modify_user_group_membership(client, user_uuid, group.id, action)
 
-        user = User(id=user_uuid, groups=[group_uuid])
+        user_groups = [group.name] if action == "PUT" else []
+
+        user = User(id=user_uuid, groups=user_groups)
 
         _vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
 
         if any(apisix_users):
+            log_action = (
+                "Updating user's API key to" if action == "PUT" else "Removing user's API key from"
+            )
             logger.debug(
-                "User '%s' found in APISIX(es) -->"
-                "Moving user's API key to group '%s' in APISIX(es)",
+                "User '%s' found in APISIX(es) --> %s group '%s' in APISIX(es)",
                 user_uuid,
-                group_uuid,
+                log_action,
+                group.name,
             )
 
             apisix_responses: list[APISixConsumer | APISIXError] = await asyncio.gather(
