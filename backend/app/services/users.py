@@ -15,7 +15,10 @@ from app.exceptions import APISIXError
 
 
 async def delete_or_disable_user(
-    client: AsyncClient, user_uuid: str, action: Literal["DISABLE", "DELETE"]
+    client: AsyncClient,
+    user_uuid: str,
+    keycloak_user: KeycloakUser,
+    action: Literal["DISABLE", "DELETE"],
 ) -> None:
     """
     Deletes first user's API key from Vault and APISIX(es).
@@ -34,19 +37,23 @@ async def delete_or_disable_user(
 
     user = User(id=user_uuid, groups=[])
 
+    log_action = "Disabling" if action == "DISABLE" else "Deleting"
+
     vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
     if vault_user or any(apisix_users):
         logger.debug(
-            "User '%s' found in Vault and/or APISIX --> Deleting user from those",
-            user.id,
+            "User '%s' found in Vault and/or APISIX --> %s user from those",
+            user_uuid,
+            log_action,
         )
         await apikey.delete_user_from_vault_and_apisixes(client, user, vault_user, apisix_users)
 
-    logger.debug("User '%s' found in Keycloak --> Deleting user", user_uuid)
+    logger.debug("User '%s' found in Keycloak --> %s user", user_uuid, log_action)
+
     try:
         if action == "DISABLE":
             # Mark the user as disabled
-            keycloak_user = KeycloakUser(enabled=False)
+            keycloak_user.enabled = False
             await keycloak.update_user(client, user_uuid, keycloak_user)
         elif action == "DELETE":
             await keycloak.delete_user(client, user_uuid)
@@ -54,15 +61,16 @@ async def delete_or_disable_user(
     except KeycloakError as e:
         logger.warning("Attempting to rollback the user's API key back to Vault and APISIX(es)...")
 
-        await asyncio.gather(
-            apikey.handle_rollback(
-                client,
-                user,
-                vault_user,
-                [apisix_user for apisix_user in apisix_users if apisix_user],
-                rollback_from="DELETE",
-            ),
-        )
+        if any(isinstance(apisix_user, APISixConsumer) for apisix_user in apisix_users):
+            await asyncio.gather(
+                apikey.handle_rollback(
+                    client,
+                    user,
+                    vault_user,
+                    [apisix_user for apisix_user in apisix_users if apisix_user],
+                    rollback_from="DELETE",
+                ),
+            )
 
         raise KeycloakError("Keycloak service error") from e
 

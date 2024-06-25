@@ -48,9 +48,11 @@ async def delete_user(
         keycloak_user = await keycloak.get_user(client, user_uuid)
 
         if keycloak_user is None or not keycloak_user.id:
-            raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found")
+            raise HTTPException(
+                status_code=HTTPStatus.NOT_FOUND, detail=f"User {user_uuid} not found"
+            )
 
-        await users.delete_or_disable_user(client, keycloak_user.id, "DELETE")
+        await users.delete_or_disable_user(client, user_uuid, keycloak_user, "DELETE")
 
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
@@ -88,7 +90,48 @@ async def disable_user(
         if keycloak_user is None or not keycloak_user.id:
             raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found")
 
-        await users.delete_or_disable_user(client, keycloak_user.id, "DISABLE")
+        await users.delete_or_disable_user(client, user_uuid, keycloak_user, "DISABLE")
+
+    except (VaultError, APISIXError, KeycloakError) as e:
+        raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
+
+    return MessageResponse(message="OK")
+
+
+@router.put("/admin/users/{user_uuid}/enable", response_model=MessageResponse)
+async def enable_user(
+    user_uuid: str,
+    token: AccessToken = Depends(validate_admin_role),
+    client: AsyncClient = Depends(get_http_client),
+) -> MessageResponse:
+    """
+    Enables a user in Keycloak.
+
+    Args:
+        user_uuid (str): The UUID of the user whose API key is to be deleted.
+        token (AccessToken): The access token of the user whose API key is to be deleted.
+        client (AsyncClient): The HTTP client to use for making requests.
+
+    Returns:
+        JSONResponse: A response indicating whether the operation was successful.
+
+    Raises:
+        HTTPException: If there is an error communicating with Keycloak.
+    """
+    admin_uuid = token.sub
+
+    logger.info("Admin '%s' requested enabling the user '%s'", admin_uuid, user_uuid)
+
+    try:
+        keycloak_user = await keycloak.get_user(client, user_uuid)
+
+        if keycloak_user is None or not keycloak_user.id:
+            raise HTTPException(
+                status_code=HTTPStatus.NOT_FOUND, detail=f"User {user_uuid} not found"
+            )
+
+        keycloak_user.enabled = True
+        await keycloak.update_user(client, user_uuid, keycloak_user)
 
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
@@ -116,7 +159,7 @@ async def update_user_to_group(
         JSONResponse: A response indicating whether the operation was successful.
 
     Raises:
-        HTTPException: If there is an error communicating with Keycloak.
+        HTTPException: If there is an error communicating with Keycloak, Vault or APISIX.
     """
     admin_uuid = token.sub
 
@@ -173,7 +216,7 @@ async def remove_user_from_group(
         JSONResponse: A response indicating whether the operation was successful.
 
     Raises:
-        HTTPException: If there is an error communicating with Keycloak.
+        HTTPException: If there is an error communicating with Keycloak, Vault or APISIX.
     """
     admin_uuid = token.sub
 
