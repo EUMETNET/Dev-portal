@@ -147,19 +147,20 @@ async def update_user_to_group(
     client: AsyncClient = Depends(get_http_client),
 ) -> MessageResponse:
     """
-    Promotes a user to the given group in Keycloak.
-    If user has existing API key, it will be promoted accordingly.
+    Add a user to the given group in Keycloak.
+    If user has existing API key, it will be added to group accordingly.
 
     Args:
-        user_uuid (str): The UUID of the user to be promoted.
-        token (AccessToken): The access token of the user to be promoted.
+        user_uuid (str): The UUID of the user.
+        user_group (UserGroup): The group to which the user will be added.
+        token (AccessToken): The access token of the user making the request.
         client (AsyncClient): The HTTP client to use for making requests.
 
     Returns:
         JSONResponse: A response indicating whether the operation was successful.
 
     Raises:
-        HTTPException: If there is an error communicating with Keycloak, Vault or APISIX.
+        HTTPException: If there is an error communicating with Keycloak, Vault, or APISIX.
     """
     admin_uuid = token.sub
 
@@ -196,7 +197,7 @@ async def update_user_to_group(
     return MessageResponse(message="OK")
 
 
-@router.delete("/admin/users/{user_uuid}/remove-group", response_model=MessageResponse)
+@router.put("/admin/users/{user_uuid}/remove-group", response_model=MessageResponse)
 async def remove_user_from_group(
     user_uuid: str,
     user_group: UserGroup = Body(...),
@@ -204,12 +205,13 @@ async def remove_user_from_group(
     client: AsyncClient = Depends(get_http_client),
 ) -> MessageResponse:
     """
-    Demotes a user from the given group in Keycloak.
-    If user has existing API key, it will be demoted accordingly.
+    Removes a user from the given group in Keycloak.
+    If user has existing API key, the group will be removed accordingly.
 
     Args:
-        user_uuid (str): The UUID of the user to be promoted.
-        token (AccessToken): The access token of the user to be promoted.
+        user_uuid (str): The UUID of the user.
+        user_group (UserGroup): The group from which the user will be removed.
+        token (AccessToken): The access token of the user making the request.
         client (AsyncClient): The HTTP client to use for making requests.
 
     Returns:

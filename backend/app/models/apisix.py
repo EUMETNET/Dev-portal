@@ -29,11 +29,11 @@ class APISixConsumer(BaseModel):
     @classmethod
     def set_group_id(cls, value: list[str]) -> Optional[str]:
         """
-        Sets the group_id attribute to 'eumetnet' if token has corresponding
+        Sets the group_id attribute to 'eumetnet_user' if token has corresponding
         group or default to None.
         """
         if "EUMETNET_USER" in value:
-            return "eumetnet_user"
+            return "EUMETNET_USER"
         return None
 
 
