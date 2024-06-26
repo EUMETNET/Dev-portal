@@ -125,7 +125,14 @@ async def modify_user_group(
             )
 
             if any(isinstance(response, APISIXError) for response in apisix_responses):
-                logger.warning("Attempting to rollback the successfull APISIX operation(s)...")
+                logger.warning(
+                    "Attempting to rollback the successfull Keycloak and APISIX operation(s)..."
+                )
+
+                # Rollback the user's group membership in Keycloak
+                await keycloak.modify_user_group_membership(
+                    client, user_uuid, group.id, "DELETE" if action == "PUT" else "PUT"
+                )
 
                 # We want to rollback the user's state to before the group was altered
                 rollback_from_delete: list[APISixConsumer | APISIXError] = []
