@@ -66,12 +66,12 @@ frontend:
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
   keycloak_url: "http://localhost:8080"
-  keycloak_logout_url: "http://localhost:8080"
+  keycloak_logout_url: "http://localhost"
 
 keycloak_realm: test
 
 ingress:
-  enabled: true
+  enabled: false
   className: nginx
   annotations: 
     certmanager.k8s.io/cluster-issuer: letsencrypt-prod
