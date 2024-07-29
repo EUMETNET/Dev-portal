@@ -164,10 +164,10 @@ async def create_user_to_vault_and_apisixes(
 
     if any(apisix_user is None for apisix_user in apisix_users):
         logger.debug(
-            "User '%s' not found in all APISIX instances -->"
+            "User '%s' not found in all APISIX instances --> "
             "Creating or updating user to APISIX instances: %s",
             user.id,
-            ",".join([instance.name for instance in config.apisix.instances]),
+            ", ".join([instance.name for instance in config.apisix.instances]),
         )
 
         apisix_responses: list[APISixConsumer | APISIXError] = await asyncio.gather(

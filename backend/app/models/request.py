@@ -28,7 +28,7 @@ class AccessToken(BaseModel):
     @field_validator("groups")
     def validate_groups(cls, v: list[str]) -> list[str]:
         """
-        Validates that user belongs to at least one of 'USER' | 'ADMIN' group(s).
+        Validates that user belongs to at least one of constant group(s).
         """
         if not any(group in v for group in GROUPS):
             raise ValueError()
