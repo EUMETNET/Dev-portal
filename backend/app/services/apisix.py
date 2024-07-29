@@ -237,7 +237,7 @@ def create_tasks(
             If 'instances' is not provided, tasks are created for all APISix instances.
     """
     consumers: dict[str, APISixConsumer] = kwargs.pop("consumers", {})
-    instances: list[str] = kwargs.pop("instances", [])
+    instances: list[str] | None = kwargs.pop("instances", None)
 
     if consumers:
         return [
@@ -248,5 +248,5 @@ def create_tasks(
     return [
         func(client, instance, *args, **kwargs)
         for instance in config.apisix.instances
-        if not instances or instance.name in instances
+        if instances is None or instance.name in instances
     ]
