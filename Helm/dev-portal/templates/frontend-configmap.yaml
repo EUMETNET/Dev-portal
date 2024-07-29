@@ -5,8 +5,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   env-config.js: |
-    window.REACT_APP_KEYCLOAK_URL="{{ .Values.keycloak_url }}";
-    window.REACT_APP_LOGOUT_URL="{{ .Values.keycloak_logout_url }}";
+    window.REACT_APP_KEYCLOAK_URL="{{ .Values.frontend.keycloak_url }}";
+    window.REACT_APP_LOGOUT_URL="{{ .Values.frontend.keycloak_logout_url }}";
     window.REACT_APP_KEYCLOAK_REALM="{{ .Values.keycloak_realm }}";
     window.REACT_APP_KEYCLOAK_CLIENTID= "frontend";
     window.REACT_APP_BACKEND_URL="https://{{ .Values.ingress.host }}";
