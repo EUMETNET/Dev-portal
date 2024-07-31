@@ -7,6 +7,7 @@ from functools import lru_cache
 from httpx import AsyncClient, HTTPError
 from app.config import settings, APISixInstanceSettings, logger
 from app.dependencies.http_client import http_request
+from app.models.request import User
 from app.models.apisix import APISixConsumer, APISixRoutes
 from app.exceptions import APISIXError
 
@@ -32,11 +33,11 @@ def create_headers(api_key: str) -> dict[str, str]:
     return {"Content-Type": "application/json", "X-API-KEY": api_key}
 
 
-async def create_apisix_consumer(
-    client: AsyncClient, instance: APISixInstanceSettings, identifier: str
+async def upsert_apisix_consumer(
+    client: AsyncClient, instance: APISixInstanceSettings, user: User | APISixConsumer
 ) -> APISixConsumer:
     """
-    Create a consumer in APISIX.
+    Upsert a consumer in APISIX.
 
     Args:
         client (AsyncClient): The HTTP client to use for making the request.
@@ -49,29 +50,42 @@ async def create_apisix_consumer(
         APISIXError: If there is an HTTP error while creating the consumer.
     """
     try:
-        apisix_consumer = APISixConsumer(
-            instance_name=instance.name,
-            username=identifier,
-            plugins={
-                "key-auth": {
-                    "key": f"{config.apisix.key_path}{identifier}/{config.apisix.key_name}"
-                }
-            },
-        )
+        # This block happens when attempting to rollback the apisix consumer
+        if isinstance(user, APISixConsumer):
+            apisix_consumer = user
+        else:
+            apisix_consumer = APISixConsumer(
+                instance_name=instance.name,
+                username=user.id,
+                plugins={
+                    "key-auth": {
+                        "key": f"{config.apisix.key_path}{user.id}/{config.apisix.key_name}"
+                    }
+                },
+                group_id=user.groups,
+            )
         await http_request(
             client,
             "PUT",
             f"{instance.admin_url}/apisix/admin/consumers",
             headers=create_headers(instance.admin_api_key),
             json=apisix_consumer.model_dump(
-                exclude={"instance_name"}
-            ),  # APISix does not expect the instance_name field
+                exclude=(
+                    {"instance_name", "group_id"}
+                    if not apisix_consumer.group_id
+                    else {"instance_name"}
+                )
+            ),  # APISix does not expect the instance_name nor not defined group_id field
         )
-        logger.info("Created APISIX user '%s' in instance '%s'", identifier, instance.name)
+        logger.info(
+            "Upserted APISIX user '%s' in instance '%s'", apisix_consumer.username, instance.name
+        )
         return apisix_consumer
     except HTTPError as e:
         logger.exception(
-            "Error creating APISIX user '%s' to instance '%s'", identifier, instance.name
+            "Error upserting APISIX user '%s' to instance '%s'",
+            apisix_consumer.username,
+            instance.name,
         )
         raise APISIXError("APISIX service error") from e
 
@@ -155,8 +169,8 @@ async def get_routes(client: AsyncClient, instance: APISixInstanceSettings) -> A
 
 
 async def delete_apisix_consumer(
-    client: AsyncClient, instance: APISixInstanceSettings, identifier: str
-) -> None:
+    client: AsyncClient, instance: APISixInstanceSettings, user: User
+) -> APISixConsumer:
     """
     Delete a consumer from APISIX.
 
@@ -171,13 +185,21 @@ async def delete_apisix_consumer(
         await http_request(
             client,
             "DELETE",
-            f"{instance.admin_url}/apisix/admin/consumers/{identifier}",
+            f"{instance.admin_url}/apisix/admin/consumers/{user.id}",
             headers=create_headers(instance.admin_api_key),
         )
-        logger.info("Deleted APISIX user '%s' from instance '%s'", identifier, instance.name)
+        logger.info("Deleted APISIX user '%s' from instance '%s'", user.id, instance.name)
+        return APISixConsumer(
+            instance_name=instance.name,
+            username=user.id,
+            plugins={
+                "key-auth": {"key": f"{config.apisix.key_path}{user.id}/{config.apisix.key_name}"}
+            },
+            group_id=user.groups,
+        )
     except HTTPError as e:
         logger.exception(
-            "Error deleting APISIX user '%s' from instance '%s'", identifier, instance.name
+            "Error deleting APISIX user '%s' from instance '%s'", user.id, instance.name
         )
         raise APISIXError("APISIX service error") from e
 
@@ -214,9 +236,17 @@ def create_tasks(
             If 'instances' is provided in kwargs, tasks are created only for those instances.
             If 'instances' is not provided, tasks are created for all APISix instances.
     """
-    instances = kwargs.pop("instances", set())
+    consumers: dict[str, APISixConsumer] = kwargs.pop("consumers", {})
+    instances: list[str] | None = kwargs.pop("instances", None)
+
+    if consumers:
+        return [
+            func(client, instance, consumers[instance.name], *args, **kwargs)
+            for instance in config.apisix.instances
+            if instance.name in consumers
+        ]
     return [
         func(client, instance, *args, **kwargs)
         for instance in config.apisix.instances
-        if not instances or instance.name in instances
+        if instances is None or instance.name in instances
     ]

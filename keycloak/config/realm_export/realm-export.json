@@ -436,6 +436,15 @@
       "clientRoles": {}
     },
     {
+      "id": "29221ddc-b859-4fe2-8aab-587f5b3f7ac7",
+      "name": "EUMETNET_USER",
+      "path": "/EUMETNET_USER",
+      "subGroups": [],
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {}
+    },
+    {
       "id": "343cfdfa-8264-488c-b63f-a376c1fe3604",
       "name": "USER",
       "path": "/USER",

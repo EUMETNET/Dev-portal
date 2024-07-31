@@ -6,11 +6,11 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 from httpx import AsyncClient
 from app.config import settings, logger
-from app.dependencies.jwt_token import validate_token, AccessToken
+from app.dependencies.jwt_token import validate_token
 from app.dependencies.http_client import get_http_client
 from app.services import apikey
-from app.utils.uuid import remove_dashes
-from app.models.responses import GetAPIKey, MessageResponse
+from app.models.request import AccessToken, User
+from app.models.response import GetAPIKey, MessageResponse
 from app.exceptions import APISIXError, VaultError
 
 router = APIRouter()
@@ -43,20 +43,17 @@ async def get_api_key(
         HTTPException: If there is an error getting user info from APISIX or Vault,
                        or if there is an error saving the user to Vault or APISIX.
     """
-    uuid = token.sub
-    uuid_no_dashes = remove_dashes(uuid)
+    user = User(id=token.sub, groups=token.groups)
 
-    logger.debug("Got request to retrieve API key for user '%s'", uuid_no_dashes)
+    logger.debug("Got request to retrieve API key for user '%s'", user.id)
 
     try:
-        vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(
-            client, uuid_no_dashes
-        )
+        vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
 
         if not vault_user or any(user is None for user in apisix_users):
-            logger.debug("User '%s' not found in Vault or APISIX --> Creating user", uuid_no_dashes)
+            logger.debug("User '%s' not found in Vault or APISIX --> Creating user", user.id)
             vault_user = await apikey.create_user_to_vault_and_apisixes(
-                client, uuid_no_dashes, vault_user, apisix_users
+                client, user, vault_user, apisix_users
             )
 
     except (VaultError, APISIXError) as e:
@@ -90,20 +87,15 @@ async def delete_user(
         HTTPException: If there is an error getting user info from APISIX or Vault,
                        or if there is an error deleting the user from Vault or APISIX.
     """
-    uuid = token.sub
-    uuid_no_dashes = remove_dashes(uuid)
+    user = User(id=token.sub, groups=token.groups)
 
-    logger.debug("Got request to delete API key for user '%s'", uuid_no_dashes)
+    logger.debug("Got request to delete API key for user '%s'", user.id)
 
     try:
-        vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(
-            client, uuid_no_dashes
-        )
+        vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
         if vault_user or any(apisix_users):
-            logger.debug("User '%s' found in Vault and/or APISIX --> Deleting user", uuid_no_dashes)
-            await apikey.delete_user_from_vault_and_apisixes(
-                client, uuid_no_dashes, vault_user, apisix_users
-            )
+            logger.debug("User '%s' found in Vault and/or APISIX --> Deleting user", user.id)
+            await apikey.delete_user_from_vault_and_apisixes(client, user, vault_user, apisix_users)
 
     except (VaultError, APISIXError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
