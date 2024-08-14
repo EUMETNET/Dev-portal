@@ -9,7 +9,7 @@ from httpx import AsyncClient
 from app.config import logger
 from app.dependencies.http_client import get_http_client
 from app.services import vault, apisix
-from app.models.responses import MessageResponse
+from app.models.response import MessageResponse
 from app.exceptions import APISIXError, VaultError
 
 router = APIRouter()

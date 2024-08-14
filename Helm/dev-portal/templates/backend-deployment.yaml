@@ -19,7 +19,11 @@ spec:
     spec:
       containers:
       - name: {{ .Values.backend.name }} 
+        {{- if .Values.imageCredentials.enabled }}
+        image: {{ .Values.imageCredentials.registry }}/{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+        {{- else }}
         image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+        {{- end }}
         imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
         args: {{.Values.backend.args}}
         ports:
@@ -50,6 +54,10 @@ spec:
           periodSeconds: {{ .Values.backend.livenessProbe.periodSeconds }}
           successThreshold: 1
         {{- end }}
+      {{- if .Values.imageCredentials.enabled }}
+      imagePullSecrets:
+      - name: registrykey
+      {{- end }}
       volumes:
       {{- if (not .Values.backend.secrets.secretName) }}
       - name: secret

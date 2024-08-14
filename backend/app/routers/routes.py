@@ -10,7 +10,7 @@ from app.config import settings, logger
 from app.dependencies.jwt_token import validate_token, AccessToken
 from app.dependencies.http_client import get_http_client
 from app.services import apisix
-from app.models.responses import GetRoutes
+from app.models.response import GetRoutes
 from app.exceptions import APISIXError, VaultError
 
 router = APIRouter()

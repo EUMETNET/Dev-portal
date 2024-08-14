@@ -96,6 +96,13 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
         "token": config.vault.token,
     }
 
+    # Add consumer group
+
+    group_data = {
+        "plugins": {},
+        "id": "EUMETNET_USER",
+    }
+
     # Add some test routes
     routes = apisix.ROUTES
 
@@ -103,6 +110,15 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
         client.put(
             f"{instance.admin_url}/apisix/admin/secrets/vault/dev",
             json=data,
+            headers=get_apisix_headers(instance),
+        )
+        for instance in config.apisix.instances
+    ]
+
+    consumer_group_requests = [
+        client.put(
+            f"{instance.admin_url}/apisix/admin/consumer_groups",
+            json=group_data,
             headers=get_apisix_headers(instance),
         )
         for instance in config.apisix.instances
@@ -120,6 +136,7 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
 
     await asyncio.gather(
         *secret_requests,
+        *consumer_group_requests,
         *routes_requests,
     )
 
@@ -137,6 +154,13 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
         *[
             client.delete(
                 f"{instance.admin_url}/apisix/admin/routes", headers=get_apisix_headers(instance)
+            )
+            for instance in config.apisix.instances
+        ],
+        *[
+            client.delete(
+                f"{instance.admin_url}/apisix/admin/consumer_groups/{group_data['id']}",
+                headers=get_apisix_headers(instance),
             )
             for instance in config.apisix.instances
         ],

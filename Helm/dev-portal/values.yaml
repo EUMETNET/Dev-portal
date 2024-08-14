@@ -1,11 +1,15 @@
 # Default values for dev-portal.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
+imageCredentials:
+  enabled: true
+  registry: "ghcr.io"
+  username: ""
+  password: ""
 backend:
   name: dev-portal-backend
   image:
-    repository: joonahalonencgi/eurodeo-dev-portal-backend
+    repository: eurodeo/dev-portal/backend
     pullPolicy: IfNotPresent
     tag: latest
   replicaCount: 2
@@ -26,11 +30,7 @@ backend:
     apisix_instances:
       - name: "EWC"
         admin_url: "http://apisix-admin.apisix.svc.cluster.local:9180"
-        gateway_url: "https://apisixdev.eumetnet-femdi.eumetsat.ewcloud.host"
-        admin_api_key: ""
-      - name: "AWS"
-        admin_url: "https://apisixdev.devlyfe.fi:9180"
-        gateway_url: "https://apisixdev.devlyfe.fi"
+        gateway_url: "http://apisix-gateway.apisix.svc.cluster.local"
         admin_api_key: ""
     keycloak_client_id: "dev-portal-api"
     keycloak_client_secret: ""
@@ -51,7 +51,7 @@ backend:
 frontend:
   name: dev-portal-frontend
   image:
-    repository: joonahalonencgi/eurodeo-dev-portal-frontend
+    repository: eurodeo/dev-portal/ui
     pullPolicy: IfNotPresent
     tag: latest
   replicaCount: 2
@@ -65,21 +65,21 @@ frontend:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage: 80
+  keycloak_url: "http://localhost:8080"
+  keycloak_logout_url: "http://localhost"
 
-keycloak_url: "https://keycloak-apisixdev.eumetnet-femdi.eumetsat.ewcloud.host"
-keycloak_logout_url: "https://devportal-apisixdev.eumetnet-femdi.eumetsat.ewcloud.host"
 keycloak_realm: test
 
 ingress:
-  enabled: true
+  enabled: false
   className: nginx
   annotations: 
     certmanager.k8s.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/tls-acme: "true"
-    external-dns.alpha.kubernetes.io/hostname: devportal-apisixdev.eumetnet-femdi.eumetsat.ewcloud.host
-    external-dns.alpha.kubernetes.io/target: 64.225.132.246
-  host: devportal-apisixdev.eumetnet-femdi.eumetsat.ewcloud.host
+    external-dns.alpha.kubernetes.io/hostname: localhost
+    external-dns.alpha.kubernetes.io/target: 127.0.0.1
+  host: localhost
   tls: 
     - secretName: devportal-tls
       hosts:
-        - devportal-apisixdev.eumetnet-femdi.eumetsat.ewcloud.host
+        - localhost

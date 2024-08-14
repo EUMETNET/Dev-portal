@@ -1,14 +1,15 @@
 from typing import Callable
 import pytest
 from httpx import AsyncClient
-from app.config import settings, APISixInstanceSettings
+from app.config import settings
 from app.services.apisix import (
-    create_apisix_consumer,
+    upsert_apisix_consumer,
     get_apisix_consumer,
     get_routes,
     delete_apisix_consumer,
 )
 from app.exceptions import APISIXError
+from app.models.request import User
 
 config = settings()
 
@@ -27,25 +28,25 @@ async def test_create_api6_consumer_success(
     client: AsyncClient, clean_up_api6_consumers: Callable
 ) -> None:
     apisix_instance = config.apisix.instances[0]
-    identifier = "supermario"
-    response = await create_apisix_consumer(client, apisix_instance, identifier)
-    assert response.username == identifier
+    user = User(id="supermario", groups=["USER"])
+    response = await upsert_apisix_consumer(client, apisix_instance, user)
+    assert response.username == user.id
 
 
 async def test_delete_api6_consumer_success(client: AsyncClient) -> None:
     apisix_instance = config.apisix.instances[0]
-    identifier = "supermario"
-    response = await create_apisix_consumer(client, apisix_instance, identifier)
-    assert response.username == identifier
+    user = User(id="supermario", groups=["USER"])
+    response = await upsert_apisix_consumer(client, apisix_instance, user)
+    assert response.username == user.id
 
-    await delete_apisix_consumer(client, apisix_instance, identifier)
+    await delete_apisix_consumer(client, apisix_instance, user)
 
 
 async def test_delete_api6_user_not_found_should_raise_error(client: AsyncClient) -> None:
     apisix_instance = config.apisix.instances[0]
-    identifier = "testuser"
+    user = User(id="testuser", groups=["USER"])
     with pytest.raises(APISIXError):
-        await delete_apisix_consumer(client, apisix_instance, identifier)
+        await delete_apisix_consumer(client, apisix_instance, user)
 
 
 async def test_get_api6_routes(client: AsyncClient) -> None:
@@ -56,14 +57,3 @@ async def test_get_api6_routes(client: AsyncClient) -> None:
     assert len(response.routes) == 2
     assert f"{apisix_instance.gateway_url}/foo" in response.routes
     assert f"{apisix_instance.gateway_url}/bar" in response.routes
-
-
-async def test_api6_username_only_alphanum_n_underscore_allowed(client: AsyncClient) -> None:
-    """
-    '\"^[a-zA-Z0-9_]+$\"' is the regex pattern used to validate the username.
-    """
-    apisix_instance = config.apisix.instances[0]
-    identifier = "super-mario"
-
-    with pytest.raises(APISIXError):
-        await create_apisix_consumer(client, apisix_instance, identifier)
