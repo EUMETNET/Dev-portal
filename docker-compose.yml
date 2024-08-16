@@ -15,14 +15,13 @@
 # limitations under the License.
 #
 
-version: "3"
-
 services:
   auth:
     image: quay.io/keycloak/keycloak
     ports:
       - "8080:8080"
       - "8000:8000"
+      - "9000:9000" #management port needed by heatlh checks
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_MASTER_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_MASTER_ADMIN_PW}
@@ -37,14 +36,13 @@ services:
     volumes:
       # https://www.keycloak.org/server/importExport
       # For the Keycloak containers, the import directory is /opt/keycloak/data/import
-      - ./keycloak/config/realm_export:/opt/keycloak/data/import
+      - ./keycloak/config/realm_export/local_dev:/opt/keycloak/data/import
       - ./keycloak/providers:/opt/keycloak/providers/
     networks:
       apisix:
       
   apisix:
-    image: apache/apisix:${APISIX_IMAGE_TAG:-3.6.0-debian}
-    restart: always
+    image: apache/apisix:${APISIX_IMAGE_TAG:-3.9.1-debian}
     volumes:
       - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
     depends_on:
@@ -61,7 +59,7 @@ services:
 
   # To test and simulate multiple apisix instances
   apisix2:
-    image: apache/apisix:${APISIX_IMAGE_TAG:-3.6.0-debian}
+    image: apache/apisix:${APISIX_IMAGE_TAG:-3.9.1-debian}
     restart: always
     volumes:
       - ./apisix_conf/config2.yaml:/usr/local/apisix/conf/config.yaml:ro
@@ -154,7 +152,7 @@ services:
   
   vault:
     image: hashicorp/vault:latest
-    container_name: vault_test
+    container_name: vault
     restart: on-failure:10
     ports:
       - "8201:8201"
@@ -175,7 +173,6 @@ services:
       timeout: 3s
       retries: 5
     command: server -dev -dev-root-token-id=${VAULT_TOKEN}
-   # command: sh ./vault/workflow-vault.sh
     networks:
       apisix:
 
