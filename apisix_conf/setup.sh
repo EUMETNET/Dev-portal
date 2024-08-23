@@ -23,7 +23,12 @@ do
     response=$(curl -i -X PUT \
         -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' \
         -d '{
-            "plugins": {},
+            "plugins": {
+                "limit-count": {
+                    "count": 100,
+                    "time_window": 60
+                }
+            },
             "id": "EUMETNET_USER"
         }' \
         "http://localhost:$port/apisix/admin/consumer_groups" 2>&1)
