@@ -36,7 +36,7 @@ TODO
 
 `justfile` contains list of commands, called recipes, that contains shell command(s).
 
-To start the external integrations stack, run in project root directory:
+To init, configure and start the external integrations, run in project root directory:
 
 ```sh
 just up
@@ -48,7 +48,7 @@ To stop the running containers:
 just stop
 ```
 
-To remove the containers:
+To remove the containers etc.:
 ```sh
 just remove
 ```
@@ -56,22 +56,75 @@ just remove
 ### Run custom components
 Refer the READMEs in [ui/](ui/) and [backend/](backend/) directories
 
-### Playing around
+### Verify everything works
 Once external integrations, UI and backend are running:
 
-1. Navigate to keycloak admin login page http://localhost:8080/ and login with
-```
-username: admin
-password: admin
-```
-2. Change realm to "test" realm. You can change realm from the upper left corner's dropdown.
+1. **Keycloak**
 
-3. Create new user(s).
-    1. Enter the general information (username, email etc.) 
-    2. (Optional) you can also add user to group(s). By default each user is added to **USER** group but you can add user to **ADMIN** group. Admin group is needed if some administrative tasks needs to be tested/run with this user.
-    3. When user is created add the credentials from "Credentials" tab within users -> User details page.
+    Admin login page should be accessible in http://localhost:8080/
 
-4. Setup IdP(s). In Keycloak UI found in left pane "Identity providers". By default Github and Google IdPs are enabled. However those needs to be configured to be able to use them. You can follow next link to setup Github OAuth app https://medium.com/keycloak/setting-up-keycloak-using-github-identity-provider-in-express-314e511a240b.
+    you can test login with credentials:
+    ```
+    username = admin
+    password = admin
+    ```
+
+    You can check from the UI's upper left corner's dropdown that there is "test" realm created.
+
+2. **Vault**
+
+    UI should be accessible in http://localhost:8200
+    
+    you can login with:
+    ```
+    Method = Token
+    Token = 00000000-0000-0000-0000-000000000000
+    ```
+
+    Click "Secret Engines" from the left side panel. There should be "apisix-dev/" kv engine created.
+
+3. **Dev Portal Backend**
+
+    Should be running in http://localhost:8082. You can test that e.g. with curl
+    ```sh
+    curl -X GET http://localhost:8082/health
+    ```
+4. **Dev Portal UI**
+
+    Should be running in http://localhost:3002
+
+    The `just up` command created three dummy users to Keycloak. You can check the users and credentials from `./keycloak/config/dummy-users.json`. For testing you can login with username & password:
+    ```
+    username = user
+    password = user
+    ```
+    Once logged in to Dev Portal click Get API key and save it to somewhere. You can also check available routes and delete API key.
+
+5. **APISIX**
+
+    There should be two GW instances running in http://127.0.0.1:9080 and in http://127.0.0.1:9181
+
+    You can test that API key created in previous step works with GW instances.
+
+    ```sh
+    # API key given in header
+
+    curl -X GET http://127.0.0.1:9080/bar -H "apikey: <your-api-key-here>"
+    curl -X GET http://127.0.0.1:9181/foo -H "apikey: <your-api-key-here>"
+
+    # API key in as query param
+
+    curl -X GET http://127.0.0.1:9080/bar?apikey=<your-api-key-here>
+    curl -X GET http://127.0.0.1:9181/foo?apikey=<your-api-key-here>
+
+    # Response should be something like {"message": "Hello from dummy upstream server web1"}
+
+    ```
+
+6. **Optional**
+
+    #### Setup IdP(s)    
+    In Keycloak UI (inside "test" realm) found in left pane "Identity providers". By default Github and Google IdPs are enabled. However those needs to be configured to be able to use them. You can follow next link to setup Github OAuth app https://medium.com/keycloak/setting-up-keycloak-using-github-identity-provider-in-express-314e511a240b.
     1. in Github you need add the following values:
     ```
     Application name: keycloak-local-test-app
@@ -80,4 +133,8 @@ password: admin
     ```
     2. Copy the generated Client ID and Client secret and replace corresponding values in Keycloak with them.
 
-5. Login to dev portal (http://localhost:3002) with the created user or using the IdP. Now you can create new API key, delete it or list APISIX routes. 
+### Users
+
+There are three kind of users - users, eumetnet users and admin users. 
+
+Every created user belongs to ***USER*** group. By demand user can be promoted by admin to ***EUMETNET_USER*** group. Difference between these groups is that eumetnet users get better rate limits for the Gateway usage. Admin users can perform user related operations with Dev Portal backend - add/remove user from eumetnet user group, disable/enable user or delete user. Refer [backend/](backend/) to check admin scripts.
