@@ -21,7 +21,7 @@ up:
 stop:
     docker-compose stop
 
-down:
+remove:
     docker-compose down -v
 
 @start-external-services:
