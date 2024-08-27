@@ -123,18 +123,22 @@ Once external integrations, UI and backend are running:
 
 6. **Optional**
 
-    #### Setup IdP(s)    
-    In Keycloak UI (inside "test" realm) found in left pane "Identity providers". By default Github and Google IdPs are enabled. However those needs to be configured to be able to use them. You can follow next link to setup Github OAuth app https://medium.com/keycloak/setting-up-keycloak-using-github-identity-provider-in-express-314e511a240b.
-    1. in Github you need add the following values:
+    #### Setup Identity Providers (IdPs)
+    To configure identity providers in Keycloak (within the "test" realm):
+
+    1. Navigate to "Identity Providers" in the left pane of the Keycloak UI. By default, GitHub and Google IdPs are enabled but require configuration to be functional. Follow e.g. [this guide](https://medium.com/keycloak/setting-up-keycloak-using-github-identity-provider-in-express-314e511a240b.) to set up a GitHub OAuth app.
+
+    2. In GitHub, provide the following details:
     ```
     Application name: keycloak-local-test-app
     Homepage URL: http://localhost:8080/realms/test
     Authorization callback URL: http://localhost:8080/realms/test/broker/github/endpoint
     ```
-    2. Copy the generated Client ID and Client secret and replace corresponding values in Keycloak with them.
+
+    3. Copy the generated Client ID and Client Secret from GitHub and enter them into the corresponding fields in Keycloak.
 
 ### Users
 
 There are three kind of users - users, eumetnet users and admin users. 
 
-Every created user belongs to ***USER*** group. By demand user can be promoted by admin to ***EUMETNET_USER*** group. Difference between these groups is that eumetnet users get better rate limits for the Gateway usage. Admin users can perform user related operations with Dev Portal backend - add/remove user from eumetnet user group, disable/enable user or delete user. Refer [backend/](backend/) to check admin scripts.
+Every created user belongs to ***USER*** group. By demand user can be promoted by admin to ***EUMETNET_USER*** group. Difference between these groups is that eumetnet users get better rate limits for the Gateway usage. Admin users can perform user related operations with Dev Portal backend - add/remove user from eumetnet user group, disable/enable user or delete user. Refer [backend/](backend/) to check admin related scripts.
