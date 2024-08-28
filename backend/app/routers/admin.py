@@ -233,7 +233,7 @@ async def remove_user_from_group(
         groups = await keycloak.get_groups(client)
 
         if (
-            group := next((group for group in groups if group.name == user_group.group_name), None)
+            group_to_update := next((group for group in groups if group.name == user_group.group_name), None)
         ) is None:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
@@ -247,7 +247,7 @@ async def remove_user_from_group(
                 status_code=HTTPStatus.NOT_FOUND, detail=f"User '{user_uuid}' not found"
             )
 
-        await users.modify_user_group(client, user_uuid, group, "DELETE")
+        await users.modify_user_group(client, user_uuid, keycloak_user.groups, group_to_update, "DELETE")
 
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
