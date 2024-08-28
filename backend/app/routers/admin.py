@@ -175,7 +175,9 @@ async def update_user_to_group(
         groups = await keycloak.get_groups(client)
 
         if (
-            group_to_update := next((group for group in groups if group.name == user_group.group_name), None)
+            group_to_update := next(
+                (group for group in groups if group.name == user_group.group_name), None
+            )
         ) is None:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
@@ -189,7 +191,8 @@ async def update_user_to_group(
                 status_code=HTTPStatus.NOT_FOUND, detail=f"User '{user_uuid}' not found"
             )
 
-        await users.modify_user_group(client, user_uuid, keycloak_user.groups, group_to_update, "PUT")
+        user_groups = keycloak_user.groups or []
+        await users.modify_user_group(client, user_uuid, user_groups, group_to_update, "PUT")
 
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
@@ -233,7 +236,9 @@ async def remove_user_from_group(
         groups = await keycloak.get_groups(client)
 
         if (
-            group_to_update := next((group for group in groups if group.name == user_group.group_name), None)
+            group_to_update := next(
+                (group for group in groups if group.name == user_group.group_name), None
+            )
         ) is None:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
@@ -247,7 +252,8 @@ async def remove_user_from_group(
                 status_code=HTTPStatus.NOT_FOUND, detail=f"User '{user_uuid}' not found"
             )
 
-        await users.modify_user_group(client, user_uuid, keycloak_user.groups, group_to_update, "DELETE")
+        user_groups = keycloak_user.groups or []
+        await users.modify_user_group(client, user_uuid, user_groups, group_to_update, "DELETE")
 
     except (VaultError, APISIXError, KeycloakError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e

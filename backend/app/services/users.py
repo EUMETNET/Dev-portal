@@ -76,7 +76,11 @@ async def delete_or_disable_user(
 
 
 async def modify_user_group(
-    client: AsyncClient, user_uuid: str, groups: list[str], group_to_update: Group, action: Literal["PUT", "DELETE"]
+    client: AsyncClient,
+    user_uuid: str,
+    groups: list[str],
+    group_to_update: Group,
+    action: Literal["PUT", "DELETE"],
 ) -> None:
     """
     Add or remove a user from a given group in Keycloak.
