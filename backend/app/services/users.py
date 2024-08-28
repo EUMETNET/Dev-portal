@@ -12,6 +12,7 @@ from app.models.keycloak import User as KeycloakUser, Group
 from app.models.request import User
 from app.models.apisix import APISixConsumer
 from app.exceptions import APISIXError
+from app.constants import EUMETNET_USER_GROUP
 
 
 async def delete_or_disable_user(
@@ -112,15 +113,18 @@ async def modify_user_group(
         _vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
 
         if any(apisix_users):
-            log_action = (
-                "Updating user's API key to" if action == "PUT" else "Removing user's API key from"
-            )
-            logger.debug(
-                "User '%s' found in APISIX(es) --> %s group '%s' in APISIX(es)",
-                user_uuid,
-                log_action,
-                group_to_update.name,
-            )
+            if EUMETNET_USER_GROUP in user.groups:
+                log_action = (
+                    "Updating user's API key to"
+                    if action == "PUT"
+                    else "Removing user's API key from"
+                )
+                logger.debug(
+                    "User '%s' found in APISIX(es) --> %s group '%s' in APISIX(es)",
+                    user_uuid,
+                    log_action,
+                    group_to_update.name,
+                )
 
             apisix_responses: list[APISixConsumer | APISIXError] = await asyncio.gather(
                 *apisix.create_tasks(

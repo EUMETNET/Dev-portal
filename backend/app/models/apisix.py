@@ -5,6 +5,7 @@ Apisix models
 from typing import Any, Optional
 from pydantic import BaseModel, field_validator, ValidationInfo
 from app.config import settings
+from app.constants import EUMETNET_USER_GROUP
 
 config = settings()
 
@@ -32,8 +33,8 @@ class APISixConsumer(BaseModel):
         Sets the group_id attribute to 'eumetnet_user' if token has corresponding
         group or default to None.
         """
-        if "EUMETNET_USER" in value:
-            return "EUMETNET_USER"
+        if EUMETNET_USER_GROUP in value:
+            return EUMETNET_USER_GROUP
         return None
 
 
