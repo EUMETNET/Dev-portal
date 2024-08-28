@@ -106,7 +106,6 @@ To mount different secrets file to container
 docker run --network dev-portal_apisix -p 8082:8082 -v $(pwd)/your-super-secrets.yaml:/code/secrets.yaml --platform=linux/amd64 ghcr.io/eurodeo/dev-portal/backend:<sha-commit_tag>
 ```
 
-
 ### Static analysis tools and tests
 
 There are couple of analyze tools used. All the tool specific configurations if any are placed in pyproject.toml file.
@@ -124,3 +123,26 @@ There are couple of analyze tools used. All the tool specific configurations if 
 All of these are run also in ci cd pipeline before building the image.
 
 TODO add pre-commit hooks to automatically run these before commit
+
+### Admin operations
+
+There are few scripts that admin user can use to perform actions for a user. Scripts are found `scripts/admin/`. Example usage:
+```sh
+# You can export the user's Keycloak UUID or place it in an env file
+export KC_USER_UUID=<some-uuid-here>
+
+# By default the scripts will use the .local-env file for variables
+./scripts/admin/update_user_to_group.sh
+
+# You can specify different env file than the default
+./scripts/admin/update_user_to_group.sh -e ./scripts/admin/config/.env
+```
+
+With scripts admin can:
+  1. Disable(=ban) or enable user
+    * When disabling user it will delete user's API if exists from APISIX instances and Vault
+    * Enabling user does NOT create API key for one
+  2. Add or remove user from group
+    * By default each user belongs to USER group.
+    * If promoting/removing user from EUMETNET_USER group the user's existing API key is also promoted/removed from the EUMETNET_USER group in APISIX instances. **NOTE: group names are case sensitive**
+  3. Delete user will delete user from Keycloak and existing API key from Vault and APISIX instances

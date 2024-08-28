@@ -25,7 +25,7 @@ remove:
     docker-compose down -v
 
 @start-external-services:
-    docker-compose up -d
+    docker-compose up -d --build
 
 @setup-vault:
     docker exec -e VAULT_SECRET_ENGINE=${VAULT_SECRET_ENGINE} -it vault sh /vault/config/setup.sh 
