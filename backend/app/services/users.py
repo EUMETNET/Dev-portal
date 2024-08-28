@@ -76,7 +76,7 @@ async def delete_or_disable_user(
 
 
 async def modify_user_group(
-    client: AsyncClient, user_uuid: str, group: Group, action: Literal["PUT", "DELETE"]
+    client: AsyncClient, user_uuid: str, groups: list[str], group_to_update: Group, action: Literal["PUT", "DELETE"]
 ) -> None:
     """
     Add or remove a user from a given group in Keycloak.
@@ -96,9 +96,12 @@ async def modify_user_group(
     """
 
     try:
-        await keycloak.modify_user_group_membership(client, user_uuid, group.id, action)
+        await keycloak.modify_user_group_membership(client, user_uuid, group_to_update.id, action)
 
-        user_groups = [group.name] if action == "PUT" else []
+        if action == "PUT":
+            user_groups = list(set(groups + [group_to_update.name]))
+        else:
+            user_groups = [group for group in groups if group != group_to_update.name]
 
         user = User(id=user_uuid, groups=user_groups)
 
@@ -112,7 +115,7 @@ async def modify_user_group(
                 "User '%s' found in APISIX(es) --> %s group '%s' in APISIX(es)",
                 user_uuid,
                 log_action,
-                group.name,
+                group_to_update.name,
             )
 
             apisix_responses: list[APISixConsumer | APISIXError] = await asyncio.gather(
@@ -131,7 +134,7 @@ async def modify_user_group(
 
                 # Rollback the user's group membership in Keycloak
                 await keycloak.modify_user_group_membership(
-                    client, user_uuid, group.id, "DELETE" if action == "PUT" else "PUT"
+                    client, user_uuid, group_to_update.id, "DELETE" if action == "PUT" else "PUT"
                 )
 
                 # We want to rollback the user's state to before the group was altered
