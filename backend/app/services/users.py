@@ -114,16 +114,13 @@ async def modify_user_group(
 
         if any(apisix_users):
             if EUMETNET_USER_GROUP in user.groups:
-                log_action = (
-                    "Updating user's API key to"
-                    if action == "PUT"
-                    else "Removing user's API key from"
-                )
                 logger.debug(
                     "User '%s' found in APISIX(es) --> %s group '%s' in APISIX(es)",
                     user_uuid,
-                    log_action,
-                    group_to_update.name,
+                    "Updating user's API key to"
+                    if action == "PUT"
+                    else "Removing user's API key from",
+                    EUMETNET_USER_GROUP,
                 )
 
             apisix_responses: list[APISixConsumer | APISIXError] = await asyncio.gather(
