@@ -290,7 +290,6 @@ async def test_add_user_and_existing_apikey_to_eumetnet_user_group(
         )
 
         for consumer in apisix_consumers:
-            print(consumer)
             assert consumer.group_id == "EUMETNET_USER"
 
         assert set(user.groups) == {"EUMETNET_USER", "USER"}
@@ -382,7 +381,6 @@ async def test_remove_user_and_existing_apikey_from_eumetnet_user_group(
         )
 
         for consumer in apisix_consumers:
-            print(consumer)
             assert consumer.group_id == "EUMETNET_USER"
 
         assert set(user.groups) == {"EUMETNET_USER", "USER"}
@@ -403,7 +401,6 @@ async def test_remove_user_and_existing_apikey_from_eumetnet_user_group(
         )
 
         for consumer in apisix_consumers:
-            print(consumer)
             assert consumer.group_id == None
 
         assert set(user.groups) == {"USER"}
@@ -487,7 +484,6 @@ async def test_remove_user_from_other_group_persists_group_in_apisix(
         )
 
         for consumer in apisix_consumers:
-            print(consumer)
             assert consumer.group_id == "EUMETNET_USER"
 
         assert set(user.groups) == {"EUMETNET_USER", "USER"}
