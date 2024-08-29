@@ -17,10 +17,9 @@ up:
     @echo "\033[1mAll services are up and running\033[0m"
 
 config-external-services:
-    set -e
-    just setup-vault || { just down; exit 1; }
-    just setup-keycloak || { just remove; exit 1; }
-    just setup-apisix || { just remove; exit 1; }
+    just configure-vault
+    just configure-keycloak
+    just configure-apisix
 
 stop:
     docker-compose stop
@@ -31,11 +30,11 @@ remove:
 @start-external-services:
     docker-compose up -d --build
 
-@setup-vault:
-    docker exec -e VAULT_SECRET_ENGINE=${VAULT_SECRET_ENGINE} -it vault sh /vault/config/setup.sh 
+@configure-vault:
+    docker exec -e VAULT_SECRET_ENGINE=${VAULT_SECRET_ENGINE} -it vault sh /vault/config/setup.sh || { just remove; exit 1; }
 
-@setup-keycloak:
-    ./keycloak/config/setup.sh
+@configure-keycloak:
+    ./keycloak/config/setup.sh || { just remove; exit 1; }
 
-@setup-apisix:
-    ./apisix_conf/setup.sh
+@configure-apisix:
+    ./apisix_conf/setup.sh || { just remove; exit 1; }
