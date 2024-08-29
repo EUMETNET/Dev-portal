@@ -12,11 +12,15 @@ default:
 
 up:
     just start-external-services
-    just setup-vault
-    just setup-keycloak
-    just setup-apisix
+    @just config-external-services
 
     @echo "\033[1mAll services are up and running\033[0m"
+
+config-external-services:
+    set -e
+    just setup-vault || { just down; exit 1; }
+    just setup-keycloak || { just remove; exit 1; }
+    just setup-apisix || { just remove; exit 1; }
 
 stop:
     docker-compose stop
