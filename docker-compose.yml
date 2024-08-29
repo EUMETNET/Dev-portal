@@ -46,7 +46,8 @@ services:
     volumes:
       - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
     depends_on:
-      - etcd
+      etcd:
+        condition: service_healthy
     ##network_mode: host
     ports:
       - "9180:9180/tcp"
@@ -64,7 +65,8 @@ services:
     volumes:
       - ./apisix_conf/config2.yaml:/usr/local/apisix/conf/config.yaml:ro
     depends_on:
-      - etcd2
+      etcd2:
+        condition: service_healthy
     ports:
       - "9280:9180/tcp"
       - "9181:9080/tcp"
@@ -88,6 +90,11 @@ services:
       - "2379:2379/tcp"
     networks:
       apisix:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2379/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   etcd2:
     image: bitnami/etcd:3.4.15
@@ -103,6 +110,11 @@ services:
       - "2380:2379/tcp"
     networks:
       apisix:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2379/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   web1:
     image: nginx:1.19.0-alpine
@@ -169,7 +181,7 @@ services:
       - ./vault/:/vault
     healthcheck:
       test: ["CMD", "vault", "status"]
-      interval: 3s
+      interval: 5s
       timeout: 3s
       retries: 5
     command: server -dev -dev-root-token-id=${VAULT_TOKEN}
