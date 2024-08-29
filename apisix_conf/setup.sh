@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APISIX_ADMIN_API_PORTS=9180,9289
+APISIX_ADMIN_API_PORTS=9180,9280
 
 # Function to check the response status
 check_response() {
@@ -8,7 +8,7 @@ check_response() {
     local port="$2"
     local status_code=$(echo "$response" | grep HTTP | awk '{print $2}')
     if [ -z "$status_code" ]; then
-        echo "Request failed for admin API on port $port: No response from server"
+        echo "Request failed for admin API on port $port with error: $response"
         exit 1
     elif [ "$status_code" -ne 200 ] && [ "$status_code" -ne 201 ]; then
         echo "Request failed for admin API on port $port with status code $status_code"
