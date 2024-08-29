@@ -186,6 +186,8 @@ async def update_user_to_group(
 
         keycloak_user = await keycloak.get_user(client, user_uuid)
 
+        logger.debug("Keycloak user: %s", keycloak_user)
+
         if keycloak_user is None or not keycloak_user.id:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND, detail=f"User '{user_uuid}' not found"

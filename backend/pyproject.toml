@@ -52,9 +52,9 @@ min-similarity-lines=10
 
 [tool.poetry.scripts]
 start-dev = "app.main:start_dev"
-format = "scripts:format_code"
-format-check = "scripts:format_code_check"
-lint = "scripts:lint_code"
-type-check = "scripts:type_check"
-sec-check = "scripts:security_check"
-test = "scripts:run_tests"
+format = "scripts.poetry.scripts:format_code"
+format-check = "scripts.poetry.scripts:format_code_check"
+lint = "scripts.poetry.scripts:lint_code"
+type-check = "scripts.poetry.scripts:type_check"
+sec-check = "scripts.poetry.scripts:security_check"
+test = "scripts.poetry.scripts:run_tests"

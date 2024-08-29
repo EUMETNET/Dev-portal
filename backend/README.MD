@@ -39,19 +39,34 @@ backend
 
 To initialize the project, follow these steps:
 
-1. Install the dependencies: `poetry install`
+1. Install the dependencies:
+```bash
+poetry install
+```
 
 
 ### Configurations
-By default the application looks for config file in path `backend/config.default.yaml`.
-You can override these settings by creating a file called `backend/config.yaml` or using an environment variable `CONFIG_FILE` for example `CONFIG_FILE=better-config.yaml`
+By default the application looks for config file in path `backend/config.default.yaml` and secrets file in path `backend/secrets.default.yaml` 
+For any reason you can override one or both of config and secrets settings. For example to override config create a file called `backend/config.yaml` or use an environment variable `CONFIG_FILE` for example `CONFIG_FILE=better-config.yaml`
 `CONFIG_FILE` takes priority over the file paths.
 
 #### Example config.default.yaml
 ```yaml
-host: 0.0.0.0
-port: 8082
-log_level: "INFO"
+server:
+  host: 0.0.0.0
+  port: 8082
+  log_level: "DEBUG"
+  allowed_origins: ["*"]
+```
+
+#### Example secrets.default.yaml
+```yaml
+vault:
+  url: http://127.0.0.1:8200
+  base_path: apisix-dev/consumers
+  token: 00000000-0000-0000-0000-000000000000
+  secret_phase: geeks
+
 apisix:
   key_path: $secret://vault/dev/
   instances:
@@ -63,21 +78,33 @@ apisix:
       admin_url: http://127.0.0.1:9280
       gateway_url: http://127.0.0.1:9180
       admin_api_key: edd1c9f034335f136f87ad84b625c8f1
-vault:
-  url: http://127.0.0.1:8200
-  base_path: apisix-dev/consumers
-  token: 00000000-0000-0000-0000-000000000000
-  secret_phase: geeks
+
 keycloak:
   url: http://127.0.0.1:8080
   realm: test
+  client_id: dev-portal-api
+  client_secret: okXCanJb0qrDPh54Le40eecLLvEh86Xw
 ```
 
 ### Run app in development mode
-To run the application in local machine type `poetry run start-dev`.
+To run the application in local machine
+```bash
+poetry run start-dev
+```
 
-If for some reason you need to run the application with different config file you can do it by giving the file as env variable to start command `CONFIG_FILE=better-config.yaml poetry run start-dev`
+If for some reason you need to run the application with different config and/or secrets file you can do it by giving the file as env variable to start command
+```bash
+CONFIG_FILE=better-config.yaml SECRETS_FILE=super-secrets.yaml poetry run start-dev
+```
 
+You can also run the app in docker. Next one is pulling image from Github Container Registry. Replace `<sha-commit_tag>` with actual tag:
+```bash
+docker run --network dev-portal_apisix -p 8082:8082 --platform=linux/amd64 ghcr.io/eurodeo/dev-portal/backend:<sha-commit_tag>
+```
+To mount different secrets file to container
+```bash
+docker run --network dev-portal_apisix -p 8082:8082 -v $(pwd)/your-super-secrets.yaml:/code/secrets.yaml --platform=linux/amd64 ghcr.io/eurodeo/dev-portal/backend:<sha-commit_tag>
+```
 
 ### Static analysis tools and tests
 
@@ -97,15 +124,25 @@ All of these are run also in ci cd pipeline before building the image.
 
 TODO add pre-commit hooks to automatically run these before commit
 
-#### MISC ATM
+### Admin operations
 
-Dockerize the backend app and run it with local dev stack with command
+There are few scripts that admin user can use to perform actions for a user. Scripts are found `scripts/admin/`. Example usage:
+```sh
+# You can export the user's Keycloak UUID or place it in an env file
+export KC_USER_UUID=<some-uuid-here>
 
-`docker run --network dev-portal_apisix -p 8082:8082 -v $(pwd)/local-docker-config.yaml:/code/config.yaml my_app:latest`
+# By default the scripts will use the .local-env file for variables
+./scripts/admin/update_user_to_group.sh
 
-Here we connect the dockerized backend app to services container. Using also different config.yaml to this (urls diffs when using docker or not)
+# You can specify different env file than the default
+./scripts/admin/update_user_to_group.sh -e ./scripts/admin/config/.env
+```
 
-## TODO
-
-- Implement atomicity and rollback mechanism in the `apikey` router functions. 
-E.g. Currently, if the user deletion fails for one or more APISIX instances but succeeds for others, the system ends up in an inconsistent state. To handle this, we need to implement a rollback mechanism. If the deletion fails for any instance, we should attempt to recreate the user in the instances where deletion was successful. This way, if anything goes wrong, we can revert back to the original state.
+With scripts admin can:
+  1. Disable(=ban) or enable user
+    * When disabling user it will delete user's API if exists from APISIX instances and Vault
+    * Enabling user does NOT create API key for one
+  2. Add or remove user from group
+    * By default each user belongs to USER group.
+    * If promoting/removing user from EUMETNET_USER group the user's existing API key is also promoted/removed from the EUMETNET_USER group in APISIX instances. **NOTE: group names are case sensitive**
+  3. Delete user will delete user from Keycloak and existing API key from Vault and APISIX instances
