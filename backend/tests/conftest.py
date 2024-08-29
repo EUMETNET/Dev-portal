@@ -36,7 +36,7 @@ async def get_realm_group_id_by_name(client: AsyncClient, group_name: str) -> st
     }
     groups = await client.get(url=url, headers=auth_header)
 
-    #with open("tests/data/realm-export.json", encoding="utf-8") as f:
+    # with open("tests/data/realm-export.json", encoding="utf-8") as f:
     #    realm_json = json.load(f)
 
     for group in groups.json():
@@ -102,39 +102,6 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
             for instance in config.apisix.instances
         ],
     )
-
-
-@pytest.fixture
-async def clean_up_api6_consumers(client: AsyncClient) -> AsyncGenerator[None, None]:
-    """
-    Clean up API6 consumers after test is ran.
-    """
-    yield
-
-    consumer_responses = await asyncio.gather(
-        *[
-            client.get(
-                f"{instance.admin_url}/apisix/admin/consumers", headers=get_apisix_headers(instance)
-            )
-            for instance in config.apisix.instances
-        ]
-    )
-
-    delete_tasks = []
-
-    for response, instance in zip(consumer_responses, config.apisix.instances):
-        data = response.json()
-        if data["total"]:
-            delete_tasks.extend(
-                [
-                    client.delete(
-                        f"{instance.admin_url}/apisix/admin/consumers/{user['value']['username']}",
-                        headers=get_apisix_headers(instance),
-                    )
-                    for user in data["list"]
-                ]
-            )
-    await asyncio.gather(*delete_tasks)
 
 
 # ------- KEYCLOAK SETUP ---------

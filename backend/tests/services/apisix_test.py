@@ -17,23 +17,14 @@ config = settings()
 pytestmark = pytest.mark.anyio
 
 
-async def test_api6_user_not_found(client: AsyncClient, clean_up_api6_consumers: Callable) -> None:
+async def test_api6_user_not_found(client: AsyncClient) -> None:
     apisix_instance = config.apisix.instances[0]
     identifier = "testuser"
     response = await get_apisix_consumer(client, apisix_instance, identifier)
     assert response is None
 
 
-async def test_create_api6_consumer_success(
-    client: AsyncClient, clean_up_api6_consumers: Callable
-) -> None:
-    apisix_instance = config.apisix.instances[0]
-    user = User(id="supermario", groups=["USER"])
-    response = await upsert_apisix_consumer(client, apisix_instance, user)
-    assert response.username == user.id
-
-
-async def test_delete_api6_consumer_success(client: AsyncClient) -> None:
+async def test_create_and_delete_api6_consumer_success(client: AsyncClient) -> None:
     apisix_instance = config.apisix.instances[0]
     user = User(id="supermario", groups=["USER"])
     response = await upsert_apisix_consumer(client, apisix_instance, user)
