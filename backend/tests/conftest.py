@@ -3,7 +3,6 @@ Pytest fixtures for actual tests.
 """
 
 from typing import AsyncGenerator
-import json
 import asyncio
 import pytest
 from httpx import AsyncClient
