@@ -47,7 +47,10 @@ def run_tests() -> None:
     Run the tests using pytest
     """
 
-    # Set the environment variable to use the secrets file for testing
+    # Check if SECRETS_FILE is set, otherwise default to secrets.test.yaml
+    secrets_file = os.getenv("SECRETS_FILE", "secrets.test.yaml")
+    os.environ["SECRETS_FILE"] = secrets_file
+
+    # Pass the current environment variables to the subprocess
     env = os.environ.copy()
-    env["SECRETS_FILE"] = "secrets.test.yaml"
     subprocess.run(["pytest"], check=False, env=env)
