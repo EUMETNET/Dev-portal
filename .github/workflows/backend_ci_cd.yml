@@ -22,8 +22,8 @@ jobs:
         - name: Set up Docker Buildx
           uses: docker/setup-buildx-action@v3
 
-        - name: Start external services stack
-          run: docker compose -f docker-compose.yml up -d --wait
+        - name: Configure and start external services stack
+          run: ./manage-services.sh up test
         
         - name: Install Poetry
           run: curl -sSL https://install.python-poetry.org | python3 -
