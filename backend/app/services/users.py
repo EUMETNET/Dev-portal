@@ -117,9 +117,11 @@ async def modify_user_group(
                 logger.debug(
                     "User '%s' found in APISIX(es) --> %s group '%s' in APISIX(es)",
                     user_uuid,
-                    "Updating user's API key to"
-                    if action == "PUT"
-                    else "Removing user's API key from",
+                    (
+                        "Updating user's API key to"
+                        if action == "PUT"
+                        else "Removing user's API key from"
+                    ),
                     EUMETNET_USER_GROUP,
                 )
 
