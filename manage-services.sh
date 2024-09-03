@@ -8,6 +8,13 @@ export VAULT_SECRET_ENGINE="apisix-dev"
 export KEYCLOAK_MASTER_ADMIN_USER="admin"
 export KEYCLOAK_MASTER_ADMIN_PW="admin"
 
+# Add check to see if jq is installed
+if ! command -v jq &> /dev/null
+then
+    echo "jq could not be found. Please install jq to continue."
+    exit 1
+fi
+
 # Load environment variables from the appropriate file
 _load_env() {
     if [ "$ENV" = "dev" ]; then
