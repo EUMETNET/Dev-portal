@@ -123,6 +123,5 @@ def settings() -> Settings:
 
 # Set the log level
 logger = logging.getLogger("uvicorn")
-log_level_name = settings().server.log_level.upper()
-log_level = logging._nameToLevel.get(log_level_name, logging.INFO)
+log_level = getattr(logging, settings().server.log_level.upper(), logging.INFO)
 logger.setLevel(log_level)
