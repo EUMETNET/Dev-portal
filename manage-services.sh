@@ -7,6 +7,7 @@ export VAULT_TOKEN="00000000-0000-0000-0000-000000000000"
 export VAULT_SECRET_ENGINE="apisix-dev"
 export KEYCLOAK_MASTER_ADMIN_USER="admin"
 export KEYCLOAK_MASTER_ADMIN_PW="admin"
+export REALM_NAME="test"
 
 # Add check to see if jq is installed
 if ! command -v jq &> /dev/null
