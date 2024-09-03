@@ -15,9 +15,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      SECRETS_FILE: secrets.test.yaml
-
     steps:
         - name: Checkout code
           uses: actions/checkout@v4

@@ -49,4 +49,4 @@ def run_tests() -> None:
 
     # Set the environment variable to use the secrets file for testing
     os.environ["SECRETS_FILE"] = "secrets.test.yaml"
-    subprocess.run(["pytest"], check=False)
+    subprocess.run(["pytest"], check=False, env=os.environ.copy())
