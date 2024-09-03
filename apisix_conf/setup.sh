@@ -1,7 +1,5 @@
 #!/bin/bash
 
-APISIX_ADMIN_API_PORTS=9180,9280
-
 # Function to check the response status
 check_response() {
     local response="$1"
@@ -48,87 +46,90 @@ do
 
 done
 
-# Create dummy route for each APISIX instance
+# Create dummy route for each APISIX instance when running in dev mode
 # Dummy upstreams are found from /upstream directory
-echo "Creating dummy routes for APISIX instances"
+if [ "$ENV" = "dev" ]; then
+    echo "Creating dummy routes for APISIX instances"
+    for port in ${APISIX_ADMIN_API_PORTS//,/ }
+    do
+        response=$(curl -i -X PUT \
+            -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' \
+            -d '{
+                "id": "bar",
+                "uri": "/bar",
+                "vars": [
+                    "OR",
+                    [
+                        "http_apikey",
+                        "~~",
+                        ".+"
+                    ],
+                    [
+                        "arg_apikey",
+                        "~~",
+                        ".+"
+                    ]
+                ],
+                "plugins": {
+                    "limit-count": {
+                        "count": 10,
+                        "time_window": 60
+                    },
+                    "key-auth": {},
+                    "proxy-rewrite": {
+                        "uri": "/"
+                    }
+                },
+                "upstream" : {
+                    "type": "roundrobin",
+                    "nodes": {
+                    "web1:80":1
+                    },
+                    "scheme": "http"
+                }
+            }' \
+            "http://localhost:$port/apisix/admin/routes" 2>&1)
 
-# ROUTE FOR INSTANCE ON PORT 9180(=Admin API port)
-response=$(curl -i -X PUT \
-    -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' \
-    -d '{
-        "id": "bar",
-        "uri": "/bar",
-        "vars": [
-            "OR",
-            [
-                "http_apikey",
-                "~~",
-                ".+"
-            ],
-            [
-                "arg_apikey",
-                "~~",
-                ".+"
-            ]
-        ],
-        "plugins": {
-            "limit-count": {
-                "count": 10,
-                "time_window": 60
-            },
-            "key-auth": {},
-            "proxy-rewrite": {
-                "uri": "/"
-            }
-        },
-        "upstream" : {
-            "type": "roundrobin",
-            "nodes": {
-            "web1:80":1
-            },
-            "scheme": "http"
-        }
-    }' \
-    "http://localhost:9180/apisix/admin/routes" 2>&1)
+        check_response "$response" "$port"
 
-check_response "$response" "9180"
+        response=$(curl -i -X PUT \
+            -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' \
+            -d '{
+                "id": "foo",
+                "uri": "/foo",
+                "vars": [
+                    "OR",
+                    [
+                        "http_apikey",
+                        "~~",
+                        ".+"
+                    ],
+                    [
+                        "arg_apikey",
+                        "~~",
+                        ".+"
+                    ]
+                ],
+                "plugins": {
+                    "limit-count": {
+                        "count": 10,
+                        "time_window": 60
+                    },
+                    "key-auth": {},
+                    "proxy-rewrite": {
+                        "uri": "/"
+                    }
+                },
+                "upstream" : {
+                    "type": "roundrobin",
+                    "nodes": {
+                    "web2:80":1
+                    },
+                    "scheme": "http"
+                }
+            }' \
+            "http://localhost:$port/apisix/admin/routes" 2>&1)
 
-response=$(curl -i -X PUT \
-    -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' \
-    -d '{
-        "id": "foo",
-        "uri": "/foo",
-        "vars": [
-            "OR",
-            [
-                "http_apikey",
-                "~~",
-                ".+"
-            ],
-            [
-                "arg_apikey",
-                "~~",
-                ".+"
-            ]
-        ],
-        "plugins": {
-            "limit-count": {
-                "count": 10,
-                "time_window": 60
-            },
-            "key-auth": {},
-            "proxy-rewrite": {
-                "uri": "/"
-            }
-        },
-        "upstream" : {
-            "type": "roundrobin",
-            "nodes": {
-            "web2:80":1
-            },
-            "scheme": "http"
-        }
-    }' \
-    "http://localhost:9280/apisix/admin/routes" 2>&1)
-
-check_response "$response" "9280"
+        check_response "$response" "$port"
+    done
+fi

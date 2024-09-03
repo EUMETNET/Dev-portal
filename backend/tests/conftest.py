@@ -68,6 +68,32 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
         yield c
 
 
+# ------- VAULT SETUP ---------
+@pytest.fixture(scope="session", autouse=True)
+async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
+    """
+    Setup vault for tests.
+    """
+
+    yield
+
+    # Remove all the secrets
+    headers = {"X-Vault-Token": config.vault.token}
+
+    response = await client.get(
+        f"{config.vault.url}/v1/{config.vault.base_path}/?list=true", headers=headers
+    )
+
+    await asyncio.gather(
+        *[
+            client.delete(
+                f"{config.vault.url}/v1/{config.vault.base_path}/{secret}", headers=headers
+            )
+            for secret in response.json()["data"]["keys"]
+        ]
+    )
+
+
 # ------- APISIX SETUP ---------
 @pytest.fixture(scope="session", autouse=True)
 async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
@@ -97,10 +123,32 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     await asyncio.gather(
         *[
             client.delete(
-                f"{instance.admin_url}/apisix/admin/routes", headers=get_apisix_headers(instance)
+                f"{instance.admin_url}/apisix/admin/routes/{route['id']}",
+                headers=get_apisix_headers(instance),
             )
             for instance in config.apisix.instances
+            for route in routes
         ],
+    )
+
+    consumers = await asyncio.gather(
+        *[
+            client.get(
+                f"{instance.admin_url}/apisix/admin/consumers", headers=get_apisix_headers(instance)
+            )
+            for instance in config.apisix.instances
+        ]
+    )
+
+    await asyncio.gather(
+        *[
+            client.delete(
+                f"{instance.admin_url}/apisix/admin/consumers/{consumer['value']['username']}",
+                headers=get_apisix_headers(instance),
+            )
+            for instance, instance_consumers in zip(config.apisix.instances, consumers)
+            for consumer in instance_consumers.json()["list"]
+        ]
     )
 
 
@@ -158,19 +206,13 @@ async def keycloak_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
 
     kc_users = await client.get(user_url, headers=auth_header)
 
-    user_ids_to_delete = [
-        kc_user["id"]
-        for kc_user in kc_users.json()
-        if kc_user["username"] in [user["username"] for user in users]
-    ]
-
     await asyncio.gather(
         *[
             client.delete(
-                f"{user_url}/{id}",
+                f"{user_url}/{user['id']}",
                 headers={"Authorization": f"Bearer {admin_access_token}"},
             )
-            for id in user_ids_to_delete
+            for user in kc_users.json()
         ]
     )
 

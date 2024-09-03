@@ -118,7 +118,7 @@ There are couple of analyze tools used. All the tool specific configurations if 
 
 4. [Bandit](https://bandit.readthedocs.io/en/latest/) to find common security issues in Python code. To run bandit type `poetry run sec-check`
 
-5. [Pytest](https://docs.pytest.org/en/8.0.x/index.html) to run tests. Before running tests make sure that external services are up and running by running the docker-compose.yml and then running tests with `poetry run test`
+5. [Pytest](https://docs.pytest.org/en/8.0.x/index.html) to run tests. Before running tests make sure that external services stack for testing is up and running by running `/.manage-services up test` in repo's root directory and then run tests with `poetry run test`. Tests will use `secrets.test.yaml` file.
 
 All of these are run also in ci cd pipeline before building the image.
 

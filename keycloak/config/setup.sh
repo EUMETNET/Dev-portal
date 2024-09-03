@@ -1,7 +1,5 @@
 #!/bin/bash
 
-KEYCLOAK_URL="http://localhost:8080"
-REALM_CONFIG_FILE="./keycloak/config/realm_export/realm-export.json"
 REALM_NAME="test"
 
 echo "Waiting for Keycloak to be ready before checking Realm export..."
@@ -10,7 +8,7 @@ echo "Waiting for Keycloak to be ready before checking Realm export..."
 # https://www.keycloak.org/server/health
 counter=0
 while : ; do 
-  error=$(curl --output /dev/null --silent --head --fail http://localhost:9000/health/ready 2>&1)
+  error=$(curl --output /dev/null --silent --head --fail http://localhost:${KEYCLOAK_MNGT_PORT}/health/ready 2>&1)
   if [ $? -eq 0 ]; then
     break
   else
@@ -26,7 +24,7 @@ while : ; do
 done
 
 # Obtain an access token for admin
-TOKEN=$(curl -s -X POST "${KEYCLOAK_URL}/realms/master/protocol/openid-connect/token" \
+TOKEN=$(curl -s -X POST "http://localhost:${KEYCLOAK_PORT}/realms/master/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=${KEYCLOAK_MASTER_ADMIN_USER}" \
   -d "password=${KEYCLOAK_MASTER_ADMIN_PW}" \
@@ -42,20 +40,20 @@ echo "${user_data}" | jq -c '.[]' | while read user; do
     username=$(echo $user | jq -r '.username')
 
     # Check if the user already exists
-    user_exists=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users?username=${username}" \
+    user_exists=$(curl -s -X GET "http://localhost:${KEYCLOAK_PORT}/admin/realms/${REALM_NAME}/users?username=${username}" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer ${TOKEN}" | jq -r 'any(.[]; .username == "'"${username}"'")')
 
     # Create the user if it does not exist
     if [ $user_exists == "false" ]; then
-      curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users" \
+      curl -s -X POST "http://localhost:${KEYCLOAK_PORT}/admin/realms/${REALM_NAME}/users" \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer ${TOKEN}" \
           -d "${user}"
 
       # Retrieve the user ID for non 'regular' users to add them to a group
       if [ "$username" != "user" ]; then
-          user_id=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users?username=${username}" \
+          user_id=$(curl -s -X GET "http://localhost:${KEYCLOAK_PORT}/admin/realms/${REALM_NAME}/users?username=${username}" \
               -H "Authorization: Bearer ${TOKEN}" | jq -r '.[0].id')
           if [ "$username" == "better_user" ]; then
                   GROUP_NAME="EUMETNET_USER"
@@ -64,11 +62,11 @@ echo "${user_data}" | jq -c '.[]' | while read user; do
           fi
 
           # Retrieve the group ID
-          group_id=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/groups?search=${GROUP_NAME}" \
+          group_id=$(curl -s -X GET "http://localhost:${KEYCLOAK_PORT}/admin/realms/${REALM_NAME}/groups?search=${GROUP_NAME}" \
               -H "Authorization: Bearer ${TOKEN}" | jq -r '.[0].id')
 
           # Add the user to the group
-          curl -s -X PUT "${KEYCLOAK_URL}/admin/realms/${REALM_NAME}/users/${user_id}/groups/${group_id}" \
+          curl -s -X PUT "http://localhost:${KEYCLOAK_PORT}/admin/realms/${REALM_NAME}/users/${user_id}/groups/${group_id}" \
               -H "Authorization: Bearer ${TOKEN}" \
               -H "Content-Type: application/json" \
               -d '{}'

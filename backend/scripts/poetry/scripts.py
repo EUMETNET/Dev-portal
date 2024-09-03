@@ -4,6 +4,7 @@ Poetry cannot run shell scripts in its scripts section, so we have to use Python
 """
 
 import subprocess
+import os
 
 
 def format_code() -> None:
@@ -45,4 +46,7 @@ def run_tests() -> None:
     """
     Run the tests using pytest
     """
+
+    # Set the environment variable to use the secrets file for testing
+    os.environ["SECRETS_FILE"] = "secrets.test.yaml"
     subprocess.run(["pytest"], check=False)
