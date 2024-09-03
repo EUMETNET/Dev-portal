@@ -12,6 +12,7 @@ from app.models.keycloak import User as KeycloakUser, Group
 from app.models.request import User
 from app.models.apisix import APISixConsumer
 from app.exceptions import APISIXError
+from app.constants import EUMETNET_USER_GROUP
 
 
 async def delete_or_disable_user(
@@ -76,7 +77,11 @@ async def delete_or_disable_user(
 
 
 async def modify_user_group(
-    client: AsyncClient, user_uuid: str, group: Group, action: Literal["PUT", "DELETE"]
+    client: AsyncClient,
+    user_uuid: str,
+    groups: list[str],
+    group_to_update: Group,
+    action: Literal["PUT", "DELETE"],
 ) -> None:
     """
     Add or remove a user from a given group in Keycloak.
@@ -96,24 +101,27 @@ async def modify_user_group(
     """
 
     try:
-        await keycloak.modify_user_group_membership(client, user_uuid, group.id, action)
+        await keycloak.modify_user_group_membership(client, user_uuid, group_to_update.id, action)
 
-        user_groups = [group.name] if action == "PUT" else []
+        if action == "PUT":
+            user_groups = list(set(groups + [group_to_update.name]))
+        else:
+            user_groups = [group for group in groups if group != group_to_update.name]
 
         user = User(id=user_uuid, groups=user_groups)
 
         _vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
 
         if any(apisix_users):
-            log_action = (
-                "Updating user's API key to" if action == "PUT" else "Removing user's API key from"
-            )
-            logger.debug(
-                "User '%s' found in APISIX(es) --> %s group '%s' in APISIX(es)",
-                user_uuid,
-                log_action,
-                group.name,
-            )
+            if EUMETNET_USER_GROUP in user.groups:
+                logger.debug(
+                    "User '%s' found in APISIX(es) --> %s group '%s' in APISIX(es)",
+                    user_uuid,
+                    "Updating user's API key to"
+                    if action == "PUT"
+                    else "Removing user's API key from",
+                    EUMETNET_USER_GROUP,
+                )
 
             apisix_responses: list[APISixConsumer | APISIXError] = await asyncio.gather(
                 *apisix.create_tasks(
@@ -131,7 +139,7 @@ async def modify_user_group(
 
                 # Rollback the user's group membership in Keycloak
                 await keycloak.modify_user_group_membership(
-                    client, user_uuid, group.id, "DELETE" if action == "PUT" else "PUT"
+                    client, user_uuid, group_to_update.id, "DELETE" if action == "PUT" else "PUT"
                 )
 
                 # We want to rollback the user's state to before the group was altered
