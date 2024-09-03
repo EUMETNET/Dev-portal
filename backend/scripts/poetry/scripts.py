@@ -18,7 +18,7 @@ def format_code_check() -> None:
     """
     Check if the code is formatted correctly using black
     """
-    subprocess.run(["black", "--check", "app/"], check=False)
+    subprocess.run(["black", "--check", "app/"], check=True)
 
 
 def lint_code() -> None:
@@ -32,14 +32,14 @@ def type_check() -> None:
     """
     Type check the code using mypy
     """
-    subprocess.run(["mypy", "app/"], check=False)
+    subprocess.run(["mypy", "app/"], check=True)
 
 
 def security_check() -> None:
     """
     Check for security vulnerabilities using bandit
     """
-    subprocess.run(["bandit", "-r", "app"], check=False)
+    subprocess.run(["bandit", "-r", "app"], check=True)
 
 
 def run_tests() -> None:
