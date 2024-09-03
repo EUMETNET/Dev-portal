@@ -18,39 +18,32 @@ The Dev portal consists of two custom components (UI & backend) and a few extern
 
 ### Prerequisities
 
-[Just](https://just.systems/man/en/) is used to run the external integrations.
-
-#### Installing just
-
-on MacOS you can install **just** e.g. with brew:
-```bash
-brew install just
-```
-
-on Linux: 
-```bash
-TODO
-```
+Docker Compose V2 is used to run the external integrations with profiles.
 
 ### Running external integrations
 
-`justfile` contains list of commands, called recipes, that contains shell command(s).
+`manage-services.sh` contains list of commands that manage external integrations.
 
-To init, configure and start the external integrations, run in project root directory:
+To initialize, configure, and start the external integrations, run in project root directory:
 
 ```sh
-just up
+./manage-services.sh up
 ```
 
 To stop the running containers:
 
 ```sh
-just stop
+./manage-services.sh stop
 ```
 
 To remove the containers etc.:
 ```sh
-just remove
+./manage-services.sh remove
+```
+
+To manage external integrations for testing you should give "test" argument to command e.g. 
+```sh
+./manage-services.sh up test
 ```
 
 ### Run custom components
@@ -93,7 +86,7 @@ Once external integrations, UI and backend are running:
 
     Should be running in http://localhost:3002
 
-    The `just up` command created three dummy users to Keycloak. You can check the users and credentials from `./keycloak/config/dummy-users.json`. For testing you can login with username & password:
+    The `manage-users.sh up` command created three dummy users to Keycloak. You can check the users and credentials from `./keycloak/config/dummy-users.json`. For testing you can login with username & password:
     ```
     username = user
     password = user
