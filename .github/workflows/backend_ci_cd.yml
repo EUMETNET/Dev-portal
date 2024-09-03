@@ -42,19 +42,19 @@ jobs:
           working-directory: ./backend
 
         - name: Run format Black
-          run: poetry run black app/ --check
+          run: poetry run format-check
           working-directory: ./backend
 
         - name: Run Pylint
-          run: poetry run pylint app/
+          run: poetry run lint
           working-directory: ./backend
         
         - name: Run Mypy
-          run: poetry run mypy app/
+          run: poetry run type-check
           working-directory: ./backend
 
         - name: Run Bandit
-          run: poetry run bandit -r app
+          run: poetry run sec-check
           working-directory: ./backend
 
         - name: Run tests
