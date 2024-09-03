@@ -25,7 +25,7 @@ def lint_code() -> None:
     """
     Lint the code using pylint
     """
-    subprocess.run(["pylint", "app/"], check=False)
+    subprocess.run(["pylint", "app/"], check=True)
 
 
 def type_check() -> None:
