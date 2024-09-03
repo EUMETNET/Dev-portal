@@ -59,7 +59,7 @@ stop() {
 # Internal command to stop services
 _stop() {
     _load_env
-    docker compose --profile $ENV stop
+    docker compose --profile $ENV -p $ENV stop
 }
 
 # Remove services
@@ -71,17 +71,17 @@ remove() {
 # Internal command to remove services
 _remove() {
     _load_env
-    docker compose --profile $ENV down -v
+    docker compose --profile $ENV -p $ENV down -v
 }
 
 # Start external services
 _start_external_services() {
-    docker compose --profile $ENV up -d --build
+    docker compose --profile $ENV -p $ENV up -d --build
 }
 
 # Configure Vault
 _configure_vault() {
-    docker exec -e VAULT_SECRET_ENGINE=${VAULT_SECRET_ENGINE} -it vault-${ENV} sh /vault/config/setup.sh || { remove $ENV; exit 1; }
+    docker exec -e VAULT_SECRET_ENGINE=${VAULT_SECRET_ENGINE} -i vault-${ENV} sh /vault/config/setup.sh || { remove $ENV; exit 1; }
 }
 
 # Configure Keycloak
