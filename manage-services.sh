@@ -44,7 +44,7 @@ up() {
 # Internal command to start services
 _up() {
     _load_env
-    echo $VAULT_TOKEN
+    echo $KEYCLOAK_PORT
     _start_external_services 
     _config_external_services
     echo -e "\033[1mAll services are up and running\033[0m"
