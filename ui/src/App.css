@@ -1,3 +1,15 @@
+:root {
+  --btn-yellow-bg: #f1b828;
+  --btn-yellow-hover-bg: #e0a71f;
+  --btn-green-bg: #93b479;
+  --btn-green-hover-bg: #7fa065;
+  --btn-orange-bg: #c97f3a;
+  --btn-orange-hover-bg: #b36e33;
+  --btn-red-bg: #bf6366;
+  --btn-red-hover-bg: #a65558;
+  --btn-text-color: #000000;
+}
+
 .App {
   text-align: center;
   background-color: rgb(239, 241, 247);
@@ -15,29 +27,11 @@
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-#app-header-2{
-  color: rgb(130, 130, 130);
-}
-
-#infoPanel{
+#infoPanel {
   text-align: left;
   font-style: italic;
   font-weight: bold;
   color: rgb(126, 52, 52);
-}
-
-.p-card-title{
-  /* background-color: gray; */
 }
 
 .App-link {
@@ -51,4 +45,72 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.btn--yellow {
+  background-color: var(--btn-yellow-bg) !important;
+  border-color: var(--btn-yellow-bg) !important;
+  color: var(--btn-text-color) !important;
+}
+
+.btn--yellow:hover {
+  background-color: var(--btn-yellow-hover-bg) !important;
+  border-color: var(--btn-yellow-hover-bg) !important;
+}
+
+.btn--yellow:focus {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px rgba(241, 184, 40, 0.5) !important;
+}
+
+.btn--green {
+  background-color: var(--btn-green-bg) !important;
+  border-color: var(--btn-green-bg) !important;
+  color: var(--btn-text-color) !important;
+}
+
+.btn--green:hover {
+  background-color: var(--btn-green-hover-bg) !important;
+  border-color: var(--btn-green-hover-bg) !important;
+}
+
+.btn--green:focus {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px rgba(147, 180, 121, 0.5) !important;
+}
+
+.btn--orange {
+  background-color: var(--btn-orange-bg) !important;
+  border-color: var(--btn-orange-bg) !important;
+  color: var(--btn-text-color-light) !important;
+}
+
+.btn--orange:hover {
+  background-color: var(--btn-orange-hover-bg) !important;
+  border-color: var(--btn-orange-hover-bg) !important;
+}
+
+.btn--orange:focus {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px rgba(201, 127, 58, 0.5) !important;
+}
+
+.btn--red {
+  background-color: var(--btn-red-bg) !important;
+  border-color: var(--btn-red-bg) !important;
+  color: var(--btn-text-color) !important;
+}
+
+.btn--red:hover {
+  background-color: var(--btn-red-hover-bg) !important;
+  border-color: var(--btn-red-hover-bg) !important;
+}
+
+.btn--red:focus {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px rgba(191, 99, 102, 0.5) !important;
 }
