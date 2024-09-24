@@ -1,0 +1,29 @@
+[
+    {
+        "username": "user",
+        "enabled": true,
+        "credentials": [{"type": "password", "value": "user", "temporary": false}],
+        "firstName": "User",
+        "lastName": "Reqular",
+        "email": "user@example.com",
+        "emailVerified": true
+    },
+    {
+        "username": "better_user",
+        "enabled": true,
+        "credentials": [{"type": "password", "value": "better_user", "temporary": false}],
+        "firstName": "User",
+        "lastName": "Better",
+        "email": "better_user@example.com",
+        "emailVerified": true
+    },
+    {
+        "username": "realm_admin",
+        "enabled": true,
+        "credentials": [{"type": "password", "value": "realm_admin", "temporary": false}],
+        "firstName": "Realm",
+        "lastName": "Admin",
+        "email": "realm_admin@example.com",
+        "emailVerified": true
+    }
+]

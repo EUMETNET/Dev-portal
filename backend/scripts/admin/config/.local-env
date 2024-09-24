@@ -1,0 +1,13 @@
+# Keycloak related values KC_*
+KC_URL="http://localhost:8080"
+KC_REALM="test"
+KC_CLIENT_ID="frontend"
+KC_GROUP_NAME="EUMETNET_USER"
+# admin credentials
+KC_USERNAME="realm_admin"
+KC_PASSWORD="realm_admin"
+# user UUID that is the target of the operation
+KC_USER_UUID=${KC_USER_UUID?Error: KC_USER_UUID not set}
+
+# Backend API URL
+API_URL="http://localhost:8082"

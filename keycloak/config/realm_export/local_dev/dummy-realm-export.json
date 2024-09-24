@@ -27,13 +27,13 @@
   "oauth2DevicePollingInterval": 5,
   "enabled": true,
   "sslRequired": "external",
-  "registrationAllowed": true,
+  "registrationAllowed": false,
   "registrationEmailAsUsername": false,
   "rememberMe": false,
   "verifyEmail": false,
-  "loginWithEmailAllowed": true,
+  "loginWithEmailAllowed": false,
   "duplicateEmailsAllowed": false,
-  "resetPasswordAllowed": true,
+  "resetPasswordAllowed": false,
   "editUsernameAllowed": false,
   "bruteForceProtected": false,
   "permanentLockout": false,
@@ -65,6 +65,24 @@
         "attributes": {}
       },
       {
+													 
+						
+						  
+						   
+							
+															  
+						
+		
+	   
+													 
+					   
+						  
+						   
+							
+															  
+						
+		
+	   
         "id": "c8c93745-dbbd-49e8-af76-175bb2ca62a5",
         "name": "default-roles-test",
         "description": "${role_default-roles}",
@@ -73,6 +91,7 @@
           "realm": [
             "offline_access",
             "uma_authorization"
+				  
           ],
           "client": {
             "account": [
@@ -171,6 +190,7 @@
                 "create-client",
                 "view-authorization",
                 "view-realm",
+								
                 "query-groups",
                 "query-clients",
                 "manage-users",
@@ -897,6 +917,7 @@
             "full.path": "false",
             "introspection.token.claim": "true",
             "userinfo.token.claim": "true",
+            "multivalued": "true",
             "id.token.claim": "true",
             "lightweight.claim": "false",
             "access.token.claim": "true",
@@ -1127,6 +1148,27 @@
       ]
     },
     {
+												   
+							
+																							
+								   
+					 
+										  
+											 
+								 
+		
+						  
+		 
+													   
+										
+									   
+														  
+								   
+					  
+		 
+	   
+	  
+	 
       "id": "ac507b14-6af3-4f54-a8e4-9e8c341ee6c1",
       "name": "offline_access",
       "description": "OpenID Connect built-in scope: offline_access",
@@ -1594,8 +1636,13 @@
       "authenticateByDefault": false,
       "linkOnly": false,
       "config": {
-        "clientSecret": "**********",
-        "clientId": "1054919297695-v480f46n6589cgo792193o9tdhrbu2hq.apps.googleusercontent.com"
+        "hideOnLoginPage": "false",
+        "acceptsPromptNoneForwardFromClient": "false",
+        "clientId": "1054919297695-v480f46n6589cgo792193o9tdhrbu2hq.apps.googleusercontent.com",
+        "disableUserInfo": "false",
+        "filteredByClaim": "false",
+        "syncMode": "IMPORT",
+        "clientSecret": "**********"
       }
     },
     {
@@ -1610,8 +1657,13 @@
       "authenticateByDefault": false,
       "linkOnly": false,
       "config": {
-        "clientSecret": "**********",
-        "clientId": "Ov23ctCB2Xbm9MVAr9FZ"
+        "hideOnLoginPage": "false",
+        "acceptsPromptNoneForwardFromClient": "false",
+        "clientId": "Ov23ctCB2Xbm9MVAr9FZ",
+        "disableUserInfo": "false",
+        "filteredByClaim": "false",
+        "syncMode": "IMPORT",
+        "clientSecret": "**********"
       }
     }
   ],
@@ -1661,14 +1713,16 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-sha256-pairwise-sub-mapper",
-            "oidc-full-name-mapper",
+									
+									
             "oidc-address-mapper",
-            "oidc-usermodel-attribute-mapper",
             "saml-user-attribute-mapper",
-            "saml-role-list-mapper",
+            "saml-user-property-mapper",
+            "oidc-full-name-mapper",
             "oidc-usermodel-property-mapper",
-            "saml-user-property-mapper"
+            "oidc-sha256-pairwise-sub-mapper",
+            "saml-role-list-mapper",
+            "oidc-usermodel-attribute-mapper"
           ]
         }
       },
@@ -1712,14 +1766,19 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-usermodel-attribute-mapper",
+											 
+										 
+								  
+									
+									
             "saml-user-property-mapper",
-            "saml-user-attribute-mapper",
             "oidc-full-name-mapper",
-            "oidc-usermodel-property-mapper",
+            "oidc-usermodel-attribute-mapper",
             "oidc-address-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
-            "saml-role-list-mapper"
+            "saml-user-attribute-mapper",
+            "oidc-usermodel-property-mapper",
+            "saml-role-list-mapper",
+            "oidc-sha256-pairwise-sub-mapper"
           ]
         }
       }
