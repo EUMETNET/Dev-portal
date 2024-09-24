@@ -37,7 +37,7 @@ function App() {
       const { data, isError } = await getAPIKey();
       if (!isError) {
         const apiKey = data.apiKey;
-        setInfoMessage(`API key: ${apiKey}`);
+        setInfoMessage(`API key:\n ${apiKey}`);
       } else {
         showToaster(data?.message ?? 'Undefined error message');
       }
@@ -124,7 +124,7 @@ function App() {
       {/* <Auth /> */}
       <Header />
       <div className="grid">
-        <div className="col">
+        <div className="col-12">
           {auth.isAuthenticated ? (
             <>
               <Button
@@ -171,18 +171,15 @@ function App() {
             />
           )}
         </div>
-      </div>
-
-      {auth.isAuthenticated && (
-        <div className="grid">
-          <div className="col-2"></div>
-          <div className="col-8">
-            <h3>Info Pane</h3>
-            <Card>{infoMessage}</Card>
-          </div>
-          <div className="col-2"></div>
+        <div className="col-12 pb-0 mb-0 mt-0 md:mt-3">
+          <h3>Info Pane</h3>
         </div>
-      )}
+        <div className="pt-0 mt-0 col-12 flex justify-content-center flex-wrap">
+          <Card className="m-1 pr-5 md:px-0 py-2 col-10 md:col-8 xl:col-8" style={{ overflowX: 'auto', whiteSpace: "pre-line" }}>
+            {infoMessage}
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
