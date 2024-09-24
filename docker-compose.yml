@@ -65,7 +65,7 @@ services:
       - test
 
   etcd:
-    image: bitnami/etcd:3.4.15
+    image: bitnami/etcd:3.5.16
     restart: always
     volumes:
       - /bitnami/etcd
@@ -79,16 +79,16 @@ services:
     networks:
       apisix:
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:2379/health"]
+      test: ["CMD-SHELL", "etcdctl --endpoints=http://localhost:2379 endpoint health"]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 5
     profiles:
       - dev
       - test
 
   etcd2:
-    image: bitnami/etcd:3.4.15
+    image: bitnami/etcd:3.5.16
     restart: always
     volumes:
       - /bitnami/etcd
@@ -102,10 +102,10 @@ services:
     networks:
       apisix:
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:2379/health"]
+      test: ["CMD-SHELL", "etcdctl --endpoints=http://localhost:2379 endpoint health"]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 5
     profiles:
       - dev
       - test
@@ -182,7 +182,7 @@ services:
     volumes:
       - ./vault/:/vault
     healthcheck:
-      test: ["CMD", "vault", "status"]
+      test: ["CMD-SHELL", "VAULT_ADDR=http://localhost:8200 vault status"]
       interval: 5s
       timeout: 3s
       retries: 5
