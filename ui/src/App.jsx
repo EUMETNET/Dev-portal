@@ -175,7 +175,10 @@ function App() {
           <h3>Info Pane</h3>
         </div>
         <div className="pt-0 mt-0 col-12 flex justify-content-center flex-wrap">
-          <Card className="m-1 pr-5 md:px-0 py-2 col-10 md:col-8 xl:col-8" style={{ overflowX: 'auto', whiteSpace: "pre-line" }}>
+          <Card
+            className="m-1 pr-5 md:px-0 py-2 col-10 md:col-8 xl:col-8"
+            style={{ overflowX: 'auto', whiteSpace: 'pre-line' }}
+          >
             {infoMessage}
           </Card>
         </div>

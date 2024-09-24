@@ -90,3 +90,21 @@
     0 0 0 2px #fff,
     0 0 0 4px rgba(191, 99, 102, 0.5) !important;
 }
+
+/* Disable transitions for instant changes */
+.btn--yellow,
+.btn--green,
+.btn--red,
+.btn--orange {
+  transition: none;
+  animation: none;
+}
+
+/* Disable transitions and animations for the button label inside custom buttons */
+.btn--yellow .p-button-label,
+.btn--green .p-button-label,
+.btn--red .p-button-label,
+.btn--orange .p-button-label {
+  transition: none !important;
+  animation: none !important;
+}
