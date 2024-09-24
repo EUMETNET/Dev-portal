@@ -1,4 +1,5 @@
 #!/bin/sh
+# This is run inside the vault container
 VAULT_ADDR='http://127.0.0.1:8200'
 
 if ! vault secrets list | grep -q "${VAULT_SECRET_ENGINE}/"; then

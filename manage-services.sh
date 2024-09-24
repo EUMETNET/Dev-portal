@@ -39,6 +39,7 @@ show_help() {
 # Command to start services
 up() {
     ENV=${1:-dev}
+    echo "Starting up $ENV environment"
     _up
 }
 
@@ -60,6 +61,7 @@ _config_external_services() {
 # Stop services
 stop() {
     ENV=${1:-dev}
+    echo "Stopping $ENV environment"
     _stop
 }
 
@@ -72,6 +74,7 @@ _stop() {
 # Remove services
 remove() {
     ENV=${1:-dev}
+    echo "Removing $ENV environment"
     _remove
 }
 

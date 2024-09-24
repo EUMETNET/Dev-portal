@@ -44,7 +44,7 @@ if [ "$ENV" = "dev" ]; then
           -H "Authorization: Bearer ${TOKEN}" | jq -r 'any(.[]; .username == "'"${username}"'")')
 
       # Create the user if it does not exist
-      if [ $user_exists == "false" ]; then
+      if [ "$user_exists" == "false" ]; then
         curl -s -X POST "http://localhost:${KEYCLOAK_PORT}/admin/realms/${REALM_NAME}/users" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${TOKEN}" \
