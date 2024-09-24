@@ -2,8 +2,7 @@
 Pytest fixtures for actual tests.
 """
 
-from typing import AsyncGenerator, Any
-import json
+from typing import AsyncGenerator
 import asyncio
 import pytest
 from httpx import AsyncClient
@@ -12,15 +11,13 @@ from tests.data import apisix, keycloak
 
 config = settings()
 
-VAULT_HEADERS = {"X-Vault-Token": config.vault.token}
-
 
 def get_apisix_headers(instance: APISixInstanceSettings) -> dict[str, str]:
     """ """
     return {"Content-Type": "application/json", "X-API-KEY": instance.admin_api_key}
 
 
-def get_realm_group_id_by_name(group_name: str) -> str:
+async def get_realm_group_id_by_name(client: AsyncClient, group_name: str) -> str:
     """
     Get the group ID of a realm group by its name.
 
@@ -30,10 +27,19 @@ def get_realm_group_id_by_name(group_name: str) -> str:
     Returns:
         str: The group ID of the realm group.
     """
-    with open("tests/data/realm-export.json", encoding="utf-8") as f:
-        realm_json = json.load(f)
+    url = f"{config.keycloak.url}/admin/realms/{config.keycloak.realm}/groups"
 
-    for group in realm_json["groups"]:
+    admin_access_token = await get_keycloak_admin_token(client)
+
+    auth_header = {
+        "Authorization": f"Bearer {admin_access_token}",
+    }
+    groups = await client.get(url=url, headers=auth_header)
+
+    # with open("tests/data/realm-export.json", encoding="utf-8") as f:
+    #    realm_json = json.load(f)
+
+    for group in groups.json():
         if group["name"] == group_name:
             return group["id"]
     raise ValueError(f'Group "{group_name}" not found in the realm export data.')
@@ -68,18 +74,24 @@ async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     """
     Setup vault for tests.
     """
-    # Setup vault
-    # initiate the secret engine
-    data = {
-        "type": "kv",
-    }
-    url = f"{config.vault.url}/v1/sys/mounts/apisix-dev"
-    await client.post(url, json=data, headers=VAULT_HEADERS)
 
     yield
 
-    # Remove secret engine
-    await client.delete(url, headers=VAULT_HEADERS)
+    # Remove all the secrets
+    headers = {"X-Vault-Token": config.vault.token}
+
+    response = await client.get(
+        f"{config.vault.url}/v1/{config.vault.base_path}/?list=true", headers=headers
+    )
+
+    await asyncio.gather(
+        *[
+            client.delete(
+                f"{config.vault.url}/v1/{config.vault.base_path}/{secret}", headers=headers
+            )
+            for secret in response.json()["data"]["keys"]
+        ]
+    )
 
 
 # ------- APISIX SETUP ---------
@@ -88,41 +100,8 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     """
     Setup apisix for tests.
     """
-
-    # Add secrets config for Vault
-    data = {
-        "uri": "http://vault:8200",  # use the docker network since this is for apisix
-        "prefix": config.vault.base_path,
-        "token": config.vault.token,
-    }
-
-    # Add consumer group
-
-    group_data = {
-        "plugins": {},
-        "id": "EUMETNET_USER",
-    }
-
     # Add some test routes
     routes = apisix.ROUTES
-
-    secret_requests = [
-        client.put(
-            f"{instance.admin_url}/apisix/admin/secrets/vault/dev",
-            json=data,
-            headers=get_apisix_headers(instance),
-        )
-        for instance in config.apisix.instances
-    ]
-
-    consumer_group_requests = [
-        client.put(
-            f"{instance.admin_url}/apisix/admin/consumer_groups",
-            json=group_data,
-            headers=get_apisix_headers(instance),
-        )
-        for instance in config.apisix.instances
-    ]
 
     routes_requests = [
         client.put(
@@ -135,8 +114,6 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     ]
 
     await asyncio.gather(
-        *secret_requests,
-        *consumer_group_requests,
         *routes_requests,
     )
 
@@ -146,35 +123,15 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     await asyncio.gather(
         *[
             client.delete(
-                f"{instance.admin_url}/apisix/admin/secrets/vault/dev",
+                f"{instance.admin_url}/apisix/admin/routes/{route['id']}",
                 headers=get_apisix_headers(instance),
             )
             for instance in config.apisix.instances
-        ],
-        *[
-            client.delete(
-                f"{instance.admin_url}/apisix/admin/routes", headers=get_apisix_headers(instance)
-            )
-            for instance in config.apisix.instances
-        ],
-        *[
-            client.delete(
-                f"{instance.admin_url}/apisix/admin/consumer_groups/{group_data['id']}",
-                headers=get_apisix_headers(instance),
-            )
-            for instance in config.apisix.instances
+            for route in routes
         ],
     )
 
-
-@pytest.fixture
-async def clean_up_api6_consumers(client: AsyncClient) -> AsyncGenerator[None, None]:
-    """
-    Clean up API6 consumers after test is ran.
-    """
-    yield
-
-    consumer_responses = await asyncio.gather(
+    consumers = await asyncio.gather(
         *[
             client.get(
                 f"{instance.admin_url}/apisix/admin/consumers", headers=get_apisix_headers(instance)
@@ -183,21 +140,16 @@ async def clean_up_api6_consumers(client: AsyncClient) -> AsyncGenerator[None, N
         ]
     )
 
-    delete_tasks = []
-
-    for response, instance in zip(consumer_responses, config.apisix.instances):
-        data = response.json()
-        if data["total"]:
-            delete_tasks.extend(
-                [
-                    client.delete(
-                        f"{instance.admin_url}/apisix/admin/consumers/{user['value']['username']}",
-                        headers=get_apisix_headers(instance),
-                    )
-                    for user in data["list"]
-                ]
+    await asyncio.gather(
+        *[
+            client.delete(
+                f"{instance.admin_url}/apisix/admin/consumers/{consumer['value']['username']}",
+                headers=get_apisix_headers(instance),
             )
-    await asyncio.gather(*delete_tasks)
+            for instance, instance_consumers in zip(config.apisix.instances, consumers)
+            for consumer in instance_consumers.json()["list"]
+        ]
+    )
 
 
 # ------- KEYCLOAK SETUP ---------
@@ -234,10 +186,6 @@ async def keycloak_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     auth_header = {
         "Authorization": f"Bearer {admin_access_token}",
     }
-    with open("tests/data/realm-export.json", encoding="utf-8") as f:
-        realm_json = json.load(f)
-
-    await client.post(f"{config.keycloak.url}/admin/realms", json=realm_json, headers=auth_header)
 
     users = keycloak.KEYCLOAK_USERS
 
@@ -258,19 +206,13 @@ async def keycloak_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
 
     kc_users = await client.get(user_url, headers=auth_header)
 
-    user_ids_to_delete = [
-        kc_user["id"]
-        for kc_user in kc_users.json()
-        if kc_user["username"] in [user["username"] for user in users]
-    ]
-
     await asyncio.gather(
         *[
             client.delete(
-                f"{user_url}/{id}",
+                f"{user_url}/{user['id']}",
                 headers={"Authorization": f"Bearer {admin_access_token}"},
             )
-            for id in user_ids_to_delete
+            for user in kc_users.json()
         ]
     )
 
@@ -397,7 +339,7 @@ async def remove_keycloak_user_from_group(client: AsyncClient) -> None:
     user_id = r.json()[0]["id"]
 
     # Define the group ID to remove the user from
-    group_id = get_realm_group_id_by_name("USER")
+    group_id = await get_realm_group_id_by_name(client, "USER")
 
     # Remove the user from the group
     group_url = (
@@ -437,7 +379,7 @@ async def add_keycloak_user_to_group(client: AsyncClient) -> None:
     user_id = r.json()[0]["id"]
 
     # Define the group ID to add the user to
-    group_id = get_realm_group_id_by_name("ADMIN")
+    group_id = await get_realm_group_id_by_name(client, "ADMIN")
 
     # Add the user to the group
     group_url = (

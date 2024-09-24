@@ -40,3 +40,10 @@ __pycache__/
 ### ENV ###
 *config.yaml
 *secrets.yaml
+
+# Ignore all .env-like files
+scripts/admin/config/*.env
+scripts/admin/config/*.env.*
+
+# Explicitly include .local-env
+!scripts/admin/config/.local-env

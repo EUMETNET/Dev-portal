@@ -13,10 +13,7 @@ from pydantic_settings import (
     SettingsConfigDict,
     YamlConfigSettingsSource,
 )
-
-# This value must match with the key name in VaultUser (app.models.vault.VaultUser)
-# In other words there must be a key that equals this value
-VAULT_API_KEY_FIELD_NAME = "auth_key"
+from app.constants import VAULT_API_KEY_FIELD_NAME
 
 
 class APISixInstanceSettings(BaseSettings):
@@ -123,4 +120,5 @@ def settings() -> Settings:
 
 # Set the log level
 logger = logging.getLogger("uvicorn")
-logger.setLevel(logging.getLevelName(settings().server.log_level))
+log_level = getattr(logging, settings().server.log_level.upper(), logging.INFO)
+logger.setLevel(log_level)

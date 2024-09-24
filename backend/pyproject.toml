@@ -7,23 +7,23 @@ readme = "README.MD"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "^0.111.0"
-uvicorn = "^0.29.0"
-httpx = "^0.27.0"
-pydantic-settings = "^2.2.1"
-pyyaml = "^6.0.1"
+fastapi = "^0.112.2"
+uvicorn = "^0.30.6"
+httpx = "^0.27.2"
+pydantic-settings = "^2.4.0"
+pyyaml = "^6.0.2"
 aiocache = "^0.12.2"
-pyjwt = {extras = ["crypto"], version = "^2.8.0"}
+pyjwt = {extras = ["crypto"], version = "^2.9.0"}
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.4.2"
-pytest = "^8.2.0"
-bandit = "^1.7.7"
-mypy = "^1.10.0"
-pylint = "^3.1.0"
-anyio = "^4.3.0"
+black = "^24.8.0"
+pytest = "^8.3.2"
+bandit = "^1.7.9"
+mypy = "^1.11.2"
+pylint = "^3.2.7"
+anyio = "^4.4.0"
 pylint-pydantic = "^0.3.2"
-freezegun = "^1.5.0"
+freezegun = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -52,9 +52,9 @@ min-similarity-lines=10
 
 [tool.poetry.scripts]
 start-dev = "app.main:start_dev"
-format = "scripts:format_code"
-format-check = "scripts:format_code_check"
-lint = "scripts:lint_code"
-type-check = "scripts:type_check"
-sec-check = "scripts:security_check"
-test = "scripts:run_tests"
+format = "scripts.poetry.scripts:format_code"
+format-check = "scripts.poetry.scripts:format_code_check"
+lint = "scripts.poetry.scripts:lint_code"
+type-check = "scripts.poetry.scripts:type_check"
+sec-check = "scripts.poetry.scripts:security_check"
+test = "scripts.poetry.scripts:run_tests"
