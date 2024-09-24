@@ -8,7 +8,7 @@ const Header = () => {
           <img src="/eumetnet_femdi.png" alt="EUMETNET FEMDI" className="header-logo" />
         </div>
         <div className="col-12 px-4 md:col-6 flex align-items-center justify-content-center flex-column flex-order-1 md:flex-order-2">
-          <h1 className="md:mt-6">Developer Portal prototype</h1>
+          <h1 className="md:mt-6">Developer Portal</h1>
           <h1 id="app-header-2" className="mt-0 md:mt-4">
             Secured with Keycloak
           </h1>
