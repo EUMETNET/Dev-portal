@@ -1,9 +1,9 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12.2-alpine as builder
+FROM python:3.12.2-alpine AS builder
 
 # Set environment varibles
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Set work directory
 WORKDIR /tmp
