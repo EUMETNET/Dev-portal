@@ -159,6 +159,17 @@ function App() {
                 label="Logout"
                 raised
               />
+              <div className="col-12 mt-2 mb-0 md:mt-3">
+                <h3>Info Pane</h3>
+              </div>
+              <div className="mt-0 flex justify-content-center flex-wrap">
+                <Card
+                  className="md:px-0 col-10 md:col-8 xl:col-8"
+                  style={{ overflowX: 'auto', whiteSpace: 'pre-line' }}
+                >
+                  {infoMessage}
+                </Card>
+              </div>
             </>
           ) : (
             <Button
@@ -170,17 +181,6 @@ function App() {
               raised
             />
           )}
-        </div>
-        <div className="col-12 pb-0 mb-0 mt-0 md:mt-3">
-          <h3>Info Pane</h3>
-        </div>
-        <div className="pt-0 mt-0 col-12 flex justify-content-center flex-wrap">
-          <Card
-            className="m-1 pr-5 md:px-0 py-2 col-10 md:col-8 xl:col-8"
-            style={{ overflowX: 'auto', whiteSpace: 'pre-line' }}
-          >
-            {infoMessage}
-          </Card>
         </div>
       </div>
     </div>
