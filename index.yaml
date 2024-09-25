@@ -2,6 +2,20 @@ apiVersion: v1
 entries:
   dev-portal:
   - apiVersion: v2
+    appVersion: 1.6.1
+    created: "2024-09-25T09:52:43.682385427Z"
+    description: A Helm chart for Rodeo Api gateway dev portal
+    digest: 909eda1cee771842d76177737def022a097747a14c1b30664549e9727bbc849a
+    maintainers:
+    - name: JoonaHa
+    name: dev-portal
+    sources:
+    - https://github.com/EURODEO/Dev-portal/
+    type: application
+    urls:
+    - https://github.com/EURODEO/Dev-portal/releases/download/dev-portal-1.10.1/dev-portal-1.10.1.tgz
+    version: 1.10.1
+  - apiVersion: v2
     appVersion: 1.6.0
     created: "2024-09-24T15:05:06.893491418Z"
     description: A Helm chart for Rodeo Api gateway dev portal
@@ -337,4 +351,4 @@ entries:
     urls:
     - https://github.com/EURODEO/Dev-portal/releases/download/dev-portal-0.2/dev-portal-0.2.tgz
     version: "0.2"
-generated: "2024-09-24T15:05:06.893631351Z"
+generated: "2024-09-25T09:52:43.682586041Z"
