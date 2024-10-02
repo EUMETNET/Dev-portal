@@ -863,17 +863,10 @@
         }
       ],
       "defaultClientScopes": [
-        "web-origins",
-        "acr",
         "profile",
-        "roles",
-        "email"
+        "roles"
       ],
       "optionalClientScopes": [
-        "address",
-        "phone",
-        "offline_access",
-        "microprofile-jwt"
       ]
     },
     {
