@@ -65,24 +65,6 @@
         "attributes": {}
       },
       {
-													 
-						
-						  
-						   
-							
-															  
-						
-		
-	   
-													 
-					   
-						  
-						   
-							
-															  
-						
-		
-	   
         "id": "c8c93745-dbbd-49e8-af76-175bb2ca62a5",
         "name": "default-roles-test",
         "description": "${role_default-roles}",
@@ -742,27 +724,23 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "okXCanJb0qrDPh54Le40eecLLvEh86Xw",
-      "redirectUris": [
-        "/*"
-      ],
-      "webOrigins": [
-        "/*"
-      ],
+      "redirectUris": [],
+      "webOrigins": [],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
-      "standardFlowEnabled": true,
+      "standardFlowEnabled": false,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": true,
       "publicClient": false,
-      "frontchannelLogout": true,
+      "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {
         "oidc.ciba.grant.enabled": "false",
         "client.secret.creation.time": "1713258412",
         "backchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "+",
+        "post.logout.redirect.uris": "",
         "oauth2.device.authorization.grant.enabled": "false",
         "display.on.consent.screen": "false",
         "backchannel.logout.revoke.offline.tokens": "false"
@@ -821,18 +799,9 @@
         }
       ],
       "defaultClientScopes": [
-        "web-origins",
-        "acr",
-        "profile",
-        "roles",
-        "email"
+        "roles"
       ],
-      "optionalClientScopes": [
-        "address",
-        "phone",
-        "offline_access",
-        "microprofile-jwt"
-      ]
+      "optionalClientScopes": []
     },
     {
       "id": "71780706-7063-4c14-a1fe-a8b229e1f230",
@@ -847,10 +816,10 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "*"
+        "http://localhost:3002"
       ],
       "webOrigins": [
-        "*"
+        "http://localhost:3002"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -866,7 +835,7 @@
         "oidc.ciba.grant.enabled": "false",
         "client.secret.creation.time": "1713171613",
         "backchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "*",
+        "post.logout.redirect.uris": "http://localhost:3002",
         "oauth2.device.authorization.grant.enabled": "false",
         "display.on.consent.screen": "false",
         "backchannel.logout.revoke.offline.tokens": "false"
