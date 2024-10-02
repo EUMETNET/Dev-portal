@@ -73,7 +73,6 @@
           "realm": [
             "offline_access",
             "uma_authorization"
-				  
           ],
           "client": {
             "account": [
@@ -172,7 +171,6 @@
                 "create-client",
                 "view-authorization",
                 "view-realm",
-								
                 "query-groups",
                 "query-clients",
                 "manage-users",
@@ -866,8 +864,7 @@
         "profile",
         "roles"
       ],
-      "optionalClientScopes": [
-      ]
+      "optionalClientScopes": []
     },
     {
       "id": "ca6e9fba-3869-44a3-9ce8-2479d9b95f3a",
@@ -1062,27 +1059,6 @@
       ]
     },
     {
-												   
-							
-																							
-								   
-					 
-										  
-											 
-								 
-		
-						  
-		 
-													   
-										
-									   
-														  
-								   
-					  
-		 
-	   
-	  
-	 
       "id": "ac507b14-6af3-4f54-a8e4-9e8c341ee6c1",
       "name": "offline_access",
       "description": "OpenID Connect built-in scope: offline_access",
@@ -1627,8 +1603,6 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-									
-									
             "oidc-address-mapper",
             "saml-user-attribute-mapper",
             "saml-user-property-mapper",
@@ -1680,11 +1654,6 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-											 
-										 
-								  
-									
-									
             "saml-user-property-mapper",
             "oidc-full-name-mapper",
             "oidc-usermodel-attribute-mapper",
