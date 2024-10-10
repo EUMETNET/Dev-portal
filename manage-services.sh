@@ -9,6 +9,9 @@ export KEYCLOAK_MASTER_ADMIN_USER="admin"
 export KEYCLOAK_MASTER_ADMIN_PW="admin"
 export REALM_NAME="test"
 
+# Determine the directory where the script is located
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
 # Add check to see if jq is installed
 if ! command -v jq &> /dev/null
 then
@@ -16,12 +19,11 @@ then
     exit 1
 fi
 
-# Load environment variables from the appropriate file
 _load_env() {
     if [ "$ENV" = "dev" ]; then
-        export $(grep -v '^#' .env.dev | xargs)
+        export $(grep -v '^#' "$SCRIPT_DIR/.env.dev" | xargs)
     elif [ "$ENV" = "test" ]; then
-        export $(grep -v '^#' .env.test | xargs)
+        export $(grep -v '^#' "$SCRIPT_DIR/.env.test" | xargs)
     else
         echo "Invalid environment: '$ENV'. Please provide a valid environment: dev or test"
         exit 1
@@ -96,13 +98,13 @@ _configure_vault() {
 
 # Configure Keycloak
 _configure_keycloak() {
-    ./keycloak/config/setup.sh || { remove $ENV; exit 1; }
+    "$SCRIPT_DIR/keycloak/config/setup.sh" || { remove $ENV; exit 1; }
 }
 
 # Configure APISIX
 _configure_apisix() {
     export APISIX_ADMIN_API_PORTS="${APISIX_ADMIN_API_PORT},${APISIX2_ADMIN_API_PORT}"
-    ./apisix_conf/setup.sh || { remove $ENV; exit 1; }
+    "$SCRIPT_DIR/apisix_conf/setup.sh" || { remove $ENV; exit 1; }
 }
 
 # Main script logic to handle command-line arguments
