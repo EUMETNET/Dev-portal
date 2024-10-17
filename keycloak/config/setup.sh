@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Determine the directory where the script is located
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
 echo "Waiting for Keycloak to be ready before configuring it..."
 
 # No easy way to do healthcheck in docker-compose, so we do it manually
@@ -31,7 +34,7 @@ if [ "$ENV" = "dev" ]; then
     -d "client_id=admin-cli" | jq -r '.access_token')
 
   # Read dummy users
-  user_data=$(cat "./keycloak/config/dummy-users.json")
+  user_data=$(cat "$SCRIPT_DIR/dummy-users.json")
 
   # Create users and assing them to groups
   echo "${user_data}" | jq -c '.[]' | while read user; do
