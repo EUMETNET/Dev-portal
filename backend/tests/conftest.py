@@ -78,17 +78,23 @@ async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     yield
 
     # Remove all the secrets
-    headers = {"X-Vault-Token": config.vault.token}
-
-    response = await client.get(
-        f"{config.vault.url}/v1/{config.vault.base_path}/?list=true", headers=headers
+    secret_responses = await asyncio.gather(
+        *[
+            client.get(
+                f"{instance.url}/v1/{config.vault.base_path}/?list=true",
+                headers={"X-Vault-Token": instance.token},
+            )
+            for instance in config.vault.instances
+        ]
     )
 
     await asyncio.gather(
         *[
             client.delete(
-                f"{config.vault.url}/v1/{config.vault.base_path}/{secret}", headers=headers
+                f"{instance.url}/v1/{config.vault.base_path}/{secret}",
+                headers={"X-Vault-Token": instance.token},
             )
+            for instance, response in zip(config.vault.instances, secret_responses)
             for secret in response.json()["data"]["keys"]
         ]
     )
