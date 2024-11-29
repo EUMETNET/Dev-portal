@@ -37,15 +37,24 @@ class APISixSettings(BaseSettings):
     instances: list[APISixInstanceSettings]
 
 
+class VaultInstanceSettings(BaseSettings):
+    """
+    Vault instance settings model
+    """
+
+    name: str
+    url: str
+    token: str
+
+
 class VaultSettings(BaseSettings):
     """
     Vault settings model
     """
 
-    url: str
     base_path: str
-    token: str
     secret_phase: str
+    instances: list[VaultInstanceSettings]
 
 
 class KeyCloakSettings(BaseSettings):

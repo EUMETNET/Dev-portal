@@ -24,5 +24,7 @@ class VaultUser(BaseModel):
 
     # The key name for 'auth_key' field must match with value of
     # app.config.settings.VAULT_API_KEY_FIELD_NAME
+    id: str
     auth_key: str
     date: str
+    instance_name: str

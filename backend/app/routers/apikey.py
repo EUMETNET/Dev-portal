@@ -48,12 +48,20 @@ async def get_api_key(
     logger.debug("Got request to retrieve API key for user '%s'", user.id)
 
     try:
-        vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
+        vault_users, apisix_users = await apikey.get_user_from_vault_and_apisix_instances(
+            client, user.id
+        )
 
-        if not vault_user or any(user is None for user in apisix_users):
-            logger.debug("User '%s' not found in Vault or APISIX --> Creating user", user.id)
+        # Grab the first user that is not None, user's API key is same in all Vault instances
+        vault_user = next((user for user in vault_users if user), None)
+
+        if not vault_user or None in apisix_users:
+            logger.debug(
+                "User '%s' not found in all Vault and/or APISIX instances --> Upserting user",
+                user.id,
+            )
             vault_user = await apikey.create_user_to_vault_and_apisixes(
-                client, user, vault_user, apisix_users
+                client, user, vault_users, apisix_users
             )
 
     except (VaultError, APISIXError) as e:
@@ -92,10 +100,14 @@ async def delete_user(
     logger.debug("Got request to delete API key for user '%s'", user.id)
 
     try:
-        vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
-        if vault_user or any(apisix_users):
+        vault_users, apisix_users = await apikey.get_user_from_vault_and_apisix_instances(
+            client, user.id
+        )
+        if any(vault_users) or any(apisix_users):
             logger.debug("User '%s' found in Vault and/or APISIX --> Deleting user", user.id)
-            await apikey.delete_user_from_vault_and_apisixes(client, user, vault_user, apisix_users)
+            await apikey.delete_user_from_vault_and_apisixes(
+                client, user, vault_users, apisix_users
+            )
 
     except (VaultError, APISIXError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e

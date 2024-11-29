@@ -40,14 +40,16 @@ async def delete_or_disable_user(
 
     log_action = "Disabling" if action == "DISABLE" else "Deleting"
 
-    vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
-    if vault_user or any(apisix_users):
+    vault_users, apisix_users = await apikey.get_user_from_vault_and_apisix_instances(
+        client, user.id
+    )
+    if any(vault_users) or any(apisix_users):
         logger.debug(
             "User '%s' found in Vault and/or APISIX --> %s user from those",
             user_uuid,
             log_action,
         )
-        await apikey.delete_user_from_vault_and_apisixes(client, user, vault_user, apisix_users)
+        await apikey.delete_user_from_vault_and_apisixes(client, user, vault_users, apisix_users)
 
     logger.debug("User '%s' found in Keycloak --> %s user", user_uuid, log_action)
 
@@ -62,15 +64,15 @@ async def delete_or_disable_user(
     except KeycloakError as e:
         logger.warning("Attempting to rollback the user's API key back to Vault and APISIX(es)...")
 
-        if any(isinstance(apisix_user, APISixConsumer) for apisix_user in apisix_users):
-            await asyncio.gather(
-                apikey.handle_rollback(
-                    client,
-                    user,
-                    vault_user,
-                    [apisix_user for apisix_user in apisix_users if apisix_user],
-                    rollback_from="DELETE",
-                ),
+        if any(vault_users) or any(apisix_users):
+            responses = [vault_user for vault_user in vault_users if vault_user] + [
+                apisix_user for apisix_user in apisix_users if apisix_user
+            ]
+            await apikey.handle_rollback(
+                client,
+                user,
+                responses,
+                rollback_from="DELETE",
             )
 
         raise KeycloakError("Keycloak service error") from e
@@ -110,7 +112,9 @@ async def modify_user_group(
 
         user = User(id=user_uuid, groups=user_groups)
 
-        _vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
+        _vault_users, apisix_users = await apikey.get_user_from_vault_and_apisix_instances(
+            client, user.id
+        )
 
         if any(apisix_users):
             if EUMETNET_USER_GROUP in user.groups:
@@ -144,7 +148,7 @@ async def modify_user_group(
                     client, user_uuid, group_to_update.id, "DELETE" if action == "PUT" else "PUT"
                 )
 
-                # We want to rollback the user's state to before the group was altered
+                # We want to rollback the user's state to state before the group was altered
                 rollback_from_delete: list[APISixConsumer | APISIXError] = []
 
                 rollback_from_create: list[APISixConsumer | APISIXError] = []
@@ -162,7 +166,6 @@ async def modify_user_group(
                     await apikey.handle_rollback(
                         client,
                         user,
-                        None,
                         rollback_from_delete,
                         rollback_from="DELETE",
                     )
@@ -171,7 +174,6 @@ async def modify_user_group(
                     await apikey.handle_rollback(
                         client,
                         user,
-                        None,
                         rollback_from_create,
                         rollback_from="CREATE",
                     )
