@@ -59,7 +59,6 @@ async def get_user_from_vault_and_apisix_instances(
     )
 
 
-# pylint: disable=too-many-arguments
 async def handle_rollback(
     client: AsyncClient,
     user: User,
@@ -85,45 +84,25 @@ async def handle_rollback(
         HTTPException: If there is an error during the rollback process.
     """
     tasks: list[Coroutine[Any, Any, VaultUser | APISixConsumer]] = []
-
-    # if vault_user:
-    #    if rollback_from == "CREATE":
-    #        tasks.append(vault.delete_user_from_vault(client, user.id))
-    #    else:
-    #        tasks.append(vault.save_user_to_vault(client, user.id, vault_user))
+    vault_user = None
 
     if rollback_from == "CREATE":
         not_errored_vault_instances = [
             user.instance_name for user in responses if isinstance(user, VaultUser)
         ]
 
+        if not_errored_vault_instances:
+            vault_user = next(user for user in responses if isinstance(user, VaultUser))
+
         not_errored_apisix_instances = [
             user.instance_name for user in responses if isinstance(user, APISixConsumer)
         ]
 
-        # not_errored_vault_instances = [
-        #    vault_user.instance_name
-        #    for vault_user in vault_responses
-        #    if not isinstance(vault_user, VaultError)
-        # ]
-        # not_errored_apisix_instances = [
-        #    consumer.instance_name
-        #    for consumer in apisix_responses
-        #    if not isinstance(consumer, APISIXError)
-        # ]
-        # tasks.extend(
-        #    apisix.create_tasks(
-        #        apisix.delete_apisix_consumer,
-        #        client,
-        #        user,
-        #        instances=not_errored_apisix_instances,
-        #    )
-        # )
         tasks = [
             *vault.create_tasks(
                 vault.delete_user_from_vault,
                 client,
-                user.id,
+                vault_user,
                 instances=not_errored_vault_instances,
             ),
             *apisix.create_tasks(
@@ -152,13 +131,6 @@ async def handle_rollback(
                 consumers=existing_apisix_consumers,
             ),
         ]
-        # tasks.extend(
-        #    apisix.create_tasks(
-        #        apisix.upsert_apisix_consumer,
-        #        client,
-        #        consumers=existing_consumers,
-        #    )
-        # )
 
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -198,7 +170,6 @@ async def create_user_to_vault_and_apisixes(
         VaultError: If there is an error saving the user to Vault.
     """
     # User has same API key in all Vault instances so grab the first one as base
-    logger.info("V USers %s", vault_users)
     vault_user = next(
         (
             VaultUser(
@@ -228,14 +199,6 @@ async def create_user_to_vault_and_apisixes(
             ", ".join([instance.name for instance in config.vault.instances]),
         )
         tasks.extend(vault.create_tasks(vault.save_user_to_vault, client, vault_user))
-        # vault_responses = list[VaultUser | VaultError] = await asyncio.gather(
-        #    *vault.create_tasks(vault.save_user_to_vault, client, user.id, vault_user),
-        #    return_exceptions=True,
-        # )
-
-        # current_vault_user = await vault.save_user_to_vault(client, user.id)
-
-    # apisix_instances_lack_user = apisix.apisix_instances_missing_user(apisix_users)
 
     if None in apisix_users:
         logger.debug(
@@ -252,15 +215,6 @@ async def create_user_to_vault_and_apisixes(
                 user,
             )
         )
-
-        # apisix_responses: list[APISixConsumer | APISIXError] = await asyncio.gather(
-        #    *apisix.create_tasks(
-        #        apisix.upsert_apisix_consumer,
-        #        client,
-        #        user,
-        #    ),
-        #    return_exceptions=True,
-        # )
 
     responses = cast(
         list[VaultUser | APISixConsumer | VaultError | APISIXError],
@@ -344,16 +298,6 @@ async def delete_user_from_vault_and_apisixes(
             user.id,
             ",".join(apisix_instances_with_user),
         )
-
-        # apisix_responses: list[APISixConsumer | APISIXError] = await asyncio.gather(
-        #    *apisix.create_tasks(
-        #        apisix.delete_apisix_consumer,
-        #        client,
-        #        user,
-        #        instances=apisix_instances_with_user,
-        #    ),
-        #    return_exceptions=True,
-        # )
 
         tasks.extend(
             apisix.create_tasks(

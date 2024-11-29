@@ -70,7 +70,7 @@ async def save_user_to_vault(
 
     Args:
         client (AsyncClient): The HTTP client to use for making the request.
-        identifier (str): The identifier for the user.
+        user (VaultUser): The user object to save to Vault.
 
     Returns:
         VaultUser: A dictionary representing the saved user.
@@ -97,7 +97,12 @@ async def save_user_to_vault(
             json=user.model_dump(exclude={"instance_name", "id"}),
         )
         logger.info("Saved user '%s' to Vault instance %s", user.id, instance.name)
-        return user
+        return VaultUser(
+            auth_key=user.auth_key,
+            date=user.date,
+            instance_name=instance.name,
+            id=user.id,
+        )
     except HTTPError as e:
         logger.exception("Error saving user '%s' to Vault instance %s", user.id, instance.name)
         raise VaultError("Vault service error") from e
@@ -157,6 +162,9 @@ async def delete_user_from_vault(
         client (AsyncClient): The HTTP client to use for making the request.
         identifier (str): The identifier for the user.
 
+    Returns:
+        VaultUser: An object representing the Vault user.
+
     Raises:
         VaultError: If there is an HTTP error while deleting the user.
     """
@@ -168,8 +176,9 @@ async def delete_user_from_vault(
             headers={"X-Vault-Token": instance.token},
         )
         logger.info("Deleted user '%s' from Vault instance %s", user.id, instance.name)
-        user.instance_name = instance.name
-        return user
+        return VaultUser(
+            auth_key=user.auth_key, date=user.date, instance_name=instance.name, id=user.id
+        )
     except HTTPError as e:
         logger.exception("Error deleting user '%s' from Vault instance %s", user.id, instance.name)
         raise VaultError("Vault service error") from e
