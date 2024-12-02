@@ -66,7 +66,8 @@ Once external integrations, UI and backend are running:
 
 2. **Vault**
 
-    UI should be accessible in http://localhost:8200
+    There should be two Vault instances running.
+    UIs should be accessible at http://localhost:8200 and http://localhost:8203
     
     you can login with:
     ```
@@ -95,7 +96,7 @@ Once external integrations, UI and backend are running:
 
 5. **APISIX**
 
-    There should be two GW instances running in http://127.0.0.1:9080 and in http://127.0.0.1:9181
+    There should be two GW instances running at http://127.0.0.1:9080 and http://127.0.0.1:9181
 
     You can test that API key created in previous step works with GW instances.
 

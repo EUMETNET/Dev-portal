@@ -7,6 +7,7 @@ backend
 ├── app
 │   ├── __init__.py  # Init module
 │   ├── config.py # Configuration settings, logger etc
+│   ├── constants.py # App wide constants
 │   ├── dependencies # Dependencies needed in routers
 │   │   ├── http_client.py
 │   │   └── ...
@@ -25,7 +26,8 @@ backend
 ├── tests
 │    ├── conftest.py
 │    └── ...
-├── config.yaml # configuration values
+├── config.default.yaml # configuration values
+├── secrets.default.yaml # secret values
 ├── scripts.py # scripts to run with poetry run
 └── pyproject.toml # Configuration file for Poetry, dependencies, other metadata
 ```
@@ -62,10 +64,15 @@ server:
 #### Example secrets.default.yaml
 ```yaml
 vault:
-  url: http://127.0.0.1:8200
   base_path: apisix-dev/consumers
-  token: 00000000-0000-0000-0000-000000000000
   secret_phase: geeks
+  instances:
+    - name: "EWC"
+      token: 00000000-0000-0000-0000-000000000000
+      url: http://127.0.0.1:8200
+    - name: "ECMWF"
+      token: 00000000-0000-0000-0000-000000000000
+      url: http://127.0.0.1:8203
 
 apisix:
   key_path: $secret://vault/dev/
