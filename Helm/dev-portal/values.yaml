@@ -23,9 +23,11 @@ backend:
   secrets:
     # Provide a existing secret. If empty, one is created
     secretName: ""
-    vault_url: "http://vault.vault.svc.cluster.local:8200"
-    vault_token: ""
     vault_path: apisix-dev/consumers
+    vault_instances:
+      - name: "EWC"
+        token: ""
+        url: "http://vault.vault.svc.cluster.local:8200"
     apisix_keypath: "$secret://vault/dev/"
     apisix_instances:
       - name: "EWC"
