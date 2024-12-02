@@ -102,7 +102,7 @@ class Settings(BaseSettings):
         ]
     )
 
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments,too-many-arguments
     @classmethod
     def settings_customise_sources(
         cls,
