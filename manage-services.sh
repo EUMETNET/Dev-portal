@@ -94,6 +94,7 @@ _start_external_services() {
 # Configure Vault
 _configure_vault() {
     docker exec -e VAULT_SECRET_ENGINE=${VAULT_SECRET_ENGINE} -i vault-${ENV} sh /vault/config/setup.sh || { remove $ENV; exit 1; }
+    docker exec -e VAULT_SECRET_ENGINE=${VAULT_SECRET_ENGINE} -i vault-2-${ENV} sh /vault/config/setup.sh || { remove $ENV; exit 1; }
 }
 
 # Configure Keycloak

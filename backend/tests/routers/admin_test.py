@@ -135,11 +135,11 @@ async def test_delete_user_exception_rolls_user_api_key_back(
         assert response.status_code == 503
         assert response.json() == {"message": "Keycloak service error"}
 
-        vault_user, apisix_consumers = await apikey.get_user_from_vault_and_apisixes(
+        vault_users, apisix_consumers = await apikey.get_user_from_vault_and_apisix_instances(
             client, req_user.id
         )
 
-        assert vault_user is not None
+        assert all(user for user in vault_users)
 
         assert all(user for user in apisix_consumers)
 
@@ -285,7 +285,7 @@ async def test_add_user_and_existing_apikey_to_eumetnet_user_group(
 
         user = await keycloak.get_user(client, uuid)
 
-        _vault_user, apisix_consumers = await apikey.get_user_from_vault_and_apisixes(
+        _vault_users, apisix_consumers = await apikey.get_user_from_vault_and_apisix_instances(
             client, parsed_user.id
         )
 
@@ -376,7 +376,7 @@ async def test_remove_user_and_existing_apikey_from_eumetnet_user_group(
 
         user = await keycloak.get_user(client, uuid)
 
-        _vault_user, apisix_consumers = await apikey.get_user_from_vault_and_apisixes(
+        _vault_users, apisix_consumers = await apikey.get_user_from_vault_and_apisix_instances(
             client, parsed_user.id
         )
 
@@ -396,7 +396,7 @@ async def test_remove_user_and_existing_apikey_from_eumetnet_user_group(
 
         user = await keycloak.get_user(client, uuid)
 
-        _vault_user, apisix_consumers = await apikey.get_user_from_vault_and_apisixes(
+        _vault_user, apisix_consumers = await apikey.get_user_from_vault_and_apisix_instances(
             client, parsed_user.id
         )
 
@@ -458,7 +458,7 @@ async def test_remove_user_from_other_group_persists_group_in_apisix(
 
         user = await keycloak.get_user(client, uuid)
 
-        _vault_user, apisix_consumers = await apikey.get_user_from_vault_and_apisixes(
+        _vault_user, apisix_consumers = await apikey.get_user_from_vault_and_apisix_instances(
             client, parsed_user.id
         )
 
@@ -479,7 +479,7 @@ async def test_remove_user_from_other_group_persists_group_in_apisix(
 
         user = await keycloak.get_user(client, uuid)
 
-        _vault_user, apisix_consumers = await apikey.get_user_from_vault_and_apisixes(
+        _vault_users, apisix_consumers = await apikey.get_user_from_vault_and_apisix_instances(
             client, parsed_user.id
         )
 

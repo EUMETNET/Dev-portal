@@ -45,21 +45,32 @@ async def get_api_key(
     """
     user = User(id=token.sub, groups=token.groups)
 
+    vault_user = None
+
     logger.debug("Got request to retrieve API key for user '%s'", user.id)
 
     try:
-        vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
+        vault_users, apisix_users = await apikey.get_user_from_vault_and_apisix_instances(
+            client, user.id
+        )
 
-        if not vault_user or any(user is None for user in apisix_users):
-            logger.debug("User '%s' not found in Vault or APISIX --> Creating user", user.id)
+        if None in vault_users or None in apisix_users:
+            logger.debug(
+                "User '%s' not found in all Vault and/or APISIX instances --> Upserting user",
+                user.id,
+            )
             vault_user = await apikey.create_user_to_vault_and_apisixes(
-                client, user, vault_user, apisix_users
+                client, user, vault_users, apisix_users
             )
 
     except (VaultError, APISIXError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
-    api_key = vault_user.auth_key
+    # Use the created API key
+    # Or grab the first existing one since user's API key is same regardless the instance
+    api_key = (
+        vault_user.auth_key if vault_user else next(user for user in vault_users if user).auth_key
+    )
 
     return GetAPIKey(apiKey=api_key)
 
@@ -92,10 +103,14 @@ async def delete_user(
     logger.debug("Got request to delete API key for user '%s'", user.id)
 
     try:
-        vault_user, apisix_users = await apikey.get_user_from_vault_and_apisixes(client, user.id)
-        if vault_user or any(apisix_users):
+        vault_users, apisix_users = await apikey.get_user_from_vault_and_apisix_instances(
+            client, user.id
+        )
+        if any(vault_users) or any(apisix_users):
             logger.debug("User '%s' found in Vault and/or APISIX --> Deleting user", user.id)
-            await apikey.delete_user_from_vault_and_apisixes(client, user, vault_user, apisix_users)
+            await apikey.delete_user_from_vault_and_apisixes(
+                client, user, vault_users, apisix_users
+            )
 
     except (VaultError, APISIXError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e

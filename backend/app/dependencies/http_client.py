@@ -20,7 +20,7 @@ async def get_http_client() -> AsyncGenerator[AsyncClient, None]:
         yield client
 
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 async def http_request(
     client: AsyncClient,
     method: str,

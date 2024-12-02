@@ -178,6 +178,9 @@ async def delete_apisix_consumer(
         client (AsyncClient): The HTTP client to use for making the request.
         identifier (str): The identifier for the consumer.
 
+    Returns:
+        APISixConsumer: An object representing the APISIX consumer
+
     Raises:
         APISIXError: If there is an HTTP error while deleting the consumer.
     """

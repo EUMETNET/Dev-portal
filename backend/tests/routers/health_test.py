@@ -29,7 +29,7 @@ async def test_get_health_success() -> None:
 
 async def test_get_health_fails_with_vault(monkeypatch) -> None:
     settings_instance = settings()
-    monkeypatch.setattr(settings_instance.vault, "url", "http://mock.vault.url")
+    monkeypatch.setattr(settings_instance.vault.instances[0], "url", "http://mock.vault.url")
 
     async with AsyncClient(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL

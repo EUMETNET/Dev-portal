@@ -38,7 +38,7 @@ async def health_check(client: AsyncClient = Depends(get_http_client)) -> Messag
     logger.debug("Checking the health of Vault and APISIX instances...")
 
     results = await asyncio.gather(
-        vault.healthcheck(client),
+        *vault.create_tasks(vault.healthcheck, client),
         *apisix.create_tasks(apisix.get_routes, client),
         return_exceptions=True,
     )
