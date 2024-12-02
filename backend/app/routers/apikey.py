@@ -45,6 +45,8 @@ async def get_api_key(
     """
     user = User(id=token.sub, groups=token.groups)
 
+    vault_user = None
+
     logger.debug("Got request to retrieve API key for user '%s'", user.id)
 
     try:
@@ -52,10 +54,7 @@ async def get_api_key(
             client, user.id
         )
 
-        # Grab the first user that is not None, user's API key is same in all Vault instances
-        vault_user = next((user for user in vault_users if user), None)
-
-        if not vault_user or None in apisix_users:
+        if None in vault_users or None in apisix_users:
             logger.debug(
                 "User '%s' not found in all Vault and/or APISIX instances --> Upserting user",
                 user.id,
@@ -67,7 +66,11 @@ async def get_api_key(
     except (VaultError, APISIXError) as e:
         raise HTTPException(status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail=str(e)) from e
 
-    api_key = vault_user.auth_key
+    # Use the created API key
+    # Or grab the first existing one since user's API key is same regardless the instance
+    api_key = (
+        vault_user.auth_key if vault_user else next(user for user in vault_users if user).auth_key
+    )
 
     return GetAPIKey(apiKey=api_key)
 
