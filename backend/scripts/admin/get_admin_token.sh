@@ -9,8 +9,8 @@ fi
 # Function to get the token
 TOKEN=$(curl -s -X POST "$KC_URL/realms/$KC_REALM/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=$KC_USERNAME" \
-  -d "password=$KC_PASSWORD" \
+  --data-urlencode "username=$KC_USERNAME" \
+  --data-urlencode "password=$KC_PASSWORD" \
   -d "grant_type=password" \
   -d "client_id=$KC_CLIENT_ID" | jq -r '.access_token')
 
