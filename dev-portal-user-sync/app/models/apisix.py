@@ -3,7 +3,7 @@ Apisix models
 """
 
 from typing import Any, Optional
-from pydantic import BaseModel, field_validator, ValidationInfo
+from pydantic import BaseModel
 
 
 class APISixConsumer(BaseModel):

@@ -2,28 +2,12 @@
 Service for interacting with the Vault.
 """
 
-from datetime import datetime, timezone
 from httpx import AsyncClient, HTTPError
-from app.config import settings, logger
+from app.config import logger
 from app.dependencies.http_client import http_request
 from app.models.vault import VaultUser
 from app.config import VaultInstanceSettings
 from app.exceptions import VaultError
-
-config = settings()
-
-
-def get_formatted_str_date(format_str: str) -> str:
-    """
-    Get the current datetime in UTC formatted as a string.
-
-    Args:
-        format (str): The format to use for the datetime string.
-
-    Returns:
-        str: The current datetime in UTC, formatted as a string.
-    """
-    return datetime.now(timezone.utc).strftime(format_str)
 
 
 async def save_user_to_vault(
@@ -49,7 +33,7 @@ async def save_user_to_vault(
         await http_request(
             client,
             "POST",
-            f"{instance.url}/v1/{config.vault.base_path}/{user.id}",
+            f"{instance.url}/v1/{instance.base_path}/{user.id}",
             headers={"X-Vault-Token": instance.token},
             json=user.model_dump(exclude={"instance_name", "id"}),
         )
@@ -86,7 +70,7 @@ async def get_user_info_from_vault(
     #'lease_id': '', 'renewable': False, 'lease_duration': 2764800,
     #'data': {'as': 'as', 'dfdf': 'dfdf'}, 'wrap_info': None, 'warnings': None, 'auth': None}
     try:
-        url = f"{instance.url}/v1/{config.vault.base_path}/{identifier}"
+        url = f"{instance.url}/v1/{instance.base_path}/{identifier}"
         headers = {"X-Vault-Token": instance.token}
         response = await http_request(
             client, "GET", url, headers=headers, valid_status_codes=(200, 404)
@@ -129,18 +113,12 @@ async def list_user_identifiers_from_vault(
     #'lease_id': '', 'renewable': False, 'lease_duration': 2764800,
     #'data': {'as': 'as', 'dfdf': 'dfdf'}, 'wrap_info': None, 'warnings': None, 'auth': None}
     try:
-        url = f"{instance.url}/v1/{config.vault.base_path}/"
+        url = f"{instance.url}/v1/{instance.base_path}/"
         headers = {"X-Vault-Token": instance.token}
         response = await http_request(
             client, "LIST", url, headers=headers, valid_status_codes=(200, 404)
         )
-        return (
-            response.json()["data"].get("keys", [])
-            if response.status_code == 200
-            else []
-        )
+        return response.json()["data"].get("keys", []) if response.status_code == 200 else []
     except HTTPError as e:
-        logger.exception(
-            "Error retrieving user identifiers from Vault instance %s", instance.url
-        )
+        logger.exception("Error retrieving user identifiers from Vault instance %s", instance.url)
         raise VaultError("Vault service error") from e

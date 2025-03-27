@@ -6,7 +6,6 @@ from functools import lru_cache
 from httpx import AsyncClient, HTTPError
 from app.config import settings, APISixInstanceSettings, logger
 from app.dependencies.http_client import http_request
-from app.models.request import User
 from app.models.apisix import APISixConsumer
 from app.exceptions import APISIXError
 
@@ -101,8 +100,7 @@ async def get_apisix_consumers(
         data = response.json()
         if response.status_code in {200, 201}:
             return [APISixConsumer(**x["value"]) for x in data["list"]]
-        else:
-            return [None]
+        return [None]
     except HTTPError as e:
         logger.exception("Error retrieving APISIX user from instance '%s'", instance.admin_url)
         raise APISIXError("APISIX service error") from e

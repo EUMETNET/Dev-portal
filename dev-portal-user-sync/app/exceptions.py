@@ -2,11 +2,6 @@
 Global exceptions for the application
 """
 
-from typing import cast
-from http import HTTPStatus
-
-from app.config import logger
-
 
 class APISIXError(Exception):
     """

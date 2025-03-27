@@ -1,2 +1,1 @@
-app_setting:
-  log_level: DEBUG
+log_level: DEBUG

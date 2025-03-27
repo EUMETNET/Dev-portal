@@ -3,7 +3,7 @@ Application configurations
 """
 
 import os
-from typing import Type, Optional
+from typing import Type
 from functools import lru_cache
 import logging
 from pydantic import Field
@@ -25,6 +25,10 @@ class APISixInstanceSettings(BaseSettings):
 
 
 class ApisixSettings(BaseSettings):
+    """
+    APISix settings model
+    """
+
     source_apisix: APISixInstanceSettings
     target_apisix: APISixInstanceSettings
 
@@ -36,18 +40,16 @@ class VaultInstanceSettings(BaseSettings):
 
     url: str
     token: str
+    base_path: str
 
 
 class VaultSettings(BaseSettings):
+    """
+    Vault settings model
+    """
 
-    base_path: str
     source_vault: VaultInstanceSettings
     target_vault: VaultInstanceSettings
-
-
-class AppSettings(BaseSettings):
-
-    log_level: str = Field(default="INFO")
 
 
 # Link to docs where this is explained
@@ -57,9 +59,9 @@ class Settings(BaseSettings):
     Application settings model
     """
 
-    apisix: Optional[ApisixSettings] = None
-    vault: Optional[VaultSettings] = None
-    app_setting: AppSettings
+    apisix: ApisixSettings | None = None
+    vault: VaultSettings | None = None
+    log_level: str = Field(default="INFO")
 
     # Look first for specific config file or config.yaml
     # and fall back to the default config.default.yaml
@@ -100,5 +102,5 @@ def settings() -> Settings:
 # Set the log level
 logging.basicConfig()
 logger = logging.getLogger(__name__)
-log_level = getattr(logging, settings().app_setting.log_level.upper(), logging.INFO)
-logger.setLevel(log_level)
+LOG_LEVEL = getattr(logging, settings().log_level.upper(), logging.INFO)
+logger.setLevel(LOG_LEVEL)
