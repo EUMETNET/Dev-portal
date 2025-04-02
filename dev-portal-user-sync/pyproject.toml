@@ -19,6 +19,7 @@ bandit = "^1.7.9"
 mypy = "^1.11.2"
 pylint = "^3.2.7"
 pylint-pydantic = "^0.3.2"
+freezegun = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core"]
