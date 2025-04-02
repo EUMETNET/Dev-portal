@@ -6,20 +6,6 @@ from typing import AsyncGenerator, Mapping, Any, Tuple
 from httpx import AsyncClient, Response
 
 
-async def get_http_client() -> AsyncGenerator[AsyncClient, None]:
-    """
-    Create and provide an HTTP client for making requests.
-
-    This function is a context manager that creates an AsyncClient instance,
-    yields it for use, and then properly closes the client when done.
-
-    Yields:
-        AsyncClient: The HTTP client to use for making requests.
-    """
-    async with AsyncClient() as client:
-        yield client
-
-
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 async def http_request(
     client: AsyncClient,

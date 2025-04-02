@@ -56,6 +56,7 @@ async def get_user_info_from_vault(
 
     Args:
         client (AsyncClient): The HTTP client to use for making the request.
+        instance: (VaultInstanceSettings): The Vault instace where Vault is read from
         identifier (str): The identifier for the user.
 
     Returns:
