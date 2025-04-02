@@ -41,16 +41,3 @@ def security_check() -> None:
     """
     subprocess.run(["bandit", "-r", "app"], check=True)
 
-
-def run_tests() -> None:
-    """
-    Run the tests using pytest
-    """
-
-    # Check if SECRETS_FILE is set, otherwise default to secrets.test.yaml
-    secrets_file = os.getenv("SECRETS_FILE", "secrets.test.yaml")
-    os.environ["SECRETS_FILE"] = secrets_file
-
-    # Pass the current environment variables to the subprocess
-    env = os.environ.copy()
-    subprocess.run(["pytest"], check=False, env=env)

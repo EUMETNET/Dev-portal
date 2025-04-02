@@ -14,7 +14,6 @@ httpx = "^0.28.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.8.0"
-pytest = "^8.3.2"
 bandit = "^1.7.9"
 mypy = "^1.11.2"
 pylint = "^3.2.7"
@@ -51,4 +50,3 @@ format-check = "scripts.poetry:format_code_check"
 lint = "scripts.poetry:lint_code"
 type-check = "scripts.poetry:type_check"
 sec-check = "scripts.poetry:security_check"
-test = "scripts.poetry:run_tests"
