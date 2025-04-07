@@ -53,4 +53,4 @@ def run_tests() -> None:
 
     # Pass the current environment variables to the subprocess
     env = os.environ.copy()
-    subprocess.run(["pytest"], check=False, env=env)
+    subprocess.run(["pytest"], check=True, env=env)
