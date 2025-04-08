@@ -1,7 +1,7 @@
 # Install the chart repository
 
 ```bash
-helm repo add dev-portal http://rodeo-project.eu/Dev-portal/
+helm repo add dev-portal https://eumetnet.github.io/Dev-portal/
 helm repo update
 ```
 
