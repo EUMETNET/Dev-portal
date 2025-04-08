@@ -106,11 +106,11 @@ CONFIG_FILE=better-config.yaml SECRETS_FILE=super-secrets.yaml poetry run start-
 
 You can also run the app in docker. Next one is pulling image from Github Container Registry. Replace `<sha-commit_tag>` with actual tag:
 ```bash
-docker run --network dev-portal_apisix -p 8082:8082 --platform=linux/amd64 ghcr.io/eurodeo/dev-portal/backend:<sha-commit_tag>
+docker run --network dev-portal_apisix -p 8082:8082 --platform=linux/amd64 ghcr.io/eumetnet/dev-portal/backend:<sha-commit_tag>
 ```
 To mount different secrets file to container
 ```bash
-docker run --network dev-portal_apisix -p 8082:8082 -v $(pwd)/your-super-secrets.yaml:/code/secrets.yaml --platform=linux/amd64 ghcr.io/eurodeo/dev-portal/backend:<sha-commit_tag>
+docker run --network dev-portal_apisix -p 8082:8082 -v $(pwd)/your-super-secrets.yaml:/code/secrets.yaml --platform=linux/amd64 ghcr.io/eumetnet/dev-portal/backend:<sha-commit_tag>
 ```
 
 ### Static analysis tools and tests

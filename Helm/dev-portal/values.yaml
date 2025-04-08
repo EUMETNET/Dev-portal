@@ -9,7 +9,7 @@ imageCredentials:
 backend:
   name: dev-portal-backend
   image:
-    repository: eurodeo/dev-portal/backend
+    repository: eumetnet/dev-portal/backend
     pullPolicy: IfNotPresent
     tag: latest
   replicaCount: 2
@@ -53,7 +53,7 @@ backend:
 frontend:
   name: dev-portal-frontend
   image:
-    repository: eurodeo/dev-portal/ui
+    repository: eumetnet/dev-portal/ui
     pullPolicy: IfNotPresent
     tag: latest
   replicaCount: 2

@@ -41,7 +41,7 @@ The following table lists the configurable parameters of the Smartmetserver char
 | `imageCredentials.username` | Username for the image registry | `""` |
 | `imageCredentials.password` | Password for the image registry | `smartmetserver` |
 | `backend.name` | Backend deployment's name | `dev-portal-backend` |
-| `backend.image.repository` | Repository for backend image | `eurodeo/dev-portal/backend` |
+| `backend.image.repository` | Repository for backend image | `eumetnet/dev-portal/backend` |
 | `backend.image.pullPolicy` | Policy for backend image pulling | `IfNotPresent` |
 | `backend.image.tag` | Tag for the backend image | `latest` |
 | `backend.replicaCount` | Number of backend replicas | `2` |
@@ -68,7 +68,7 @@ The following table lists the configurable parameters of the Smartmetserver char
 | `backend.autoscaling.targetCPUUtilizationPercentage` | Target CPU utilization percentage for autoscaling | `80` |
 | `backend.autoscaling.targetMemoryUtilizationPercentage` | Target memory utilization percentage for autoscaling | `80` |
 | `frontend.name` | Frontend deployment's name | `dev-portal-frontend` |
-| `frontend.image.repository` | Repository for frontend image | `eurodeo/dev-portal/ui` |
+| `frontend.image.repository` | Repository for frontend image | `eumetnet/dev-portal/ui` |
 | `frontend.image.pullPolicy` | Policy for frontend image pulling | `IfNotPresent` |
 | `frontend.image.tag` | Tag for the frontend image | `latest` |
 | `frontend.replicaCount` | Number of frontend replicas | `2` |
