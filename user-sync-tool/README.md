@@ -52,8 +52,8 @@ poetry install
 
 
 ### Configurations
-By default the application looks for config file in path `backend/config.default.yaml` and secrets file in path `backend/secrets.default.yaml` 
-For any reason you can override one or both of config and secrets settings. For example to override config create a file called `backend/config.yaml` or use an environment variable `CONFIG_FILE` for example `CONFIG_FILE=better-config.yaml`
+By default the application looks for config file in path `user-sync-tool/config.default.yaml` and secrets file in path `user-sync-tool/secrets.default.yaml` 
+For any reason you can override one or both of config and secrets settings. For example to override config create a file called `user-sync-tool/config.yaml` or use an environment variable `CONFIG_FILE` for example `CONFIG_FILE=better-config.yaml`
 `CONFIG_FILE` takes priority over the file paths.
 
 #### Example config.default.yaml
