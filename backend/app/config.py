@@ -23,7 +23,6 @@ class APISixInstanceSettings(BaseSettings):
 
     name: str
     admin_url: str
-    gateway_url: str
     admin_api_key: str
 
 
@@ -34,6 +33,7 @@ class APISixSettings(BaseSettings):
 
     key_path: str
     key_name: str = VAULT_API_KEY_FIELD_NAME
+    global_gateway_url: str
     instances: list[APISixInstanceSettings]
 
 

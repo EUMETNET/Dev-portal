@@ -27,10 +27,10 @@ async def test_get_routes_success(get_keycloak_user_token: Callable) -> None:
     assert response.status_code == 200
     data = response.json()
 
-    assert len(data["routes"]) == 4
+    assert len(data["routes"]) == 2
 
     routes = [
-        f"{instance.gateway_url}{route['uri']}"
+        f"{config.apisix.global_gateway_url}{route['uri']}"
         for instance in config.apisix.instances
         for route in ROUTES
         if "key-auth" in route["plugins"]

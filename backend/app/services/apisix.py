@@ -162,7 +162,7 @@ async def get_routes(client: AsyncClient, instance: APISixInstanceSettings) -> A
         # {'type': 'roundrobin', 'pass_host': 'pass', 'nodes': {'httpbin.org:80': 1},
         #'hash_on': 'vars', 'scheme': 'http'}, 'status': 1, 'id': 'foo'},
         #'createdIndex': 101, 'key': '/apisix/routes/foo', 'modifiedIndex': 128}]}
-        return APISixRoutes(gateway_url=instance.gateway_url, routes=routes)
+        return APISixRoutes(gateway_url=config.apisix.global_gateway_url, routes=routes)
     except HTTPError as e:
         logger.exception("Error retrieving APISIX routes from instance '%s'", instance.name)
         raise APISIXError("APISIX service error") from e
