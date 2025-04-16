@@ -46,5 +46,5 @@ async def test_get_api6_routes(client: AsyncClient) -> None:
     apisix_instance = config.apisix.instances[0]
     response = await get_routes(client, apisix_instance)
     assert len(response.routes) == 2
-    assert f"{apisix_instance.gateway_url}/foo" in response.routes
-    assert f"{apisix_instance.gateway_url}/bar" in response.routes
+    assert f"{config.apisix.global_gateway_url}/foo" in response.routes
+    assert f"{config.apisix.global_gateway_url}/bar" in response.routes
