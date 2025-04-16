@@ -33,7 +33,6 @@ backend:
     apisix_instances:
       - name: "EWC"
         admin_url: "http://apisix-admin.apisix.svc.cluster.local:9180"
-        gateway_url: "http://apisix-gateway.apisix.svc.cluster.local"
         admin_api_key: ""
     keycloak_client_id: "dev-portal-api"
     keycloak_client_secret: ""

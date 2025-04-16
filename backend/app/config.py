@@ -23,7 +23,6 @@ class APISixInstanceSettings(BaseSettings):
 
     name: str
     admin_url: str
-    gateway_url: str
     admin_api_key: str
 
 
