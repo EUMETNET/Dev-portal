@@ -29,6 +29,7 @@ backend:
         token: ""
         url: "http://vault.vault.svc.cluster.local:8200"
     apisix_keypath: "$secret://vault/dev/"
+    apisix_gateway_url: "http://apisix-gateway.apisix.svc.cluster.local"
     apisix_instances:
       - name: "EWC"
         admin_url: "http://apisix-admin.apisix.svc.cluster.local:9180"
