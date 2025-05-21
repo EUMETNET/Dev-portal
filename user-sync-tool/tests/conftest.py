@@ -7,6 +7,7 @@ import asyncio
 import pytest
 from httpx import AsyncClient
 from app.config import settings, APISixInstanceSettings
+from tests.data import apisix
 
 config = settings()
 
@@ -77,6 +78,8 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     """
     Setup apisix for tests.
     """
+    consumers = apisix.CONSUMERS
+
     instances = [config.apisix.source_apisix, config.apisix.target_apisix]
     consumers = await asyncio.gather(
         *[
