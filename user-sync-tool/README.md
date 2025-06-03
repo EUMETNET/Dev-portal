@@ -11,7 +11,7 @@ user-sync-tool
 │   ├── dependencies # Dependencies needed in services
 │   │   └── http_client.py
 │   ├── exceptions.py # Exceptions types
-│   ├── __init__.py # Make main a moduöe
+│   ├── __init__.py # Make main a module
 │   ├── main.py # Entry point
 │   ├── models # Pydantic data models for
 │   │   ├── apisix.py
@@ -30,6 +30,9 @@ user-sync-tool
 ├── README.md
 ├── scripts # Scrits that Poetry runs
 │   └── poetry.py
+├── tests
+│    ├── conftest.py
+│    └── ...  
 ├── secrets.default.yaml
 └── secrets.test.yaml
 
