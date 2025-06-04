@@ -8,6 +8,10 @@ The Dev portal consists of two custom components (UI & backend) and a few extern
 
 * **Backend**: This is the server-side part of the Dev portal. It handles communication with external services. The backend is built using Python FastAPI.
 
+* **user-sync-tool**: Tool for syncing the Dev-portal user information between a source and target Apisix and/or Vault instances. Built using Python poetry and httpx
+
+* **Helm** Contains the Helm chart for installing the Dev-portal to a Kubernetes cluster. Only deploys UI and Backend
+
 * [**Keycloak**](https://www.keycloak.org/): An open-source Identity and Access Management solution used in the Dev portal. It's used to enable third-party registration and authentication. This allows users to register and authenticate using their existing accounts from services like Google, GitHub, and Apple.
 
 * [**Hashicorp Vault**](https://www.vaultproject.io/): This is a tool for securely storing and accessing secrets. In the Dev portal, it's used to store the user's API key.

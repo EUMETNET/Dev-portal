@@ -1,0 +1,56 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = "Tool for syncing user between Apisix instances based on dev-portal backends."
+authors = ["Joona Halonen <joona.halonen@cgi.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic = "^2.10.6"
+requests = "^2.32.3"
+pydantic-settings = "^2.7.1"
+pyyaml = "^6.0.2"
+httpx = "^0.28.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+pytest = "^8.3.2"
+bandit = "^1.7.9"
+mypy = "^1.11.2"
+pylint = "^3.2.7"
+pylint-pydantic = "^0.3.2"
+freezegun = "^1.5.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+# Mypy rules
+# Based on this https://careers.wolt.com/en/blog/tech/professional-grade-mypy-configuration
+[tool.mypy]
+plugins = [
+  "pydantic.mypy"
+]
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+show_error_codes = true
+warn_unused_ignores = true
+
+[tool.black]
+line-length = 100
+
+[tool.pylint]
+load-plugins = "pylint_pydantic"
+min-similarity-lines=10
+
+[tool.poetry.scripts]
+format = "scripts.poetry:format_code"
+format-check = "scripts.poetry:format_code_check"
+lint = "scripts.poetry:lint_code"
+type-check = "scripts.poetry:type_check"
+sec-check = "scripts.poetry:security_check"
+test = "scripts.poetry:run_tests"
