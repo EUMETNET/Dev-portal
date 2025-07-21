@@ -30,7 +30,7 @@ async def test_delete_user_without_admin_role_fails(get_keycloak_user_token: Cal
         )
 
         assert response.status_code == 403
-        assert response.json() == {"message": "User does not belong to ADMIN group"}
+        assert response.json() == {"message": "User does not belong to Admin group"}
 
 
 async def test_delete_user_with_admin_role_succeeds(
@@ -100,7 +100,7 @@ async def test_delete_user_exception_rolls_user_api_key_back(
     user = KeycloakUser(**KEYCLOAK_USERS[3])
     uuid = await keycloak.create_user(client, user)
 
-    req_user = User(id=uuid, groups=["USER"])
+    req_user = User(id=uuid, groups=["User"])
 
     og_delete_user_func = keycloak.delete_user
 
@@ -232,7 +232,7 @@ async def test_add_user_to_eumetnet_user_group(
         response = await ac.put(
             f"/admin/users/{uuid}/update-group",
             headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
-            json={"groupName": "EUMETNET_USER"},
+            json={"groupName": "EumetnetUser"},
         )
 
         assert response.status_code == 200
@@ -240,7 +240,7 @@ async def test_add_user_to_eumetnet_user_group(
 
         user = await keycloak.get_user(client, uuid)
 
-        assert set(user.groups) == {"EUMETNET_USER", "USER"}
+        assert set(user.groups) == {"EumetnetUser", "User"}
 
         await keycloak.delete_user(client, uuid)
 
@@ -251,7 +251,7 @@ async def test_add_user_and_existing_apikey_to_eumetnet_user_group(
     user = KeycloakUser(**KEYCLOAK_USERS[3])
     uuid = await keycloak.create_user(client, user)
 
-    parsed_user = User(id=uuid, groups=["USER"])
+    parsed_user = User(id=uuid, groups=["User"])
 
     token_url = (
         f"{config.keycloak.url}/realms/{config.keycloak.realm}" "/protocol/openid-connect/token"
@@ -277,7 +277,7 @@ async def test_add_user_and_existing_apikey_to_eumetnet_user_group(
         update_response = await ac.put(
             f"/admin/users/{uuid}/update-group",
             headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
-            json={"groupName": "EUMETNET_USER"},
+            json={"groupName": "EumetnetUser"},
         )
 
         assert update_response.status_code == 200
@@ -290,9 +290,9 @@ async def test_add_user_and_existing_apikey_to_eumetnet_user_group(
         )
 
         for consumer in apisix_consumers:
-            assert consumer.group_id == "EUMETNET_USER"
+            assert consumer.group_id == "EumetnetUser"
 
-        assert set(user.groups) == {"EUMETNET_USER", "USER"}
+        assert set(user.groups) == {"EumetnetUser", "User"}
 
         await keycloak.delete_user(client, uuid)
 
@@ -309,7 +309,7 @@ async def test_remove_user_from_eumetnet_user_group(
         add_group_response = await ac.put(
             f"/admin/users/{uuid}/update-group",
             headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
-            json={"groupName": "EUMETNET_USER"},
+            json={"groupName": "EumetnetUser"},
         )
 
         assert add_group_response.status_code == 200
@@ -317,12 +317,12 @@ async def test_remove_user_from_eumetnet_user_group(
 
         user = await keycloak.get_user(client, uuid)
 
-        assert set(user.groups) == {"EUMETNET_USER", "USER"}
+        assert set(user.groups) == {"EumetnetUser", "User"}
 
         rm_group_response = await ac.put(
             f"/admin/users/{uuid}/remove-group",
             headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
-            json={"groupName": "EUMETNET_USER"},
+            json={"groupName": "EumetnetUser"},
         )
 
         assert rm_group_response.status_code == 200
@@ -330,7 +330,7 @@ async def test_remove_user_from_eumetnet_user_group(
 
         user = await keycloak.get_user(client, uuid)
 
-        assert set(user.groups) == {"USER"}
+        assert set(user.groups) == {"User"}
 
         await keycloak.delete_user(client, uuid)
 
@@ -341,7 +341,7 @@ async def test_remove_user_and_existing_apikey_from_eumetnet_user_group(
     user = KeycloakUser(**KEYCLOAK_USERS[3])
     uuid = await keycloak.create_user(client, user)
 
-    parsed_user = User(id=uuid, groups=["USER"])
+    parsed_user = User(id=uuid, groups=["User"])
 
     async with AsyncClient(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
@@ -350,7 +350,7 @@ async def test_remove_user_and_existing_apikey_from_eumetnet_user_group(
         update_response = await ac.put(
             f"/admin/users/{uuid}/update-group",
             headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
-            json={"groupName": "EUMETNET_USER"},
+            json={"groupName": "EumetnetUser"},
         )
 
         assert update_response.status_code == 200
@@ -381,14 +381,14 @@ async def test_remove_user_and_existing_apikey_from_eumetnet_user_group(
         )
 
         for consumer in apisix_consumers:
-            assert consumer.group_id == "EUMETNET_USER"
+            assert consumer.group_id == "EumetnetUser"
 
-        assert set(user.groups) == {"EUMETNET_USER", "USER"}
+        assert set(user.groups) == {"EumetnetUser", "User"}
 
         rm_group_response = await ac.put(
             f"/admin/users/{uuid}/remove-group",
             headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
-            json={"groupName": "EUMETNET_USER"},
+            json={"groupName": "EumetnetUser"},
         )
 
         assert rm_group_response.status_code == 200
@@ -401,9 +401,9 @@ async def test_remove_user_and_existing_apikey_from_eumetnet_user_group(
         )
 
         for consumer in apisix_consumers:
-            assert consumer.group_id == None
+            assert consumer.group_id == "User"
 
-        assert set(user.groups) == {"USER"}
+        assert set(user.groups) == {"User"}
 
         await keycloak.delete_user(client, uuid)
 
@@ -412,29 +412,29 @@ async def test_remove_user_from_other_group_persists_group_in_apisix(
     client: AsyncClient, get_keycloak_realm_admin_token: Callable
 ) -> None:
     """
-    Test that removing a user from a group that is not EUMETNET_USER
+    Test that removing a user from a group that is not EumetnetUser
     does not remove the user from the group in APISIXes
     """
     user = KeycloakUser(**KEYCLOAK_USERS[3])
     uuid = await keycloak.create_user(client, user)
 
-    parsed_user = User(id=uuid, groups=["USER"])
+    parsed_user = User(id=uuid, groups=["User"])
 
     async with AsyncClient(
         transport=ASGITransport(app=cast(Callable, app)), base_url=BASE_URL
     ) as ac:
 
-        # Put user to EUMETNET_USER and ADMIN groups
+        # Put user to EumetnetUser and Admin groups
         await ac.put(
             f"/admin/users/{uuid}/update-group",
             headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
-            json={"groupName": "EUMETNET_USER"},
+            json={"groupName": "EumetnetUser"},
         )
 
         await ac.put(
             f"/admin/users/{uuid}/update-group",
             headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
-            json={"groupName": "ADMIN"},
+            json={"groupName": "Admin"},
         )
 
         # Create API key for user
@@ -463,15 +463,15 @@ async def test_remove_user_from_other_group_persists_group_in_apisix(
         )
 
         for consumer in apisix_consumers:
-            assert consumer.group_id == "EUMETNET_USER"
+            assert consumer.group_id == "EumetnetUser"
 
-        assert set(user.groups) == {"ADMIN", "EUMETNET_USER", "USER"}
+        assert set(user.groups) == {"Admin", "EumetnetUser", "User"}
 
-        # Remove user from ADMIN group
+        # Remove user from Admin group
         rm_group_response = await ac.put(
             f"/admin/users/{uuid}/remove-group",
             headers={"Authorization": f"Bearer {get_keycloak_realm_admin_token}"},
-            json={"groupName": "ADMIN"},
+            json={"groupName": "Admin"},
         )
 
         assert rm_group_response.status_code == 200
@@ -484,9 +484,9 @@ async def test_remove_user_from_other_group_persists_group_in_apisix(
         )
 
         for consumer in apisix_consumers:
-            assert consumer.group_id == "EUMETNET_USER"
+            assert consumer.group_id == "EumetnetUser"
 
-        assert set(user.groups) == {"EUMETNET_USER", "USER"}
+        assert set(user.groups) == {"EumetnetUser", "User"}
 
         await ac.delete(
             f"/admin/users/{uuid}",

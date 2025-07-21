@@ -46,7 +46,7 @@ async def test_handling_rollback_from_create_succeeds(client: AsyncClient) -> No
     Test that the rollback from creation is successful and doesn't raise an error.
     """
 
-    user = User(id="mockuuid", groups=["USER"])
+    user = User(id="mockuuid", groups=["User"])
     vault_user = VaultUser(
         auth_key=vault.generate_api_key(user.id),
         date=vault.get_formatted_str_date("%Y/%m/%d %H:%M:%S"),
@@ -79,7 +79,7 @@ async def test_handling_rollback_from_delete_succeeds(client: AsyncClient) -> No
     """
     Test that the rollback from deletion is successful and doesn't raise an error.
     """
-    user = User(id="mockuuid", groups=["USER"])
+    user = User(id="mockuuid", groups=["User"])
     vault_user = VaultUser(
         auth_key=vault.generate_api_key(user.id),
         date=vault.get_formatted_str_date("%Y/%m/%d %H:%M:%S"),
@@ -123,7 +123,7 @@ async def test_handling_rollback_fails_with_vault(
     Test that failing rollback with Vault raises error.
     """
 
-    user = User(id="mockuuid", groups=["USER"])
+    user = User(id="mockuuid", groups=["User"])
     vault_user = VaultUser(
         auth_key=vault.generate_api_key(user.id),
         date=vault.get_formatted_str_date("%Y/%m/%d %H:%M:%S"),

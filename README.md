@@ -139,4 +139,4 @@ Once external integrations, UI and backend are running:
 
 There are three kind of users - users, eumetnet users and admin users. 
 
-Every created user belongs to ***USER*** group. By demand user can be promoted by admin to ***EUMETNET_USER*** group. Difference between these groups is that eumetnet users get better rate limits for the Gateway usage. Admin users can perform user related operations with Dev Portal backend - add/remove user from eumetnet user group, disable/enable user or delete user. Refer [backend/](backend/) to check admin related scripts.
+Every created user belongs to ***User*** group. By demand user can be promoted by admin to ***EumetnetUser*** group. Difference between these groups is that eumetnet users get better rate limits for the Gateway usage. Admin users can perform user related operations with Dev Portal backend - add/remove user from eumetnet user group, disable/enable user or delete user. Refer [backend/](backend/) to check admin related scripts.

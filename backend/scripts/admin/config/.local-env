@@ -2,7 +2,7 @@
 KC_URL="http://localhost:8080"
 KC_REALM="test"
 KC_CLIENT_ID="frontend"
-KC_GROUP_NAME="EUMETNET_USER"
+KC_GROUP_NAME="EumetnetUser"
 # admin credentials
 KC_USERNAME="realm_admin"
 KC_PASSWORD="realm_admin"

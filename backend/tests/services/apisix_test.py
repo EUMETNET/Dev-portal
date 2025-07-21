@@ -26,7 +26,7 @@ async def test_api6_user_not_found(client: AsyncClient) -> None:
 
 async def test_create_and_delete_api6_consumer_success(client: AsyncClient) -> None:
     apisix_instance = config.apisix.instances[0]
-    user = User(id="supermario", groups=["USER"])
+    user = User(id="supermario", groups=["User"])
     response = await upsert_apisix_consumer(client, apisix_instance, user)
     assert response.username == user.id
 
@@ -35,7 +35,7 @@ async def test_create_and_delete_api6_consumer_success(client: AsyncClient) -> N
 
 async def test_delete_api6_user_not_found_should_raise_error(client: AsyncClient) -> None:
     apisix_instance = config.apisix.instances[0]
-    user = User(id="testuser", groups=["USER"])
+    user = User(id="testuser", groups=["User"])
     with pytest.raises(APISIXError):
         await delete_apisix_consumer(client, apisix_instance, user)
 
