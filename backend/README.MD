@@ -149,6 +149,6 @@ With scripts admin can:
     * When disabling user it will delete user's API if exists from APISIX instances and Vault
     * Enabling user does NOT create API key for one
   2. Add or remove user from group
-    * By default each user belongs to USER group.
-    * If promoting/removing user from EUMETNET_USER group the user's existing API key is also promoted/removed from the EUMETNET_USER group in APISIX instances. **NOTE: group names are case sensitive**
+    * By default each user belongs to User group.
+    * If promoting/removing user from EumetnetUser group the user's existing API key is also promoted/removed from the EumetnetUser group in APISIX instances. **NOTE: group names are case sensitive**
   3. Delete user will delete user from Keycloak and existing API key from Vault and APISIX instances

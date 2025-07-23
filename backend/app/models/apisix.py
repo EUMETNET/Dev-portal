@@ -2,10 +2,10 @@
 Apisix models
 """
 
-from typing import Any, Optional
+from typing import Any
 from pydantic import BaseModel, field_validator, ValidationInfo
 from app.config import settings
-from app.constants import EUMETNET_USER_GROUP
+from app.constants import USER_GROUP, EUMETNET_USER_GROUP
 
 config = settings()
 
@@ -24,18 +24,18 @@ class APISixConsumer(BaseModel):
     instance_name: str
     username: str
     plugins: dict[str, dict[str, Any]]
-    group_id: Optional[str] = None
+    group_id: str = USER_GROUP
 
     @field_validator("group_id", mode="before")
     @classmethod
-    def set_group_id(cls, value: list[str]) -> Optional[str]:
+    def set_group_id(cls, value: list[str]) -> str:
         """
-        Sets the group_id attribute to 'eumetnet_user' if token has corresponding
-        group or default to None.
+        Sets the group_id attribute to 'EumetnetUser' if token has corresponding
+        group or defaults to 'User'.
         """
         if EUMETNET_USER_GROUP in value:
             return EUMETNET_USER_GROUP
-        return None
+        return USER_GROUP
 
 
 class APISixRoutes(BaseModel):

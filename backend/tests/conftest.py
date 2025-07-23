@@ -290,7 +290,7 @@ async def get_keycloak_realm_admin_token(client: AsyncClient) -> str:
     """
     Pytest fixture that retrieves a admin user's access token from Keycloak.
 
-    Adds user to the realm group "ADMIN" before retrieving the token.
+    Adds user to the realm group "Admin" before retrieving the token.
 
     The access token can be used in other fixtures or tests
     to authenticate requests to APIs that use Keycloak for authentication.
@@ -345,7 +345,7 @@ async def remove_keycloak_user_from_group(client: AsyncClient) -> None:
     user_id = r.json()[0]["id"]
 
     # Define the group ID to remove the user from
-    group_id = await get_realm_group_id_by_name(client, "USER")
+    group_id = await get_realm_group_id_by_name(client, "User")
 
     # Remove the user from the group
     group_url = (
@@ -385,7 +385,7 @@ async def add_keycloak_user_to_group(client: AsyncClient) -> None:
     user_id = r.json()[0]["id"]
 
     # Define the group ID to add the user to
-    group_id = await get_realm_group_id_by_name(client, "ADMIN")
+    group_id = await get_realm_group_id_by_name(client, "Admin")
 
     # Add the user to the group
     group_url = (

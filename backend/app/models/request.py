@@ -3,8 +3,7 @@ Access token model
 """
 
 from pydantic import BaseModel, field_validator, Field
-
-GROUPS = ["USER", "EUMETNET_USER", "ADMIN"]
+from app.constants import GROUPS
 
 
 class AccessToken(BaseModel):

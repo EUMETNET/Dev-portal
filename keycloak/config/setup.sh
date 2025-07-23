@@ -58,9 +58,9 @@ if [ "$ENV" = "dev" ]; then
             user_id=$(curl -s -X GET "http://localhost:${KEYCLOAK_PORT}/admin/realms/${REALM_NAME}/users?username=${username}" \
                 -H "Authorization: Bearer ${TOKEN}" | jq -r '.[0].id')
             if [ "$username" == "better_user" ]; then
-                    GROUP_NAME="EUMETNET_USER"
+                    GROUP_NAME="EumetnetUser"
             elif [ "$username" == "realm_admin" ]; then
-                    GROUP_NAME="ADMIN"
+                    GROUP_NAME="Admin"
             fi
 
             # Retrieve the group ID
