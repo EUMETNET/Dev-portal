@@ -10,6 +10,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from app.config import settings, logger
 from app.models.request import AccessToken
+from app.constants import ADMIN_GROUP
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="tokenUrl")
 
@@ -58,7 +59,7 @@ async def validate_admin_role(
     """
     Validate that the user belongs to Admin group
     """
-    if "Admin" not in token.groups:
+    if ADMIN_GROUP not in token.groups:
         logger.exception("User '%s' does not have valid Admin group", token.sub)
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN, detail="User does not belong to Admin group"
