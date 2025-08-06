@@ -70,7 +70,7 @@ frontend:
   keycloak_url: "http://localhost:8080"
   keycloak_logout_url: "http://localhost"
 
-keycloak_realm: test
+keycloak_realm: meteogate
 
 ingress:
   enabled: false
