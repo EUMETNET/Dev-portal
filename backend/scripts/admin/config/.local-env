@@ -1,6 +1,6 @@
 # Keycloak related values KC_*
 KC_URL="http://localhost:8080"
-KC_REALM="test"
+KC_REALM="meteogate"
 KC_CLIENT_ID="frontend"
 KC_GROUP_NAME="EumetnetUser"
 # admin credentials

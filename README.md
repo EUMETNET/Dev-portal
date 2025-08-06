@@ -122,15 +122,15 @@ Once external integrations, UI and backend are running:
 6. **Optional**
 
     #### Setup Identity Providers (IdPs)
-    To configure identity providers in Keycloak (within the "test" realm):
+    To configure identity providers in Keycloak (within the "meteogate" realm):
 
     1. Navigate to "Identity Providers" in the left pane of the Keycloak UI. By default, GitHub and Google IdPs are enabled but require configuration to be functional. Follow e.g. [this guide](https://medium.com/keycloak/setting-up-keycloak-using-github-identity-provider-in-express-314e511a240b.) to set up a GitHub OAuth app.
 
     2. In GitHub, provide the following details:
     ```
     Application name: keycloak-local-test-app
-    Homepage URL: http://localhost:8080/realms/test
-    Authorization callback URL: http://localhost:8080/realms/test/broker/github/endpoint
+    Homepage URL: http://localhost:8080/realms/meteogate
+    Authorization callback URL: http://localhost:8080/realms/meteogate/broker/github/endpoint
     ```
 
     3. Copy the generated Client ID and Client Secret from GitHub and enter them into the corresponding fields in Keycloak.
