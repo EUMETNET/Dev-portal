@@ -1,9 +1,10 @@
-""""
+"""
 Apisix models
 """
 
 from typing import Any, Optional
 from pydantic import BaseModel
+from app.constants import USER_GROUP
 
 
 class APISixConsumer(BaseModel):
@@ -18,7 +19,7 @@ class APISixConsumer(BaseModel):
 
     username: str
     plugins: dict[str, dict[str, Any]]
-    group_id: Optional[str] = None
+    group_id: Optional[str] = USER_GROUP
 
 
 class APISixConsumerGroup(BaseModel):

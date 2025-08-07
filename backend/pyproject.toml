@@ -7,16 +7,16 @@ readme = "README.MD"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "^0.115.5"
-uvicorn = "^0.32.1"
+fastapi = "^0.116.1"
+uvicorn = "^0.35.0"
 httpx = "^0.28.0"
-pydantic-settings = "^2.4.0"
+pydantic-settings = "^2.10.1"
 pyyaml = "^6.0.2"
 aiocache = "^0.12.2"
 pyjwt = {extras = ["crypto"], version = "^2.9.0"}
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.8.0"
+black = "^25.1.0"
 pytest = "^8.3.2"
 bandit = "^1.7.9"
 mypy = "^1.11.2"
