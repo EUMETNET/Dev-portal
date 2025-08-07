@@ -33,22 +33,3 @@ async def test_vault_user_creation_success(client: AsyncClient) -> None:
 
     assert response is not None
     assert response == user
-
-
-#async def test_user_deletion_success(client: AsyncClient) -> None:
-#    identifier = "User-not-exists"
-#    apikey = vault.generate_api_key(identifier)
-#    instance = config.vault.instances[1]
-#
-#    user = VaultUser(
-#        auth_key=apikey,
-#        date="2021/01/01 00:00:00",
-#        instance_name=instance.name,
-#        id=identifier,
-#    )
-#
-#    await vault.save_user_to_vault(client, instance, user)
-#    await vault.delete_user_from_vault(client, instance, user)
-#    response = await vault.get_user_info_from_vault(client, instance, identifier)
-#
-#    assert response is None

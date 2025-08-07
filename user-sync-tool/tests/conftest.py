@@ -17,7 +17,6 @@ def get_apisix_headers(instance: APISixInstanceSettings) -> dict[str, str]:
     return {"Content-Type": "application/json", "X-API-KEY": instance.admin_api_key}
 
 
-
 @pytest.fixture(scope="session", autouse=True)
 def anyio_backend() -> str:
     """
@@ -41,16 +40,13 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
         yield c
 
 
-# ------- VAULT SETUP ---------
-@pytest.fixture(scope="session", autouse=True)
-async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
+# ------- VAULT CLEAN UP ---------
+@pytest.fixture(autouse=True)
+async def vault_cleanup(client: AsyncClient) -> AsyncGenerator[None, None]:
     """
-    Setup vault for tests.
+    Clean up vault for tests.
     """
 
-    yield
-
-    # Remove all the secrets
     instances = [config.vault.source_vault, config.vault.target_vault]
     secret_responses = await asyncio.gather(
         *[
@@ -61,8 +57,6 @@ async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
             for instance in instances
         ]
     )
-
-    print(secret_responses[0])
 
     await asyncio.gather(
         *[
@@ -77,15 +71,12 @@ async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     )
 
 
-# ------- APISIX SETUP ---------
-@pytest.fixture(scope="session", autouse=True)
-async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
+# ------- APISIX CLEAN UP ---------
+@pytest.fixture(autouse=True)
+async def apisix_cleanup_consumers(client: AsyncClient) -> AsyncGenerator[None, None]:
     """
-    Setup apisix for tests.
+    Clean up apisix consumers.
     """
-    consumers = apisix.CONSUMERS
-
-    yield
 
     instances = [config.apisix.source_apisix, config.apisix.target_apisix]
     consumers = await asyncio.gather(
@@ -107,4 +98,3 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
             for consumer in instance_consumers.json()["list"]
         ]
     )
-
