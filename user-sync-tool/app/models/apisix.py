@@ -1,4 +1,4 @@
-""""
+"""
 Apisix models
 """
 
