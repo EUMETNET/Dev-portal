@@ -1,4 +1,4 @@
-""""
+"""
 Vault models
 """
 
