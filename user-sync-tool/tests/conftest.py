@@ -48,6 +48,8 @@ async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     Setup vault for tests.
     """
 
+    yield
+
     # Remove all the secrets
     instances = [config.vault.source_vault, config.vault.target_vault]
     secret_responses = await asyncio.gather(
@@ -60,6 +62,8 @@ async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
         ]
     )
 
+    print(secret_responses[0])
+
     await asyncio.gather(
         *[
             client.delete(
@@ -67,6 +71,7 @@ async def vault_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
                 headers={"X-Vault-Token": instance.token},
             )
             for instance, response in zip(instances, secret_responses)
+            if response.status_code == 200
             for secret in response.json()["data"]["keys"]
         ]
     )
@@ -79,6 +84,8 @@ async def apisix_setup(client: AsyncClient) -> AsyncGenerator[None, None]:
     Setup apisix for tests.
     """
     consumers = apisix.CONSUMERS
+
+    yield
 
     instances = [config.apisix.source_apisix, config.apisix.target_apisix]
     consumers = await asyncio.gather(
