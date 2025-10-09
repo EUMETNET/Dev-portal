@@ -65,7 +65,7 @@ services:
       - test
 
   etcd:
-    image: bitnami/etcd:3.5.16
+    image: bitnamilegacy/etcd:3.5.16
     restart: always
     volumes:
       - /bitnami/etcd
@@ -88,7 +88,7 @@ services:
       - test
 
   etcd2:
-    image: bitnami/etcd:3.5.16
+    image: bitnamilegacy/etcd:3.5.16
     restart: always
     volumes:
       - /bitnami/etcd
