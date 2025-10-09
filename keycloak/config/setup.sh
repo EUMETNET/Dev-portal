@@ -9,7 +9,7 @@ echo "Waiting for Keycloak to be ready before configuring it..."
 # https://www.keycloak.org/server/health
 counter=0
 while : ; do 
-  error=$(curl --output /dev/null --silent --head --fail http://localhost:${KEYCLOAK_MNGT_PORT}/health/ready 2>&1)
+  error=$(curl --output /dev/null --silent --head --fail http://localhost:${KEYCLOAK_PORT}/health/ready 2>&1)
   if [ $? -eq 0 ]; then
     break
   else

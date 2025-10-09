@@ -1,20 +1,16 @@
 services:
   auth:
-    image: quay.io/keycloak/keycloak
+    image: quay.io/keycloak/keycloak:24.0
     ports:
       - "${KEYCLOAK_PORT:-8080}:8080"
       - "${KEYCLOAK_DEBUG_PORT:-8000}:8000"
-      - "${KEYCLOAK_MNGT_PORT:-9000}:9000" # management port needed by health checks
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_MASTER_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_MASTER_ADMIN_PW}
-      PROXY_ADDRESS_FORWARDING: false
-      KEYCLOAK_LOGLEVEL: DEBUG
-      DEBUG: "true"
-      DEBUG_PORT: "*:8000"
-      KC_HEALTH_ENABLED: true
-    command: 
-      - start-dev 
+      KC_HEALTH_ENABLED: "true"
+      JAVA_OPTS_APPEND: "-agentlib:jdwp=transport=dt_socket,address=*:8000,server=y,suspend=n"
+    command:
+      - start-dev
       - --import-realm # import realm(s) from /opt/keycloak/data/import
     volumes:
       - ./keycloak/config/realm_export/local_dev:/opt/keycloak/data/import
