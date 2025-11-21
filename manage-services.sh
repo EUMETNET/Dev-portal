@@ -99,6 +99,31 @@ _configure_vault() {
 
 # Configure Keycloak
 _configure_keycloak() {
+    echo "Waiting for Keycloak to be ready before configuring it..."
+    counter=0
+    while : ; do 
+      error=$(curl --output /dev/null --silent --head --fail http://localhost:${KEYCLOAK_PORT}/health/ready 2>&1)
+      if [ $? -eq 0 ]; then
+        break
+      else
+        sleep 5
+        counter=$((counter+1))
+        if [ $counter -ge 10 ]; then
+          echo "Keycloak did not become healthy after 10 attempts. Exiting..."
+          echo "Last error was: $error"
+          exit 1
+        fi
+        echo "Keycloak not ready yet. Waiting 5 seconds before next check..."
+      fi
+    done
+
+    docker exec -i ${ENV}-auth-1 sh /opt/keycloak/bin/kcadm.sh update realms/master \
+        -s sslRequired=NONE \
+        --server http://localhost:8080 \
+        --realm master \
+        --user "${KEYCLOAK_MASTER_ADMIN_USER}" \
+        --password "${KEYCLOAK_MASTER_ADMIN_PW}" || { remove $ENV; exit 1; }
+
     "$SCRIPT_DIR/keycloak/config/setup.sh" || { remove $ENV; exit 1; }
 }
 

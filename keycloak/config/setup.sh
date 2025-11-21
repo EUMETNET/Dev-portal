@@ -3,27 +3,6 @@
 # Determine the directory where the script is located
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
-echo "Waiting for Keycloak to be ready before configuring it..."
-
-# No easy way to do healthcheck in docker-compose, so we do it manually
-# https://www.keycloak.org/server/health
-counter=0
-while : ; do 
-  error=$(curl --output /dev/null --silent --head --fail http://localhost:${KEYCLOAK_PORT}/health/ready 2>&1)
-  if [ $? -eq 0 ]; then
-    break
-  else
-    sleep 5
-    counter=$((counter+1))
-    if [ $counter -ge 10 ]; then
-      echo "Keycloak did not become healthy after 10 attempts. Exiting..."
-      echo "Last error was: $error"
-      exit 1
-    fi
-    echo "Keycloak not ready yet. Waiting 5 seconds before next check..."
-  fi
-done
-
 if [ "$ENV" = "dev" ]; then
   # Obtain an access token for admin
   TOKEN=$(curl -s -X POST "http://localhost:${KEYCLOAK_PORT}/realms/master/protocol/openid-connect/token" \
