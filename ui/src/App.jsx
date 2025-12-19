@@ -92,8 +92,8 @@ function App() {
 
   function generateTable(routes) {
     return (
-      <DataTable value={routes}>
-        <Column field="route" header="Routes"></Column>
+      <DataTable value={routes} stripedRows emptyMessage="No routes available">
+        <Column field="route" header="Available Routes"></Column>
       </DataTable>
     );
   }
@@ -123,66 +123,76 @@ function App() {
     <div className="App">
       {/* <Auth /> */}
       <Header />
-      <div className="grid">
-        <div className="col-12">
-          {auth.isAuthenticated ? (
-            <>
-              <Button
-                onClick={() => {
-                  handleGetAPIKey();
-                }}
-                className="m-1 md:px-0 py-2 col-10 md:col-2 xl:col-1 btn--yellow"
-                label="Get API key"
-                raised
-              />
-              <Button
-                onClick={() => {
-                  handleRoutes();
-                }}
-                className="m-1 md:px-0 py-2 col-10 md:col-2 xl:col-1 btn--green"
-                label="Show routes"
-                raised
-              />
-              <Button
-                onClick={() => {
-                  handleDeleteApiKey();
-                }}
-                className="m-1 md:px-0 py-2 col-10 md:col-2 xl:col-1 btn--red"
-                label="Delete API key"
-                raised
-              />
-              <Button
-                onClick={() => {
-                  logout();
-                }}
-                className="m-1 md:px-0 py-2 col-10 md:col-2 xl:col-1 btn--orange"
-                label="Logout"
-                raised
-              />
-              <div className="col-12 mt-2 mb-0 md:mt-3">
-                <h3>Info Pane</h3>
-              </div>
-              <div className="mt-0 flex justify-content-center flex-wrap">
-                <Card
-                  className="md:px-0 col-10 md:col-8 xl:col-8"
-                  style={{ overflowX: 'auto', whiteSpace: 'pre-line' }}
-                >
-                  {infoMessage}
-                </Card>
-              </div>
-            </>
-          ) : (
+      
+      {auth.isAuthenticated ? (
+        <div className="content-container">
+          {/* Button Group */}
+          <div style={{ 
+            display: 'flex', 
+            gap: '16px', 
+            flexWrap: 'wrap', 
+            justifyContent: 'center',
+            marginBottom: '40px'
+          }}>
             <Button
-              onClick={() => {
-                auth.signinRedirect();
-              }}
-              className="m-1 md:px-0 py-2 col-10 md:col-2 xl:col-1 btn--green"
+              onClick={handleGetAPIKey}
+              className="btn--yellow"
+              label="Get API key"
+              raised
+            />
+            <Button
+              onClick={handleRoutes}
+              className="btn--green"
+              label="Show routes"
+              raised
+            />
+            <Button
+              onClick={handleDeleteApiKey}
+              className="btn--red"
+              label="Delete API key"
+              raised
+            />
+            <Button
+              onClick={logout}
+              className="btn--orange"
+              label="Logout"
+              raised
+            />
+          </div>
+
+          {/* Info Panel Card */}
+          <div>
+            <h3>Info Panel</h3>
+            <Card>
+              <div id="infoPanel">
+                {infoMessage || 'Click a button above to get started'}
+              </div>
+            </Card>
+          </div>
+        </div>
+      ) : (
+        <div className="content-container">
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '60px 20px' 
+          }}>
+            <h3 style={{ marginBottom: '24px' }}>Welcome to Developer Portal</h3>
+            <p style={{ 
+              color: 'var(--color-sherpa200)', 
+              marginBottom: '32px', 
+              fontSize: '18px' 
+            }}>
+              Please log in to access your API keys and manage routes
+            </p>
+            <Button
+              onClick={() => auth.signinRedirect()}
+              className="btn--green"
               label="Login"
               raised
             />
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
