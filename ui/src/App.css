@@ -1,13 +1,16 @@
 :root {
-  --btn-yellow-bg: #f1b828;
-  --btn-yellow-hover-bg: #e0a71f;
-  --btn-green-bg: #93b479;
-  --btn-green-hover-bg: #7fa065;
-  --btn-orange-bg: #c97f3a;
-  --btn-orange-hover-bg: #b36e33;
-  --btn-red-bg: #bf6366;
-  --btn-red-hover-bg: #a65558;
-  --btn-text-color: #000000;
+  --color-sherpa100: #D9F4F4;
+  --color-sherpa200: #B8E8E9;
+  --color-sherpa300: #86D6DA;
+  --color-sherpa400: #63CBCF;
+  --color-sherpa500: #009AA1;
+  --color-sherpa600: #087a82;
+  --color-sherpa700: #0C646D;
+  --color-sherpa800: #004F59;
+  --color-sherpa900: #0C3B41;
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-yellow: #F1B828;
 }
 
 .App {
