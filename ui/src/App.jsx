@@ -9,6 +9,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
 import Header from './components/Header';
+import Footer from './components/Footer';
 
 import { getAPIKey, deleteAPIKey, getRoutes } from './Services/apiService';
 import { useAuth } from 'react-oidc-context';
@@ -193,6 +194,8 @@ function App() {
           </div>
         </div>
       )}
+
+      <Footer />
     </div>
   );
 }
