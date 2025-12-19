@@ -27,9 +27,9 @@ const Footer = () => {
         <div className="footer-row footer-row-text">
           <div className="footer-text">
             <p className="semibold">
-              Technical guidance or encounter issues {' '}
+              If you need technical guidance or encounter issues, see the Support Section {' '}
               <a 
-                href="https://eumetnet.github.io/meteogate-documentation/" 
+                href="https://meteogate.eu/" 
                 target="_blank" 
                 rel="noopener noreferrer"
               >
