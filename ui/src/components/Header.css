@@ -1,6 +1,127 @@
-#app-header-2 {
-  color: rgb(130, 130, 130);
+.header-wrapper {
+  width: 100%;
+  padding: 48px 40px 32px 40px;
+  background: transparent;
 }
-.header-logo {
-  height: 120px; /* Adjust as needed */
+
+/* Logos Container - Separate from title */
+.header-logos {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 32px;
+}
+
+.header-logo-left img {
+  height: 32px;
+  width: auto;
+}
+
+.header-logo-right img {
+  height: 56px;
+  width: auto;
+}
+
+/* Title Section - Separate div below logos */
+.header-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-white);
+}
+
+.header-content h1 {
+  color: var(--color-white);
+  font-family: "Exo 2", sans-serif;
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 48px;
+  margin: 0 0 16px 0;
+}
+
+.header-content .subtitle {
+  color: var(--color-white);
+  font-family: "Exo 2", sans-serif;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 36px;
+  margin: 0;
+  padding-top: 36px;
+  border-top: 1px solid var(--color-white);
+}
+
+/* Highlighted text in subtitle */
+.header-content .subtitle .highlight {
+  color: var(--color-sherpa400);
+}
+
+/* Responsive - Tablet */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .header-wrapper {
+    padding: 40px 32px 24px 32px;
+  }
+
+  .header-logos {
+    padding-bottom: 24px;
+  }
+
+  .header-logo-left img {
+    height: 28px;
+  }
+
+  .header-logo-right img {
+    height: 48px;
+  }
+
+  .header-content {
+    padding-top: 24px;
+  }
+
+  .header-content h1 {
+    font-size: 38px;
+    line-height: 44px;
+  }
+
+  .header-content .subtitle {
+    font-size: 20px;
+    line-height: 28px;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 599px) {
+  .header-wrapper {
+    padding: 24px 20px;
+  }
+
+  .header-logos {
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 24px;
+  }
+
+  .header-logo-left img {
+    height: 24px;
+  }
+
+  .header-logo-right img {
+    height: 40px;
+  }
+
+  .header-content {
+    padding-top: 24px;
+  }
+
+  .header-content h1 {
+    font-size: 32px;
+    line-height: 36px;
+  }
+
+  .header-content .subtitle {
+    font-size: 18px;
+    line-height: 24px;
+  }
 }
