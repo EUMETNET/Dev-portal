@@ -185,6 +185,23 @@ function App() {
               label="Login"
               raised
             />
+
+            {/* Supporting Documentation Link */}
+            <div style={{ marginTop: '24px' }}>
+              <a 
+                href="https://eumetnet.github.io/meteogate-documentation/2-discovering-and-accessing-data/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="documentation-link"
+              >
+                <span>Supporting Documentation</span>
+                <img
+                  className="icon"
+                  src="/icons/newtab.svg"
+                  alt="Opens in new tab"
+                />
+              </a>
+            </div>
           </div>
         </div>
       )}

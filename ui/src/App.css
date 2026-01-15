@@ -267,6 +267,37 @@ h3 {
   white-space: pre-line;
 }
 
+/* Documentation Link */
+.documentation-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-sherpa400);
+  font-family: 'Heebo', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  /* padding: 8px 16px; */
+  border-radius: 4px;
+}
+
+.documentation-link:hover {
+  color: var(--color-white);
+  text-decoration: underline;
+}
+
+.documentation-link .icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.documentation-link:hover .icon {
+  transform: translateX(2px);
+}
+
 /* Tablet layout (600px - 1023px) */
 @media (min-width: 600px) and (max-width: 1023px) {
   .App {
@@ -327,5 +358,9 @@ h3 {
   .btn--uniform {
     min-width: 100% !important;
     width: 100% !important;
+  }
+
+  .documentation-link {
+    font-size: 14px;
   }
 }
