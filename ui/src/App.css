@@ -35,6 +35,22 @@
   color: rgb(126, 52, 52);
 }
 
+/* Button Group Container */
+.button-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+/* Uniform buttons */
+.btn--uniform {
+  min-width: 180px !important;
+  width: auto !important;
+  flex: 0 1 auto;
+}
+
 /* Button Styles - Yellow (Primary/Get API Key) */
 .btn--yellow {
   background: var(--color-yellow) !important;
@@ -272,6 +288,10 @@ h3 {
   .p-card .p-card-body {
     padding: 24px !important;
   }
+
+  .btn--uniform {
+    min-width: 160px !important;
+  }
 }
 
 /* Mobile layout (up to 599px) */
@@ -302,5 +322,10 @@ h3 {
   .p-datatable .p-datatable-tbody > tr > td {
     padding: 12px !important;
     font-size: 14px !important;
+  }
+
+  .btn--uniform {
+    min-width: 100% !important;
+    width: 100% !important;
   }
 }

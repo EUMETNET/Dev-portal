@@ -128,34 +128,28 @@ function App() {
       {auth.isAuthenticated ? (
         <div className="content-container">
           {/* Button Group */}
-          <div style={{ 
-            display: 'flex', 
-            gap: '16px', 
-            flexWrap: 'wrap', 
-            justifyContent: 'center',
-            marginBottom: '40px'
-          }}>
+          <div className="button-group">
             <Button
               onClick={handleGetAPIKey}
-              className="btn--yellow"
+              className="btn--yellow btn--uniform"
               label="Get API key"
               raised
             />
             <Button
               onClick={handleRoutes}
-              className="btn--green"
+              className="btn--green btn--uniform"
               label="Show routes"
               raised
             />
             <Button
               onClick={handleDeleteApiKey}
-              className="btn--red"
+              className="btn--red btn--uniform"
               label="Delete API key"
               raised
             />
             <Button
               onClick={logout}
-              className="btn--orange"
+              className="btn--orange btn--uniform"
               label="Logout"
               raised
             />
