@@ -265,6 +265,8 @@ h3 {
   padding: 24px;
   text-align: left;
   white-space: pre-line;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 /* Documentation Link */
