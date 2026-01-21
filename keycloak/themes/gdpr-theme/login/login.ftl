@@ -4,9 +4,39 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MeteoGate - Login</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Exo+2">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Heebo">
     <style>
+        /* Font Faces (matching Dev Portal) */
+        @font-face {
+            font-family: 'Exo 2';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('${url.resourcesPath}/fonts/exo-2-v26-latin-regular.woff2') format('woff2');
+        }
+
+        @font-face {
+            font-family: 'Exo 2';
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: url('${url.resourcesPath}/fonts/exo-2-v26-latin-600.woff2') format('woff2');
+        }
+
+        @font-face {
+            font-family: 'Heebo';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('${url.resourcesPath}/fonts/heebo-v28-latin-regular.woff2') format('woff2');
+        }
+
+        @font-face {
+            font-family: 'Heebo';
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: url('${url.resourcesPath}/fonts/heebo-v28-latin-600.woff2') format('woff2');
+        }
         /* Color Variables (matching Dev Portal) */
         :root {
             --color-sherpa100: #D9F4F4;
