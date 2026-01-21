@@ -1,19 +1,31 @@
 :root {
-  --btn-yellow-bg: #f1b828;
-  --btn-yellow-hover-bg: #e0a71f;
-  --btn-green-bg: #93b479;
-  --btn-green-hover-bg: #7fa065;
-  --btn-orange-bg: #c97f3a;
-  --btn-orange-hover-bg: #b36e33;
-  --btn-red-bg: #bf6366;
-  --btn-red-hover-bg: #a65558;
-  --btn-text-color: #000000;
+  --color-sherpa100: #D9F4F4;
+  --color-sherpa200: #B8E8E9;
+  --color-sherpa300: #86D6DA;
+  --color-sherpa400: #63CBCF;
+  --color-sherpa500: #009AA1;
+  --color-sherpa600: #087a82;
+  --color-sherpa700: #0C646D;
+  --color-sherpa800: #004F59;
+  --color-sherpa900: #0C3B41;
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-yellow: #F1B828;
 }
 
 .App {
-  text-align: center;
-  background-color: rgb(239, 241, 247);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+   /* Desktop background (default) */
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.00) 15.58%),
+    radial-gradient(68.05% 68.05% at 50.79% 4.4%, rgba(12, 59, 65, 0.30) 0%, #0C3B41 100%),
+    url('/background-image-desktop.jpg');
+  background-position: center, center, top;
+  background-size: 100% 100%, 100% 100%, cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 #infoPanel {
@@ -23,88 +35,338 @@
   color: rgb(126, 52, 52);
 }
 
+/* Button Group Container */
+.button-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+/* Uniform buttons */
+.btn--uniform {
+  min-width: 180px !important;
+  width: auto !important;
+  flex: 0 1 auto;
+}
+
+/* Button Styles - Yellow (Primary/Get API Key) */
 .btn--yellow {
-  background-color: var(--btn-yellow-bg) !important;
-  border-color: var(--btn-yellow-bg) !important;
-  color: var(--btn-text-color) !important;
+  background: var(--color-yellow) !important;
+  border: 4px solid var(--color-white) !important;
+  color: var(--color-black) !important;
+  font-family: Heebo, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 24px !important;
+  border-radius: 4px !important;
+  padding: 14px 24px !important;
+  transition: all 0.3s ease !important;
 }
 
 .btn--yellow:hover {
-  background-color: var(--btn-yellow-hover-bg) !important;
-  border-color: var(--btn-yellow-hover-bg) !important;
+  background: #e0a71f !important;
+  border: 4px solid var(--color-white) !important;
+}
+
+.btn--yellow:active {
+  background: #c99319 !important;
 }
 
 .btn--yellow:focus {
-  box-shadow:
-    0 0 0 2px #fff,
-    0 0 0 4px rgba(241, 184, 40, 0.5) !important;
+  border: 4px solid var(--color-yellow) !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
+/* Button Styles - Green (Secondary/Show Routes, Login) */
 .btn--green {
-  background-color: var(--btn-green-bg) !important;
-  border-color: var(--btn-green-bg) !important;
-  color: var(--btn-text-color) !important;
+  background: var(--color-white) !important;
+  border: 4px solid var(--color-white) !important;
+  color: var(--color-sherpa800) !important;
+  font-family: Heebo, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 24px !important;
+  border-radius: 4px !important;
+  padding: 14px 24px !important;
+  transition: all 0.3s ease !important;
 }
 
 .btn--green:hover {
-  background-color: var(--btn-green-hover-bg) !important;
-  border-color: var(--btn-green-hover-bg) !important;
+  background: var(--color-sherpa200) !important;
+  border: 4px solid var(--color-white) !important;
+}
+
+.btn--green:active {
+  background: var(--color-sherpa300) !important;
 }
 
 .btn--green:focus {
-  box-shadow:
-    0 0 0 2px #fff,
-    0 0 0 4px rgba(147, 180, 121, 0.5) !important;
+  border: 4px solid var(--color-yellow) !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
+/* Button Styles - Orange (Secondary/Logout) */
 .btn--orange {
-  background-color: var(--btn-orange-bg) !important;
-  border-color: var(--btn-orange-bg) !important;
-  color: var(--btn-text-color-light) !important;
+  background: var(--color-sherpa800) !important;
+  border: 4px solid var(--color-white) !important;
+  color: var(--color-white) !important;
+  font-family: Heebo, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 24px !important;
+  border-radius: 4px !important;
+  padding: 14px 24px !important;
+  transition: all 0.3s ease !important;
 }
 
 .btn--orange:hover {
-  background-color: var(--btn-orange-hover-bg) !important;
-  border-color: var(--btn-orange-hover-bg) !important;
+  border-width: 2px !important;
+  padding: 15px 25px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.btn--orange:active {
+  border-width: 3px !important;
+  padding: 15.5px 24.5px !important;
 }
 
 .btn--orange:focus {
-  box-shadow:
-    0 0 0 2px #fff,
-    0 0 0 4px rgba(201, 127, 58, 0.5) !important;
+  border: 4px solid var(--color-yellow) !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
+/* Button Styles - Red (Destructive/Delete) */
 .btn--red {
-  background-color: var(--btn-red-bg) !important;
-  border-color: var(--btn-red-bg) !important;
-  color: var(--btn-text-color) !important;
+  background: #bf6366 !important;
+  border: 4px solid var(--color-white) !important;
+  color: var(--color-white) !important;
+  font-family: Heebo, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 24px !important;
+  border-radius: 4px !important;
+  padding: 14px 24px !important;
+  transition: all 0.3s ease !important;
 }
 
 .btn--red:hover {
-  background-color: var(--btn-red-hover-bg) !important;
-  border-color: var(--btn-red-hover-bg) !important;
+  background: #a65558 !important;
+  border: 4px solid var(--color-white) !important;
+}
+
+.btn--red:active {
+  background: #8d484b !important;
 }
 
 .btn--red:focus {
-  box-shadow:
-    0 0 0 2px #fff,
-    0 0 0 4px rgba(191, 99, 102, 0.5) !important;
+  border: 4px solid var(--color-yellow) !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-/* Disable transitions for instant changes */
-.btn--yellow,
-.btn--green,
-.btn--red,
-.btn--orange {
-  transition: none;
-  animation: none;
+/* Content Container */
+.content-container {
+  max-width: 1280px;
+  margin: 40px auto;
+  padding: 0 40px;
+  width: 100%;
 }
 
-/* Disable transitions and animations for the button label inside custom buttons */
-.btn--yellow .p-button-label,
-.btn--green .p-button-label,
-.btn--red .p-button-label,
-.btn--orange .p-button-label {
-  transition: none !important;
-  animation: none !important;
+/* Headings */
+h3 {
+  color: var(--color-white);
+  font-family: "Exo 2", sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 32px;
+  margin: 32px 0 24px 0;
+  text-align: center;
+}
+
+/* Card Styles */
+.p-card {
+  background: var(--color-sherpa800) !important;
+  border: 1px solid var(--color-sherpa600) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.p-card .p-card-body {
+  padding: 32px !important;
+  color: var(--color-white) !important;
+}
+
+.p-card .p-card-content {
+  color: var(--color-white) !important;
+  font-family: 'Heebo', sans-serif !important;
+  font-size: 16px !important;
+  line-height: 24px !important;
+  min-height: 200px;
+}
+
+/* DataTable Styles */
+.p-datatable {
+  background: var(--color-sherpa800) !important;
+  border: 1px solid var(--color-sherpa600) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.p-datatable .p-datatable-header {
+  background: var(--color-sherpa700) !important;
+  border-bottom: 1px solid var(--color-sherpa600) !important;
+  color: var(--color-white) !important;
+  padding: 16px !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: var(--color-sherpa700) !important;
+  border: 1px solid var(--color-sherpa600) !important;
+  color: var(--color-sherpa400) !important;
+  font-family: 'Exo 2', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  padding: 16px !important;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  background: var(--color-sherpa800) !important;
+  color: var(--color-white) !important;
+  transition: background 0.2s ease !important;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  border: 1px solid var(--color-sherpa600) !important;
+  padding: 16px !important;
+  font-family: 'Heebo', sans-serif !important;
+  font-size: 16px !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  word-break: break-all !important;
+  max-width: 0 !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Empty message in DataTable */
+.p-datatable .p-datatable-emptymessage > td {
+  color: var(--color-sherpa400) !important;
+}
+
+/* Info Panel Styling */
+#infoPanel {
+  color: var(--color-white);
+  font-family: 'Heebo', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  padding: 24px;
+  text-align: left;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Documentation Link */
+.documentation-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-sherpa400);
+  font-family: 'Heebo', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  /* padding: 8px 16px; */
+  border-radius: 4px;
+}
+
+.documentation-link:hover {
+  color: var(--color-white);
+  text-decoration: underline;
+}
+
+.documentation-link .icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.documentation-link:hover .icon {
+  transform: translateX(2px);
+}
+
+/* Tablet layout (600px - 1023px) */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .App {
+    background-image:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.00) 15.58%),
+      radial-gradient(68.05% 68.05% at 50.79% 4.4%, rgba(12, 59, 65, 0.30) 0%, #0C3B41 100%),
+      url('/background-image-tablet.jpg');
+  }
+
+  .content-container {
+    padding: 0 32px;
+  }
+
+  h3 {
+    font-size: 24px;
+    line-height: 28px;
+  }
+
+  .p-card .p-card-body {
+    padding: 24px !important;
+  }
+
+  .btn--uniform {
+    min-width: 160px !important;
+  }
+}
+
+/* Mobile layout (up to 599px) */
+@media (max-width: 599px) {
+  .App {
+    background-image:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.00) 30%),
+      radial-gradient(90% 90% at 50% 10%, rgba(12, 59, 65, 0.50) 0%, #0C3B41 100%),
+      url('/background-image-mobile.jpg');
+  }
+
+  .content-container {
+    padding: 0 20px;
+    margin: 24px auto;
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 24px;
+    margin: 24px 0 16px 0;
+  }
+
+  .p-card .p-card-body {
+    padding: 20px !important;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th,
+  .p-datatable .p-datatable-tbody > tr > td {
+    padding: 12px !important;
+    font-size: 14px !important;
+  }
+
+  .btn--uniform {
+    min-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .documentation-link {
+    font-size: 14px;
+  }
 }

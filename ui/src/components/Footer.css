@@ -1,0 +1,141 @@
+.footer-container {
+  width: 100%;
+  background: #00282D;
+  padding: 64px 0;
+  margin-top: auto;
+  border-top: 1px solid var(--color-sherpa600);
+}
+
+.footer-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--color-sherpa600);
+  padding-top: 40px;
+}
+
+.footer-logo {
+  height: 32px;
+  width: auto;
+}
+
+.footer-text {
+  flex: 1;
+}
+
+.footer-text p {
+  color: var(--color-white);
+  font-family: Heebo, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  margin: 0;
+}
+
+.footer-text a {
+  color: var(--color-sherpa400);
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.footer-text a:hover {
+  color: var(--color-sherpa300);
+}
+
+.footer-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.footer-link p {
+  color: var(--color-sherpa400);
+  font-family: Heebo, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  margin: 0;
+}
+
+.footer-link:hover p {
+  text-decoration: underline;
+  color: var(--color-white);
+}
+
+.footer-link .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.copyright {
+  color: var(--color-sherpa400);
+  font-family: Heebo, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  margin: 0;
+}
+
+/* Responsive - Tablet */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .footer-content {
+    padding: 0 32px;
+  }
+
+  .footer-row {
+    gap: 16px;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 599px) {
+  .footer-container {
+    padding: 40px 0;
+  }
+
+  .footer-content {
+    padding: 0 20px;
+    gap: 24px;
+  }
+
+  .footer-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .footer-bottom {
+    padding-top: 24px;
+  }
+
+  .footer-logo {
+    height: 28px;
+  }
+
+  .footer-text p {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .footer-link p,
+  .copyright {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
