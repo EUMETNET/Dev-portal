@@ -1511,10 +1511,6 @@
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
   "smtpServer": {},
-  "loginTheme": "gdpr-theme",
-  "accountTheme": "",
-  "adminTheme": "",
-  "emailTheme": "",
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
@@ -2299,8 +2295,8 @@
       "alias": "TERMS_AND_CONDITIONS",
       "name": "Terms and Conditions",
       "providerId": "TERMS_AND_CONDITIONS",
-      "enabled": true,
-      "defaultAction": true,
+      "enabled": false,
+      "defaultAction": false,
       "priority": 20,
       "config": {}
     },
