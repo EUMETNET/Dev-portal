@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MeteoGate - Login</title>
-    <link href="${url.resourcesPath}/css/common.css" rel="stylesheet" />
-    <link href="${url.resourcesPath}/css/login.css" rel="stylesheet" />
+    <link href="${url.resourcesPath}/css/custom-common.css" rel="stylesheet" />
+    <link href="${url.resourcesPath}/css/custom-login.css" rel="stylesheet" />
 </head>
 <body>
     <div id="page-wrapper">

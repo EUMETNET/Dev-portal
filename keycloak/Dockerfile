@@ -7,9 +7,9 @@ COPY themes/gdpr-theme /theme/gdpr-theme
 RUN test -f /theme/gdpr-theme/login/theme.properties && \
     test -f /theme/gdpr-theme/login/login.ftl && \
     test -f /theme/gdpr-theme/login/terms.ftl && \
-    test -f /theme/gdpr-theme/login/resources/css/common.css && \
-    test -f /theme/gdpr-theme/login/resources/css/login.css && \
-    test -f /theme/gdpr-theme/login/resources/css/terms.css && \
+    test -f /theme/gdpr-theme/login/resources/css/custom-common.css && \
+    test -f /theme/gdpr-theme/login/resources/css/custom-login.css && \
+    test -f /theme/gdpr-theme/login/resources/css/custom-terms.css && \
     test -d /theme/gdpr-theme/login/resources/fonts && \
     test -d /theme/gdpr-theme/login/resources/img && \
     echo "✓ Theme files verified successfully"
