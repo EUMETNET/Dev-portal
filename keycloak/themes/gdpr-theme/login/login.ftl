@@ -56,7 +56,7 @@
                                 name="username" 
                                 value="${(login.username!'')}"
                                 autofocus
-                                autocomplete="off"
+                                autocomplete="username"
                             />
                         </div>
 
@@ -66,7 +66,7 @@
                                 type="password" 
                                 id="password" 
                                 name="password"
-                                autocomplete="off"
+                                autocomplete="current-password"
                             />
                         </div>
 
