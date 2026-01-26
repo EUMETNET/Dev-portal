@@ -12,4 +12,5 @@ RUN test -f /theme/gdpr-theme/login/theme.properties && \
     test -f /theme/gdpr-theme/login/resources/css/custom-terms.css && \
     test -d /theme/gdpr-theme/login/resources/fonts && \
     test -d /theme/gdpr-theme/login/resources/img && \
+    test -f /theme/gdpr-theme/login/resources/js/custom-terms.js && \
     echo "✓ Theme files verified successfully"
