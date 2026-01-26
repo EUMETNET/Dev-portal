@@ -2,7 +2,7 @@ const errorMessageDiv = document.getElementById('error-message');
 const form = document.getElementById('kc-terms-form');
 
 form.addEventListener('submit', function(e) {
-    const submitButton = e.submitter;
+    const submitButton = e.submitter || document.activeElement;
 
     // Check if user clicked "Accept" button
     if (submitButton && submitButton.name === 'accept') {
