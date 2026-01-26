@@ -47,7 +47,7 @@
                 <div class="consent-box">
                     <h2>Terms and Conditions</h2>
                     
-                    <form id="kc-terms-form" action="${url.loginAction}" method="post">
+                    <form id="kc-terms-form" action="${url.loginAction}" method="POST">
                         <!-- First Consent Checkbox -->
                         <div class="consent-item">
                             <label class="consent-checkbox">
@@ -76,8 +76,8 @@
 
                         <!-- Action Buttons -->
                         <div class="button-container">
-                            <button type="submit" name="accept" class="btn-accept">I Accept</button>
-                            <button type="submit" name="cancel" class="btn-decline">I Decline</button>
+                            <input type="submit" name="accept" id="kc-accept" class="btn-accept" value="I Accept" />
+                            <input type="submit" name="cancel" id="kc-decline" class="btn-decline" value="I Decline" />
                         </div>
                     </form>
                 </div>
@@ -100,9 +100,10 @@
         const form = document.getElementById('kc-terms-form');
         
         form.addEventListener('submit', function(e) {
-            const acceptButton = e.submitter;
-            
-            if (acceptButton && acceptButton.name === 'accept') {
+            const submitButton = e.submitter;
+
+            // Check if user clicked "Accept" button
+            if (submitButton && submitButton.name === 'accept') {
                 const systemUpdates = document.getElementById('system-updates-consent').checked;
                 const dataUsage = document.getElementById('data-usage-consent').checked;
                 

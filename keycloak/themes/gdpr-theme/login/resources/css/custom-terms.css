@@ -79,7 +79,7 @@
 }
 
 /* Buttons */
-button.btn-accept {
+input.btn-accept {
     flex: 1;
     padding: 14px 24px;
     border-radius: 4px;
@@ -94,20 +94,20 @@ button.btn-accept {
     transition: all 0.3s ease;
 }
 
-button.btn-accept:hover {
+input.btn-accept:hover {
     background: var(--color-sherpa200);
 }
 
-button.btn-accept:active {
+input.btn-accept:active {
     background: var(--color-sherpa300);
 }
 
-button.btn-accept:focus {
+input.btn-accept:focus {
     border-color: var(--color-yellow);
     outline: none;
 }
 
-button.btn-decline {
+input.btn-decline {
     flex: 1;
     padding: 14px 24px;
     border-radius: 4px;
@@ -122,13 +122,13 @@ button.btn-decline {
     transition: all 0.3s ease;
 }
 
-button.btn-decline:hover {
+input.btn-decline:hover {
     background: rgba(255, 255, 255, 0.1);
     border-width: 2px;
     padding: 15px 25px;
 }
 
-button.btn-decline:focus {
+input.btn-decline:focus {
     border-color: var(--color-yellow);
     outline: none;
 }
@@ -167,8 +167,8 @@ button.btn-decline:focus {
         flex-direction: column;
     }
 
-    button.btn-accept,
-    button.btn-decline {
+    input.btn-accept,
+    input.btn-decline {
         width: 100%;
     }
 }

@@ -69,8 +69,9 @@
                                 autocomplete="current-password"
                             />
                         </div>
-
-                        <button type="submit" class="btn-login">Sign In</button>
+                        
+                        <input type="hidden" id="id-hidden-input" name="credentialId" />
+                        <button type="submit" name="login" class="btn-login">Sign In</button>
                     </form>
 
                     <!-- Social Login Options -->
@@ -78,11 +79,12 @@
                         <div class="social-login">
                             <p>Or sign in with:</p>
                             <#list social.providers as p>
-                                <form action="${p.loginUrl}" method="post">
-                                    <button type="submit" class="social-btn">
-                                        ${p.displayName}
-                                    </button>
-                                </form>
+                                <a id="social-${p.alias}" 
+                                   href="${p.loginUrl}" 
+                                   class="social-btn"
+                                   type="button">
+                                    ${p.displayName}
+                                </a>
                             </#list>
                         </div>
                     </#if>
