@@ -12,9 +12,13 @@ services:
     command:
       - start-dev
       - --import-realm # import realm(s) from /opt/keycloak/data/import
+      - --spi-theme-static-max-age=-1
+      - --spi-theme-cache-themes=false
+      - --spi-theme-cache-templates=false
     volumes:
       - ./keycloak/config/realm_export/local_dev:/opt/keycloak/data/import
       - ./keycloak/providers:/opt/keycloak/providers/
+      - ./keycloak/themes:/opt/keycloak/themes/
     networks:
       apisix:
     profiles:
