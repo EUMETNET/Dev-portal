@@ -118,33 +118,20 @@ chmod +x deploy-routes.sh
 **deploy-routes.sh:**
 ```bash
 #!/bin/bash
+# Deploy routes to local APISIX instances
+set -euo pipefail
 
-set -e
+deploy() {
+    echo "Deploying to $3..."
+    PLATFORM=LOCAL-DEV BASE_URL="$1" ADMIN_API_URL="$2" \
+        APISIX_API_KEY=edd1c9f034335f136f87ad84b625c8f1 npm run dev
+}
 
-echo "Deploying routes to both APISIX instances..."
+echo "Deploying routes..."
+deploy "http://127.0.0.1:9080" "http://127.0.0.1:9180" "Instance 1"
+deploy "http://127.0.0.1:9181" "http://127.0.0.1:9280" "Instance 2"
 
-# Deploy to local APISIX Instance 1
-echo ""
-echo "Deploying to Instance 1 (ports 9080/9180)..."
-export PLATFORM=LOCAL-DEV
-export BASE_URL=http://127.0.0.1:9080
-export ADMIN_API_URL=http://127.0.0.1:9180
-export APISIX_API_KEY=edd1c9f034335f136f87ad84b625c8f1
-
-npm run dev
-
-# Deploy to local APISIX Instance 2
-echo ""
-echo "Deploying to Instance 2 (ports 9181/9280)..."
-export BASE_URL=http://127.0.0.1:9181
-export ADMIN_API_URL=http://127.0.0.1:9280
-
-npm run dev
-
-echo ""
-echo "Both instances configured successfully!"
-echo ""
-echo "Verify routes at: http://localhost:3002/routes"
+echo "Done! View routes at: http://localhost:3002/routes"
 ```
 
 ### 5. Deploy Routes
@@ -159,17 +146,14 @@ Run the deployment script:
 
 **Expected output:**
 ```
-Deploying routes to both APISIX instances...
-
-Deploying to Instance 1 (ports 9080/9180)...
+Deploying routes...
+Deploying to Instance 1...
+..
 Routes: 4, Upstreams: 2
-
-Deploying to Instance 2 (ports 9181/9280)...
+Deploying to Instance 2...
+..
 Routes: 4, Upstreams: 2
-
-Both instances configured successfully!
-
-Verify routes at: http://localhost:3002/routes
+Done! View routes at: http://localhost:3002/routes
 ```
 
 ### 6. Verify Configuration
