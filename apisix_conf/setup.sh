@@ -45,7 +45,8 @@ do
             "plugins": {
                 "limit-count": {
                     "count": 100,
-                    "time_window": 60
+                    "time_window": 60,
+                    "key": "consumer_name"
                 }
             },
             "id": "EumetnetUser"
@@ -81,19 +82,27 @@ if [ "$ENV" = "dev" ]; then
                     ]
                 ],
                 "plugins": {
+                    "key-auth": {},
+                    "limit-req": {
+                        "rate": 10,
+                        "burst": 20,
+                        "key": "consumer_name",
+                        "rejected_code": 429
+                    },
                     "limit-count": {
                         "count": 10,
-                        "time_window": 60
+                        "time_window": 60,
+                        "key": "consumer_name",
+                        "rejected_code": 429
                     },
-                    "key-auth": {},
                     "proxy-rewrite": {
-                        "uri": "/"
+                        "regex_uri": ["^/bar(.*)", "/$1"]
                     }
                 },
-                "upstream" : {
+                "upstream": {
                     "type": "roundrobin",
                     "nodes": {
-                    "web1:80":1
+                        "web1:80": 1
                     },
                     "scheme": "http"
                 }
@@ -121,19 +130,27 @@ if [ "$ENV" = "dev" ]; then
                     ]
                 ],
                 "plugins": {
+                    "key-auth": {},
+                    "limit-req": {
+                        "rate": 10,
+                        "burst": 20,
+                        "key": "consumer_name",
+                        "rejected_code": 429
+                    },
                     "limit-count": {
                         "count": 10,
-                        "time_window": 60
+                        "time_window": 60,
+                        "key": "consumer_name",
+                        "rejected_code": 429
                     },
-                    "key-auth": {},
                     "proxy-rewrite": {
-                        "uri": "/"
+                        "regex_uri": ["^/foo(.*)", "/$1"]
                     }
                 },
-                "upstream" : {
+                "upstream": {
                     "type": "roundrobin",
                     "nodes": {
-                    "web2:80":1
+                        "web2:80": 1
                     },
                     "scheme": "http"
                 }
