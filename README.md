@@ -50,6 +50,8 @@ To manage external integrations for testing you should give "test" argument to c
 ./manage-services.sh up test
 ```
 
+To use the API Management Tool POC to configure the Apisix routes instead of the [setup.sh](apisix_conf/setup.sh) script, refer the README in [apisix_conf/](apisix_conf/) directory.
+
 ### Run custom components
 Refer the READMEs in [ui/](ui/) and [backend/](backend/) directories
 
