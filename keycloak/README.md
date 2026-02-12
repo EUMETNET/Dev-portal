@@ -32,8 +32,8 @@ keycloak/
 
 1. Navigate to http://localhost:8080/admin
 2. Login with admin credentials (`admin`/`admin`)
-3. Select the **meteogate** realm
-4. Go to **Realm Settings** → **Themes**
+3. Go to **Manage realms** and select the **meteogate** realm
+4. Go to **Realm Settings** → **Themes** tab
 5. Set **Login theme** to `gdpr-theme`
 6. Click **Save**
 
@@ -43,20 +43,18 @@ keycloak/
 
 To display the Terms & Conditions page to users, enable the **Terms and Conditions** required action:
 
-1. Go to **Authentication** → **Required Actions**
-2. Find **Terms and Conditions**
-3. Check **Enabled**
-4. Check **Default Action**
-5. Click **Save**
+1. Go to **Manage realms** and select the **meteogate** realm
+2. Go to **Authentication** → **Required actions** tab
+3. Find **Terms and Conditions**
+4. Check **Enabled**
+5. Check **Set as default action**
 
 To apply the **Terms and Conditions** required action to any existing users:
 
-1. Go to **Users** in the left sidebar
+1. Go to **Users**
 2. Find and click on the user
-3. Go to the **Required Actions** tab
-4. Select **Terms and Conditions** from the dropdown
-5. Click **Add**
-6. Click **Save**
+3. Select **Terms and Conditions** from the **Required user actions** dropdown
+4. Click **Save**
 
 **Bulk action:** To apply to all users, use the Keycloak REST API.
 
@@ -64,3 +62,4 @@ To apply the **Terms and Conditions** required action to any existing users:
 
 - [Keycloak Documentation](https://www.keycloak.org/docs/latest/server_development/)
 - [Working with themes](https://www.keycloak.org/ui-customization/themes)
+- [Theme CI/CD Workflow](../.github/workflows/keycloak_theme_ci_cd.yml)
