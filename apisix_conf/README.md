@@ -31,16 +31,30 @@ cd api-management-tool-poc
 npm install
 ```
 
-### 3. Create Route Configuration
+### 3. Create Apisix Configuration
 
-Create a YAML file in `configs/routes/` for your local development routes:
+The API Management Tool uses YAML files in the `configs/` directory:
+- **Routes**: `configs/routes/` - Define API endpoints and upstream services
+- **Consumer groups**: `configs/groups/` - Define user groups and rate limits
+
+**Example of a consumer group** (`configs/groups/eumetnet.yaml`):
+```yaml
+id: EumetnetUser
+ratelimit:
+  quota:
+    count: 500
+    time_window: 60
+```
+
+This creates a consumer group with higher rate limits for EUMETNET users (500 req/min).
+
+Create a route configuration file:
 
 ```bash
-# Create the configuration file
 touch configs/routes/dev-test.yaml
 ```
 
-**Example:** `configs/routes/dev-test.yaml`
+**Example of route configuration** (`configs/routes/dev-test.yaml`);
 
 ```yaml
 id: dev-test
@@ -49,7 +63,7 @@ platforms:
   - LOCAL-DEV
 routes:
   - route:
-      disableResponseRewrite: true  # Disable custom plugin not installed by default
+      disableResponseRewrite: true
       id: baz
       endpoint: http://web1:80/
       ratelimitAuth:
@@ -57,21 +71,21 @@ routes:
           rate: 10
           burst: 20
         quota:
-          count: 100
+          count: 10
           time_window: 60
       ratelimitAnon:
         requestRate:
-          rate: 2
+          rate: 1
           burst: 5
         quota:
-          count: 30
+          count: 10
           time_window: 60
       cors: true
       overwrite:
         upstream:
-          scheme: http             # Force HTTP (default is HTTPS)
+          scheme: http
           nodes:
-            "web1:80": 1           # Specify backend and port
+            "web1:80": 1
             
   - route:
       disableResponseRewrite: true
@@ -79,17 +93,17 @@ routes:
       endpoint: http://web2:80/
       ratelimitAuth:
         requestRate:
+          rate: 100
+          burst: 200
+        quota:
+          count: 200
+          time_window: 60
+      ratelimitAnon:
+        requestRate:
           rate: 10
           burst: 20
         quota:
           count: 100
-          time_window: 60
-      ratelimitAnon:
-        requestRate:
-          rate: 2
-          burst: 5
-        quota:
-          count: 30
           time_window: 60
       cors: true
       overwrite:
@@ -99,6 +113,17 @@ routes:
             "web2:80": 1
 ```
 
+This creates two routes (`/baz` and `/qux`) with both authenticated and anonymous access (four routes in total).
+
+Route `/baz`: Authenticated users get 10 requests/second (burst 20) and 10 requests/minute quota, while anonymous users have stricter rate limits of 1 request/second (burst 5) and 10 requests/minute quota.
+
+Route `/qux`: Authenticated users get 100 requests/second (burst 200) and 200 requests/minute quota, while anonymous users have stricter rate limits of 10 request/second (burst 20) and 100 requests/minute quota.
+
+Consumer Group Limits: Users in the EumetnetUser consumer group would have an additional group-level limit of 500 requests/minute quota that applies across all routes. Regular User group members only have the route-level limits shown above. Anonymous users (no API key) are limited per IP address and have the lowest rate limits.
+
+The routes proxy to HTTP backend servers web1 and web2. APISIX automatically selects the authenticated route when an API key is provided (via apikey header or query parameter), and falls back to the anonymous route when no API key is provided.
+
+
 **Configuration notes:**
 - `disableResponseRewrite: true` - Disables the `dynamic-response-rewrite` plugin (not installed by default in APISIX)
 - `endpoint` - Must include the port (e.g., `http://web1:80/`)
@@ -107,7 +132,7 @@ routes:
 
 ### 4. Create Deployment Script
 
-Create a script to deploy routes to both APISIX instances:
+Create a script to deploy consumer groups and routes to both APISIX instances:
 
 ```bash
 # In the api-management-tool-poc directory
