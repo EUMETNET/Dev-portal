@@ -1,14 +1,14 @@
 # Configuring APISIX Routes with the API Management Tool
 
-This guide explains how to use the [API Management Tool POC](https://github.com/EUMETNET/api-management-tool-poc) to configure APISIX routes for the Dev Portal.
+This guide explains how to use the [API Management Tool POC](https://github.com/EUMETNET/api-management-tool-poc) to configure APISIX routes for Dev Portal instead of the [setup.sh](setup.sh) script.
 
-## Prerequisites
+Note: When running the command `./manage-services.sh up dev`, it will also run the `setup.sh` script by default, which creates dummy routes (`/foo` and `/bar`) for testing purposes.
+
+## Prerequisites for the API Management Tool
 
 - Node.js (>= 18.x)
 - npm (>= 9.x)
 - Dev Portal external services running (`./manage-services.sh up dev`)
-
-Note: The manage-services script creates dummy routes (`/foo` and `/bar`) for testing.
 
 ## Setup
 
