@@ -1,9 +1,10 @@
 services:
   auth:
-    image: quay.io/keycloak/keycloak:24.0
+    image: quay.io/keycloak/keycloak:26.4.5
     ports:
       - "${KEYCLOAK_PORT:-8080}:8080"
       - "${KEYCLOAK_DEBUG_PORT:-8000}:8000"
+      - "${KEYCLOAK_HEALTH_PORT:-9000}:9000"
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_MASTER_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_MASTER_ADMIN_PW}

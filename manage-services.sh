@@ -102,7 +102,7 @@ _configure_keycloak() {
     echo "Waiting for Keycloak to be ready before configuring it..."
     counter=0
     while : ; do 
-      error=$(curl --output /dev/null --silent --head --fail http://localhost:${KEYCLOAK_PORT}/health/ready 2>&1)
+      error=$(curl --output /dev/null --silent --head --fail http://localhost:${KEYCLOAK_HEALTH_PORT}/health/ready 2>&1)
       if [ $? -eq 0 ]; then
         break
       else
