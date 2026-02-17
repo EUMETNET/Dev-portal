@@ -75,7 +75,11 @@ function App() {
       if (!isError) {
         const routes = data.routes;
         const listItems = routes.map((currElement, index) => {
-          return { id: index, route: currElement };
+          return { 
+            id: index, 
+            route: currElement.url,
+            limits: currElement.limits
+          };
         });
         setInfoMessage(generateTable(listItems));
       } else {
@@ -93,9 +97,22 @@ function App() {
 
   function generateTable(routes) {
     return (
-      <DataTable value={routes} stripedRows emptyMessage="No routes available">
-        <Column field="route" header="Available Routes"></Column>
-      </DataTable>
+      <>
+        <div className="routes-info-box">
+          <img
+            className="icon"
+            src="/icons/info.svg"
+            alt="Information"
+          />
+          <span>
+            Your effective rate limits are determined by route configuration and your group membership. EUMETNET member users receive higher limits.
+          </span>
+        </div>
+        <DataTable value={routes} stripedRows emptyMessage="No routes available">
+          <Column field="route" header="Route" className="route-column"></Column>
+          <Column field="limits" header="Limits" className="limits-column"></Column>
+        </DataTable>
+      </>
     );
   }
 
@@ -137,7 +154,7 @@ function App() {
             />
             <Button
               onClick={handleRoutes}
-              className="btn--green btn--uniform"
+              className="btn--white btn--uniform"
               label="Show routes"
               raised
             />
@@ -149,7 +166,7 @@ function App() {
             />
             <Button
               onClick={logout}
-              className="btn--orange btn--uniform"
+              className="btn--green btn--uniform"
               label="Logout"
               raised
             />
@@ -181,7 +198,7 @@ function App() {
             </p>
             <Button
               onClick={() => auth.signinRedirect()}
-              className="btn--green"
+              className="btn--white"
               label="Login"
               raised
             />

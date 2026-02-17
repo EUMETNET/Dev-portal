@@ -36,7 +36,7 @@ async def test_get_routes_success(get_keycloak_user_token: Callable) -> None:
         if "key-auth" in route["plugins"]
     ]
 
-    assert set(routes) == set(data["routes"])
+    assert set(routes) == {route["url"] for route in data["routes"]}
 
 
 async def test_get_routes_without_token_fails() -> None:
