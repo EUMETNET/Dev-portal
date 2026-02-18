@@ -9,13 +9,13 @@ ROUTES = [
         "plugins": {
             "key-auth": {},
             "limit-req": {
-                "rate": 10,
-                "burst": 20,
+                "rate": 5,
+                "burst": 10,
                 "key": "consumer_name",
                 "rejected_code": 429
             },
             "limit-count": {
-                "count": 10,
+                "count": 5,
                 "time_window": 60,
                 "key": "consumer_name",
                 "rejected_code": 429
