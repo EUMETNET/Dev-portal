@@ -40,7 +40,7 @@ async def test_get_routes_success(get_keycloak_user_token: Callable) -> None:
 
     expected_limits_map = {
         f"{config.apisix.global_gateway_url}/foo":
-            "Quota: 10 req/60s | Rate: 10 req/s | Burst: 20 req (Route limit)",
+            "Quota: 5 req/60s | Rate: 5 req/s | Burst: 10 req (Route limit)",
         f"{config.apisix.global_gateway_url}/bar":
             "Quota: 10 req/60s | Rate: 10 req/s | Burst: 20 req (Route limit)",
         f"{config.apisix.global_gateway_url}/qux":
