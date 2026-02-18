@@ -177,7 +177,11 @@ if [ "$ENV" = "dev" ]; then
                         ".+"
                     ]
                 ],
-                "plugins": {},
+                "plugins": {
+                    "proxy-rewrite": {
+                        "regex_uri": ["^/baz(.*)", "/$1"]
+                    }
+                },
                 "upstream": {
                     "type": "roundrobin",
                     "nodes": {

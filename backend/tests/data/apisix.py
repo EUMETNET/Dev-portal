@@ -20,7 +20,9 @@ ROUTES = [
                 "key": "consumer_name",
                 "rejected_code": 429
             },
-            "proxy-rewrite": {"uri": "/"}
+            "proxy-rewrite": {
+                "regex_uri": ["^/foo(.*)", "/$1"]
+            }
         },
         "upstream": {"type": "roundrobin", "nodes": {"httpbin.org:80": 1}, "scheme": "http"},
     },
@@ -41,14 +43,20 @@ ROUTES = [
                 "key": "consumer_name",
                 "rejected_code": 429
             },
-            "proxy-rewrite": {"uri": "/"}
+            "proxy-rewrite": {
+                "regex_uri": ["^/bar(.*)", "/$1"]
+            }
         },
         "upstream": {"type": "roundrobin", "nodes": {"httpbin.org:80": 1}, "scheme": "http"},
     },
     {
         "id": "baz",
         "uri": "/baz",
-        "plugins": {},
+        "plugins": {
+            "proxy-rewrite": {
+                "regex_uri": ["^/baz(.*)", "/$1"]
+            }
+        },
         "upstream": {"type": "roundrobin", "nodes": {"httpbin.org:80": 1}, "scheme": "http"},
     },
     {
@@ -56,7 +64,9 @@ ROUTES = [
         "uri": "/qux",
         "plugins": {
             "key-auth": {},
-            "proxy-rewrite": {"uri": "/"}
+            "proxy-rewrite": {
+                "regex_uri": ["^/qux(.*)", "/$1"]
+            }
         },
         "upstream": {"type": "roundrobin", "nodes": {"httpbin.org:80": 1}, "scheme": "http"},
     },
