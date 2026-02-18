@@ -45,6 +45,7 @@ async def test_get_api6_routes(client: AsyncClient) -> None:
     # Current implementation does not list routes that does not have key-auth plugin defined
     apisix_instance = config.apisix.instances[0]
     response = await get_routes(client, apisix_instance)
-    assert len(response.routes) == 2
+    assert len(response.routes) == 3
     assert f"{config.apisix.global_gateway_url}/foo" in response.routes
     assert f"{config.apisix.global_gateway_url}/bar" in response.routes
+    assert f"{config.apisix.global_gateway_url}/qux" in response.routes
