@@ -425,6 +425,18 @@ async def get_routes_with_limits(
         logger.exception("Error retrieving routes with limits from instance '%s'", instance.name)
         raise APISIXError("APISIX service error") from e
 
+def format_time_window(seconds: int) -> str:
+    if seconds % 86400 == 0:
+        days = seconds // 86400
+        return f"{days}d"
+    elif seconds % 3600 == 0:
+        hours = seconds // 3600
+        return f"{hours}h"
+    elif seconds % 60 == 0:
+        minutes = seconds // 60
+        return f"{minutes}m"
+    else:
+        return f"{seconds}s"
 
 def format_rate_limits(
     limit_req: dict[str, Any] | None, limit_count: dict[str, Any] | None, source: str
@@ -450,7 +462,8 @@ def format_rate_limits(
         count = limit_count.get("count")
         time_window = limit_count.get("time_window")
         if count and time_window:
-            parts.append(f"Quota: {count} req/{time_window}s")
+            window_str = format_time_window(time_window)
+            parts.append(f"Quota: {count} req/{window_str}")
 
     # Add request rate limit (limit-req)
     if limit_req:
