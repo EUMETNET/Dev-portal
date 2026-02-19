@@ -314,6 +314,60 @@ def create_tasks(
     ]
 
 
+def get_effective_limit(
+    plugin_name: str,
+    route_plugins: dict[str, Any],
+    consumer: APISixConsumer | None,
+    consumer_group: APISixConsumerGroup | None,
+) -> tuple[dict[str, Any] | None, str | None]:
+    """
+    Get the effective limit for a specific plugin based on APISIX precedence.
+
+    Args:
+        plugin_name (str): The name of the plugin (e.g., "limit-req", "limit-count").
+        route_plugins (dict[str, Any]): Plugins configured on the route.
+        consumer (APISixConsumer | None): The consumer object.
+        consumer_group (APISixConsumerGroup | None): The consumer group configuration.
+
+    Returns:
+        tuple[dict[str, Any] | None, str | None]: A tuple of (limit_config, source).
+    """
+
+    if consumer and consumer.plugins and consumer.plugins.get(plugin_name):
+        return consumer.plugins.get(plugin_name), "Consumer"
+
+    if consumer_group and consumer_group.plugins and consumer_group.plugins.get(plugin_name):
+        return consumer_group.plugins.get(plugin_name), "Group"
+
+    if route_plugins and route_plugins.get(plugin_name):
+        return route_plugins.get(plugin_name), "Route"
+
+    return None, None
+
+
+def describe_limit_sources(req_source: str | None, count_source: str | None) -> str:
+    """
+    Generate a human-readable description of where the effective rate and quota limits are sourced from.
+
+    Args:
+        req_source (str | None): The source of the rate/burst limit (e.g., "Consumer", "Group", "Route", or None).
+        count_source (str | None): The source of the quota limit (e.g., "Consumer", "Group", "Route", or None).
+
+    Returns:
+        str: A description indicating the source(s) of the limits, such as
+            "Route limit", "Group quota, Route rate", or "No limits".
+    """
+    if not req_source and not count_source:
+        return "No limits"
+    if req_source == count_source:
+        return f"{req_source} limit"
+    if req_source and count_source:
+        return f"{count_source} quota, {req_source} rate"
+    if req_source:
+        return f"{req_source} limit"
+    return f"{count_source} limit"
+
+
 def determine_rate_limits(
     route_plugins: dict[str, Any],
     consumer: APISixConsumer | None,
@@ -332,33 +386,81 @@ def determine_rate_limits(
             (limit_req, limit_count, source) where source indicates which level
             the limits came from.
     """
-    # Check consumer first (highest precedence)
-    if consumer and consumer.plugins:
-        consumer_limit_req = consumer.plugins.get("limit-req")
-        consumer_limit_count = consumer.plugins.get("limit-count")
 
-        # If consumer has ANY rate limit plugin, use only consumer-level plugins
-        if consumer_limit_req or consumer_limit_count:
-            return consumer_limit_req, consumer_limit_count, "consumer"
+    limit_req, req_source = get_effective_limit(
+        "limit-req", route_plugins, consumer, consumer_group
+    )
+    limit_count, count_source = get_effective_limit(
+        "limit-count", route_plugins, consumer, consumer_group
+    )
 
-    # Check consumer group next (medium precedence)
-    if consumer_group and consumer_group.plugins:
-        group_plugins = consumer_group.plugins
-        group_limit_req = group_plugins.get("limit-req")
-        group_limit_count = group_plugins.get("limit-count")
+    source = describe_limit_sources(req_source, count_source)
 
-        # If consumer group has ANY rate limit plugin, use only group-level plugins
-        if group_limit_req or group_limit_count:
-            return group_limit_req, group_limit_count, "Group limit"
+    return limit_req, limit_count, source
 
-    # Fall back to route-level (lowest precedence)
-    if route_plugins:
-        route_limit_req = route_plugins.get("limit-req")
-        route_limit_count = route_plugins.get("limit-count")
 
-        return route_limit_req, route_limit_count, "Route limit"
+def format_time_window(seconds: int) -> str:
+    """
+    Format a time window in seconds to a human-readable string.
 
-    return None, None, "none"
+    Args:
+        seconds (int): The time window in seconds.
+
+    Returns:
+        str: A formatted string (e.g., "1d", "2h", "30m", "45s").
+    """
+    if seconds % 86400 == 0:
+        days = seconds // 86400
+        return f"{days}d"
+    if seconds % 3600 == 0:
+        hours = seconds // 3600
+        return f"{hours}h"
+    if seconds % 60 == 0:
+        minutes = seconds // 60
+        return f"{minutes}m"
+    return f"{seconds}s"
+
+
+def format_rate_limits(
+    limit_req: dict[str, Any] | None, limit_count: dict[str, Any] | None, source: str
+) -> str:
+    """
+    Format rate limit information into a human-readable string.
+
+    Args:
+        limit_req (dict[str, Any] | None): The limit-req configuration.
+        limit_count (dict[str, Any] | None): The limit-count configuration.
+        source (str): The source of the limits.
+
+    Returns:
+        str: A formatted string describing the rate limits.
+    """
+    if not limit_req and not limit_count:
+        return "No rate limits"
+
+    parts = []
+
+    # Add quota limit (limit-count)
+    if limit_count:
+        count = limit_count.get("count")
+        time_window = limit_count.get("time_window")
+        if count and time_window:
+            window_str = format_time_window(time_window)
+            parts.append(f"Quota: {count} req/{window_str}")
+
+    # Add request rate limit (limit-req)
+    if limit_req:
+        rate = limit_req.get("rate")
+        burst = limit_req.get("burst")
+
+        if rate:
+            parts.append(f"Rate: {rate} req/s")
+        if burst:
+            parts.append(f"Burst: {burst} req")
+
+    limits_str = " | ".join(parts) if parts else "No rate limits"
+
+    return f"{limits_str} ({source})"
 
 
 async def get_routes_with_limits(
@@ -425,66 +527,3 @@ async def get_routes_with_limits(
         logger.exception("Error retrieving routes with limits from instance '%s'", instance.name)
         raise APISIXError("APISIX service error") from e
 
-
-def format_time_window(seconds: int) -> str:
-    """
-    Format a time window in seconds to a human-readable string.
-
-    Args:
-        seconds (int): The time window in seconds.
-
-    Returns:
-        str: A formatted string (e.g., "1d", "2h", "30m", "45s").
-    """
-    if seconds % 86400 == 0:
-        days = seconds // 86400
-        return f"{days}d"
-    if seconds % 3600 == 0:
-        hours = seconds // 3600
-        return f"{hours}h"
-    if seconds % 60 == 0:
-        minutes = seconds // 60
-        return f"{minutes}m"
-    return f"{seconds}s"
-
-
-def format_rate_limits(
-    limit_req: dict[str, Any] | None, limit_count: dict[str, Any] | None, source: str
-) -> str:
-    """
-    Format rate limit information into a human-readable string.
-
-    Args:
-        limit_req (dict[str, Any] | None): The limit-req configuration.
-        limit_count (dict[str, Any] | None): The limit-count configuration.
-        source (str): The source of the limits.
-
-    Returns:
-        str: A formatted string describing the rate limits.
-    """
-    if not limit_req and not limit_count:
-        return "No rate limits"
-
-    parts = []
-
-    # Add quota limit (limit-count)
-    if limit_count:
-        count = limit_count.get("count")
-        time_window = limit_count.get("time_window")
-        if count and time_window:
-            window_str = format_time_window(time_window)
-            parts.append(f"Quota: {count} req/{window_str}")
-
-    # Add request rate limit (limit-req)
-    if limit_req:
-        rate = limit_req.get("rate")
-        burst = limit_req.get("burst")
-
-        if rate:
-            parts.append(f"Rate: {rate} req/s")
-        if burst:
-            parts.append(f"Burst: {burst} req")
-
-    limits_str = " | ".join(parts) if parts else "No rate limits"
-
-    return f"{limits_str} ({source})"
