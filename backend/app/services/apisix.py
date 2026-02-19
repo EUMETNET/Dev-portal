@@ -347,11 +347,11 @@ def get_effective_limit(
 
 def describe_limit_sources(req_source: str | None, count_source: str | None) -> str:
     """
-    Generate a human-readable description of where the effective rate and quota limits are sourced from.
+    Generate a description of where the effective rate and quota limits are sourced from.
 
     Args:
-        req_source (str | None): The source of the rate/burst limit (e.g., "Consumer", "Group", "Route", or None).
-        count_source (str | None): The source of the quota limit (e.g., "Consumer", "Group", "Route", or None).
+        req_source (str | None): The source of the rate/burst limit
+        count_source (str | None): The source of the quota limit
 
     Returns:
         str: A description indicating the source(s) of the limits, such as
@@ -526,4 +526,3 @@ async def get_routes_with_limits(
     except HTTPError as e:
         logger.exception("Error retrieving routes with limits from instance '%s'", instance.name)
         raise APISIXError("APISIX service error") from e
-
