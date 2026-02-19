@@ -425,6 +425,7 @@ async def get_routes_with_limits(
         logger.exception("Error retrieving routes with limits from instance '%s'", instance.name)
         raise APISIXError("APISIX service error") from e
 
+
 def format_time_window(seconds: int) -> str:
     """
     Format a time window in seconds to a human-readable string.
@@ -445,6 +446,7 @@ def format_time_window(seconds: int) -> str:
         minutes = seconds // 60
         return f"{minutes}m"
     return f"{seconds}s"
+
 
 def format_rate_limits(
     limit_req: dict[str, Any] | None, limit_count: dict[str, Any] | None, source: str
