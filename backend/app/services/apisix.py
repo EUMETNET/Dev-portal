@@ -426,17 +426,25 @@ async def get_routes_with_limits(
         raise APISIXError("APISIX service error") from e
 
 def format_time_window(seconds: int) -> str:
+    """
+    Format a time window in seconds to a human-readable string.
+
+    Args:
+        seconds (int): The time window in seconds.
+
+    Returns:
+        str: A formatted string (e.g., "1d", "2h", "30m", "45s").
+    """
     if seconds % 86400 == 0:
         days = seconds // 86400
         return f"{days}d"
-    elif seconds % 3600 == 0:
+    if seconds % 3600 == 0:
         hours = seconds // 3600
         return f"{hours}h"
-    elif seconds % 60 == 0:
+    if seconds % 60 == 0:
         minutes = seconds // 60
         return f"{minutes}m"
-    else:
-        return f"{seconds}s"
+    return f"{seconds}s"
 
 def format_rate_limits(
     limit_req: dict[str, Any] | None, limit_count: dict[str, Any] | None, source: str
