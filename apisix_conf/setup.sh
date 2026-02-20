@@ -90,7 +90,7 @@ if [ "$ENV" = "dev" ]; then
                         "rejected_code": 429
                     },
                     "limit-count": {
-                        "count": 10,
+                        "count": 20,
                         "time_window": 60,
                         "key": "consumer_name",
                         "rejected_code": 429
@@ -132,13 +132,13 @@ if [ "$ENV" = "dev" ]; then
                 "plugins": {
                     "key-auth": {},
                     "limit-req": {
-                        "rate": 5,
-                        "burst": 10,
+                        "rate": 20,
+                        "burst": 40,
                         "key": "consumer_name",
                         "rejected_code": 429
                     },
                     "limit-count": {
-                        "count": 5,
+                        "count": 200,
                         "time_window": 60,
                         "key": "consumer_name",
                         "rejected_code": 429
