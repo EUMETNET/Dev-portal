@@ -44,7 +44,7 @@ const Footer = () => {
 
         {/* Third Row - Copyright and Legal Links */}
         <div className="footer-row footer-bottom">
-          <p className="copyright">Copyright EUMETNET SNC ©2025</p>
+          <p className="copyright">Copyright EUMETNET SNC ©{new Date().getFullYear()}</p>
           <a 
             href="https://www.eumetnet.eu/legal-information" 
             target="_blank" 

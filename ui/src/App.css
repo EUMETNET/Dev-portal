@@ -51,7 +51,7 @@
   flex: 0 1 auto;
 }
 
-/* Button Styles - Yellow (Primary/Get API Key) */
+/* Button Styles - Yellow (Get API Key) */
 .btn--yellow {
   background: var(--color-yellow) !important;
   border: 4px solid var(--color-white) !important;
@@ -62,7 +62,6 @@
   line-height: 24px !important;
   border-radius: 4px !important;
   padding: 14px 24px !important;
-  transition: all 0.3s ease !important;
 }
 
 .btn--yellow:hover {
@@ -80,8 +79,8 @@
   box-shadow: none !important;
 }
 
-/* Button Styles - Green (Secondary/Show Routes, Login) */
-.btn--green {
+/* Button Styles - White (Show Routes, Login) */
+.btn--white {
   background: var(--color-white) !important;
   border: 4px solid var(--color-white) !important;
   color: var(--color-sherpa800) !important;
@@ -91,56 +90,24 @@
   line-height: 24px !important;
   border-radius: 4px !important;
   padding: 14px 24px !important;
-  transition: all 0.3s ease !important;
 }
 
-.btn--green:hover {
+.btn--white:hover {
   background: var(--color-sherpa200) !important;
   border: 4px solid var(--color-white) !important;
 }
 
-.btn--green:active {
+.btn--white:active {
   background: var(--color-sherpa300) !important;
 }
 
-.btn--green:focus {
+.btn--white:focus {
   border: 4px solid var(--color-yellow) !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
-/* Button Styles - Orange (Secondary/Logout) */
-.btn--orange {
-  background: var(--color-sherpa800) !important;
-  border: 4px solid var(--color-white) !important;
-  color: var(--color-white) !important;
-  font-family: Heebo, sans-serif !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  line-height: 24px !important;
-  border-radius: 4px !important;
-  padding: 14px 24px !important;
-  transition: all 0.3s ease !important;
-}
-
-.btn--orange:hover {
-  border-width: 2px !important;
-  padding: 15px 25px !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-}
-
-.btn--orange:active {
-  border-width: 3px !important;
-  padding: 15.5px 24.5px !important;
-}
-
-.btn--orange:focus {
-  border: 4px solid var(--color-yellow) !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* Button Styles - Red (Destructive/Delete) */
+/* Button Styles - Red (Delete API key) */
 .btn--red {
   background: #bf6366 !important;
   border: 4px solid var(--color-white) !important;
@@ -151,7 +118,6 @@
   line-height: 24px !important;
   border-radius: 4px !important;
   padding: 14px 24px !important;
-  transition: all 0.3s ease !important;
 }
 
 .btn--red:hover {
@@ -164,6 +130,36 @@
 }
 
 .btn--red:focus {
+  border: 4px solid var(--color-yellow) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Button Styles - Green (Logout) */
+.btn--green{
+  background: var(--color-sherpa800) !important;
+  border: 4px solid var(--color-white) !important;
+  color: var(--color-white) !important;
+  font-family: Heebo, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 24px !important;
+  border-radius: 4px !important;
+  padding: 14px 24px !important;
+}
+
+.btn--green:hover {
+  border-width: 2px !important;
+  padding: 15px 25px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.btn--green:active {
+  border-width: 3px !important;
+  padding: 15.5px 24.5px !important;
+}
+
+.btn--green:focus {
   border: 4px solid var(--color-yellow) !important;
   outline: none !important;
   box-shadow: none !important;
@@ -215,6 +211,13 @@ h3 {
   border: 1px solid var(--color-sherpa600) !important;
   border-radius: 8px !important;
   overflow: hidden !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.p-datatable .p-datatable-table {
+  width: 100% !important;
+  table-layout: fixed !important;
 }
 
 .p-datatable .p-datatable-header {
@@ -227,17 +230,17 @@ h3 {
 .p-datatable .p-datatable-thead > tr > th {
   background: var(--color-sherpa700) !important;
   border: 1px solid var(--color-sherpa600) !important;
-  color: var(--color-sherpa400) !important;
+  color: var(--color-white) !important;
   font-family: 'Exo 2', sans-serif !important;
   font-size: 16px !important;
   font-weight: 600 !important;
   padding: 16px !important;
+  box-sizing: border-box !important;
 }
 
 .p-datatable .p-datatable-tbody > tr {
   background: var(--color-sherpa800) !important;
   color: var(--color-white) !important;
-  transition: background 0.2s ease !important;
 }
 
 .p-datatable .p-datatable-tbody > tr > td {
@@ -247,8 +250,7 @@ h3 {
   font-size: 16px !important;
   overflow-wrap: break-word !important;
   word-wrap: break-word !important;
-  word-break: break-all !important;
-  max-width: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .p-datatable .p-datatable-tbody > tr:hover {
@@ -259,6 +261,19 @@ h3 {
 .p-datatable .p-datatable-emptymessage > td {
   color: var(--color-sherpa400) !important;
 }
+
+/* DataTable Column Widths */
+  .p-datatable .p-datatable-thead > tr > th:nth-child(1),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(1),
+  .p-datatable .route-column {
+    width: 60% !important;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th:nth-child(2),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(2),
+  .p-datatable .limits-column {
+    width: 40% !important;
+  }
 
 /* Info Panel Styling */
 #infoPanel {
@@ -273,6 +288,15 @@ h3 {
   word-wrap: break-word;
 }
 
+/* Uniform icons */
+.icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
 /* Documentation Link */
 .documentation-link {
   display: inline-flex;
@@ -283,8 +307,6 @@ h3 {
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
-  transition: color 0.3s ease;
-  /* padding: 8px 16px; */
   border-radius: 4px;
 }
 
@@ -293,15 +315,23 @@ h3 {
   text-decoration: underline;
 }
 
-.documentation-link .icon {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.3s ease;
-  flex-shrink: 0;
+/* Routes Information */
+.routes-info-box {
+  background-color: var(--color-sherpa700);
+  border: 1px solid var(--color-sherpa500);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--color-sherpa200);
 }
 
-.documentation-link:hover .icon {
-  transform: translateX(2px);
+.routes-info-box .info-item {
+  margin-bottom: 8px;
+}
+
+.routes-info-box .info-item:last-child {
+  margin-bottom: 0;
 }
 
 /* Tablet layout (600px - 1023px) */
@@ -326,8 +356,25 @@ h3 {
     padding: 24px !important;
   }
 
+  .p-datatable .p-datatable-thead > tr > th:nth-child(1),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(1),
+  .p-datatable .route-column {
+    width: 55% !important;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th:nth-child(2),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(2),
+  .p-datatable .limits-column {
+    width: 45% !important;
+  }
+
   .btn--uniform {
     min-width: 160px !important;
+  }
+
+  .routes-info-box {
+    font-size: 13px;
+    padding: 10px 14px;
   }
 }
 
@@ -355,10 +402,16 @@ h3 {
     padding: 20px !important;
   }
 
-  .p-datatable .p-datatable-thead > tr > th,
-  .p-datatable .p-datatable-tbody > tr > td {
-    padding: 12px !important;
-    font-size: 14px !important;
+  .p-datatable .p-datatable-thead > tr > th:nth-child(1),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(1),
+  .p-datatable .route-column {
+    width: 50% !important;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th:nth-child(2),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(2),
+  .p-datatable .limits-column {
+    width: 50% !important;
   }
 
   .btn--uniform {
@@ -368,5 +421,10 @@ h3 {
 
   .documentation-link {
     font-size: 14px;
+  }
+
+  .routes-info-box {
+    font-size: 12px;
+    padding: 8px 12px;
   }
 }

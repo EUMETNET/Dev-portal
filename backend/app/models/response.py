@@ -23,9 +23,18 @@ class MessageResponse(BaseModel):
     message: str = Field(..., description="The response message")
 
 
+class RouteWithLimits(BaseModel):
+    """A route URL with rate limit information"""
+
+    url: str = Field(..., description="The route URL")
+    limits: str = Field(..., description="Effective rate limits for the current user")
+
+
 class GetRoutes(BaseModel):
     """
     Response model for the GET /routes endpoint
     """
 
-    routes: list[str] = Field(..., description="The routes that require key authentication")
+    routes: list[RouteWithLimits] = Field(
+        ..., description="The routes that require key authentication"
+    )

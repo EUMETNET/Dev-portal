@@ -27,7 +27,7 @@ async def test_get_routes_success(get_keycloak_user_token: Callable) -> None:
     assert response.status_code == 200
     data = response.json()
 
-    assert len(data["routes"]) == 2
+    assert len(data["routes"]) == 3
 
     routes = [
         f"{config.apisix.global_gateway_url}{route['uri']}"
@@ -36,7 +36,18 @@ async def test_get_routes_success(get_keycloak_user_token: Callable) -> None:
         if "key-auth" in route["plugins"]
     ]
 
-    assert set(routes) == set(data["routes"])
+    assert set(routes) == {route["url"] for route in data["routes"]}
+
+    expected_limits_map = {
+        f"{config.apisix.global_gateway_url}/foo":
+            "Quota: 200 req/1m | Rate: 20 req/s | Burst: 40 req (Route limit)",
+        f"{config.apisix.global_gateway_url}/bar":
+            "Quota: 20 req/1m | Rate: 10 req/s | Burst: 20 req (Route limit)",
+        f"{config.apisix.global_gateway_url}/qux":
+            "No rate limits",
+        }
+    for route in data["routes"]:
+        assert route["limits"] == expected_limits_map[route["url"]]
 
 
 async def test_get_routes_without_token_fails() -> None:

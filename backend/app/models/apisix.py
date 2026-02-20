@@ -38,6 +38,21 @@ class APISixConsumer(BaseModel):
         return USER_GROUP
 
 
+class APISixConsumerGroup(BaseModel):
+    """
+    Representing an APISIX consumer group.
+
+    Attributes:
+        instance_name (str): The name of the APISIX instance.
+        id (str): The group ID.
+        plugins (dict[str, dict[str, Any]]): The plugins associated with the group.
+    """
+
+    instance_name: str
+    id: str
+    plugins: dict[str, dict[str, Any]] = {}
+
+
 class APISixRoutes(BaseModel):
     """
     Represents a list of key auth routes in APISix.

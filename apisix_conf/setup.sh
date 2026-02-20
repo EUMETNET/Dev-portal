@@ -90,7 +90,7 @@ if [ "$ENV" = "dev" ]; then
                         "rejected_code": 429
                     },
                     "limit-count": {
-                        "count": 10,
+                        "count": 20,
                         "time_window": 60,
                         "key": "consumer_name",
                         "rejected_code": 429
@@ -132,13 +132,13 @@ if [ "$ENV" = "dev" ]; then
                 "plugins": {
                     "key-auth": {},
                     "limit-req": {
-                        "rate": 10,
-                        "burst": 20,
+                        "rate": 20,
+                        "burst": 40,
                         "key": "consumer_name",
                         "rejected_code": 429
                     },
                     "limit-count": {
-                        "count": 10,
+                        "count": 200,
                         "time_window": 60,
                         "key": "consumer_name",
                         "rejected_code": 429
@@ -151,6 +151,77 @@ if [ "$ENV" = "dev" ]; then
                     "type": "roundrobin",
                     "nodes": {
                         "web2:80": 1
+                    },
+                    "scheme": "http"
+                }
+            }' \
+            "http://localhost:$port/apisix/admin/routes" 2>&1)
+
+        check_response "$response" "$port"
+
+        response=$(curl -i -X PUT \
+            -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' \
+            -d '{
+                "id": "baz",
+                "uri": "/baz",
+                "vars": [
+                    "OR",
+                    [
+                        "http_apikey",
+                        "~~",
+                        ".+"
+                    ],
+                    [
+                        "arg_apikey",
+                        "~~",
+                        ".+"
+                    ]
+                ],
+                "plugins": {
+                    "proxy-rewrite": {
+                        "regex_uri": ["^/baz(.*)", "/$1"]
+                    }
+                },
+                "upstream": {
+                    "type": "roundrobin",
+                    "nodes": {
+                        "web1:80": 1
+                    },
+                    "scheme": "http"
+                }
+            }' \
+            "http://localhost:$port/apisix/admin/routes" 2>&1)
+
+        check_response "$response" "$port"
+
+        response=$(curl -i -X PUT \
+            -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' \
+            -d '{
+                "id": "qux",
+                "uri": "/qux",
+                "vars": [
+                    "OR",
+                    [
+                        "http_apikey",
+                        "~~",
+                        ".+"
+                    ],
+                    [
+                        "arg_apikey",
+                        "~~",
+                        ".+"
+                    ]
+                ],
+                "plugins": {
+                    "key-auth": {},
+                    "proxy-rewrite": {
+                        "regex_uri": ["^/qux(.*)", "/$1"]
+                    }
+                },
+                "upstream": {
+                    "type": "roundrobin",
+                    "nodes": {
+                        "web1:80": 1
                     },
                     "scheme": "http"
                 }
