@@ -64,7 +64,7 @@
   padding: 16px !important;
 }
 
-.p-datatable .p-datatable-thead>tr>th {
+.p-datatable .p-datatable-thead > tr > th {
   background: var(--color-sherpa700) !important;
   border: 1px solid var(--color-sherpa600) !important;
   color: var(--color-white) !important;
@@ -75,12 +75,12 @@
   box-sizing: border-box !important;
 }
 
-.p-datatable .p-datatable-tbody>tr {
+.p-datatable .p-datatable-tbody > tr {
   background: var(--color-sherpa800) !important;
   color: var(--color-white) !important;
 }
 
-.p-datatable .p-datatable-tbody>tr>td {
+.p-datatable .p-datatable-tbody > tr > td {
   border: 1px solid var(--color-sherpa600) !important;
   padding: 16px !important;
   font-family: 'Heebo', sans-serif !important;
@@ -90,24 +90,24 @@
   box-sizing: border-box !important;
 }
 
-.p-datatable .p-datatable-tbody>tr:hover {
+.p-datatable .p-datatable-tbody > tr:hover {
   background: rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Empty message in DataTable */
-.p-datatable .p-datatable-emptymessage>td {
+.p-datatable .p-datatable-emptymessage > td {
   color: var(--color-sherpa400) !important;
 }
 
 /* DataTable Column Widths */
-.p-datatable .p-datatable-thead>tr>th:nth-child(1),
-.p-datatable .p-datatable-tbody>tr>td:nth-child(1),
+.p-datatable .p-datatable-thead > tr > th:nth-child(1),
+.p-datatable .p-datatable-tbody > tr > td:nth-child(1),
 .p-datatable .route-column {
   width: 60% !important;
 }
 
-.p-datatable .p-datatable-thead>tr>th:nth-child(2),
-.p-datatable .p-datatable-tbody>tr>td:nth-child(2),
+.p-datatable .p-datatable-thead > tr > th:nth-child(2),
+.p-datatable .p-datatable-tbody > tr > td:nth-child(2),
 .p-datatable .limits-column {
   width: 40% !important;
 }
@@ -136,7 +136,7 @@
 .footer-title {
   color: var(--color-sherpa400);
   font-size: 20px;
-  font-family: "Exo 2", sans-serif;
+  font-family: 'Exo 2', sans-serif;
   font-weight: 600;
   margin-bottom: 16px;
   margin-top: 0;
@@ -208,14 +208,14 @@
     padding: 24px !important;
   }
 
-  .p-datatable .p-datatable-thead>tr>th:nth-child(1),
-  .p-datatable .p-datatable-tbody>tr>td:nth-child(1),
+  .p-datatable .p-datatable-thead > tr > th:nth-child(1),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(1),
   .p-datatable .route-column {
     width: 55% !important;
   }
 
-  .p-datatable .p-datatable-thead>tr>th:nth-child(2),
-  .p-datatable .p-datatable-tbody>tr>td:nth-child(2),
+  .p-datatable .p-datatable-thead > tr > th:nth-child(2),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(2),
   .p-datatable .limits-column {
     width: 45% !important;
   }
@@ -248,14 +248,14 @@
     padding: 20px !important;
   }
 
-  .p-datatable .p-datatable-thead>tr>th:nth-child(1),
-  .p-datatable .p-datatable-tbody>tr>td:nth-child(1),
+  .p-datatable .p-datatable-thead > tr > th:nth-child(1),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(1),
   .p-datatable .route-column {
     width: 50% !important;
   }
 
-  .p-datatable .p-datatable-thead>tr>th:nth-child(2),
-  .p-datatable .p-datatable-tbody>tr>td:nth-child(2),
+  .p-datatable .p-datatable-thead > tr > th:nth-child(2),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(2),
   .p-datatable .limits-column {
     width: 50% !important;
   }

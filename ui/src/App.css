@@ -1,16 +1,16 @@
 :root {
-  --color-sherpa100: #D9F4F4;
-  --color-sherpa200: #B8E8E9;
-  --color-sherpa300: #86D6DA;
-  --color-sherpa400: #63CBCF;
-  --color-sherpa500: #009AA1;
+  --color-sherpa100: #d9f4f4;
+  --color-sherpa200: #b8e8e9;
+  --color-sherpa300: #86d6da;
+  --color-sherpa400: #63cbcf;
+  --color-sherpa500: #009aa1;
   --color-sherpa600: #087a82;
-  --color-sherpa700: #0C646D;
-  --color-sherpa800: #004F59;
-  --color-sherpa900: #0C3B41;
-  --color-white: #FFFFFF;
+  --color-sherpa700: #0c646d;
+  --color-sherpa800: #004f59;
+  --color-sherpa900: #0c3b41;
+  --color-white: #ffffff;
   --color-black: #000000;
-  --color-yellow: #F1B828;
+  --color-yellow: #f1b828;
   --color-yellow-hover: #e0a71f;
   --color-yellow-active: #c99319;
   --color-red: #bf6366;
@@ -24,12 +24,14 @@
   display: flex;
   flex-direction: column;
   /* Desktop background (default) */
-  background-image:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.00) 15.58%),
-    radial-gradient(68.05% 68.05% at 50.79% 4.4%, rgba(12, 59, 65, 0.30) 0%, #0C3B41 100%),
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0) 15.58%),
+    radial-gradient(68.05% 68.05% at 50.79% 4.4%, rgba(12, 59, 65, 0.3) 0%, #0c3b41 100%),
     url('/background-image-desktop.jpg');
   background-position: center, center, top;
-  background-size: 100% 100%, 100% 100%, cover;
+  background-size:
+    100% 100%,
+    100% 100%,
+    cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
@@ -175,7 +177,7 @@
 /* Headings */
 h3 {
   color: var(--color-white);
-  font-family: "Exo 2", sans-serif;
+  font-family: 'Exo 2', sans-serif;
   font-size: 28px;
   font-weight: 600;
   line-height: 32px;
@@ -213,9 +215,8 @@ h3 {
 /* Tablet layout (600px - 1023px) */
 @media (min-width: 600px) and (max-width: 1023px) {
   .App {
-    background-image:
-      linear-gradient(180deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.00) 15.58%),
-      radial-gradient(68.05% 68.05% at 50.79% 4.4%, rgba(12, 59, 65, 0.30) 0%, #0C3B41 100%),
+    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0) 15.58%),
+      radial-gradient(68.05% 68.05% at 50.79% 4.4%, rgba(12, 59, 65, 0.3) 0%, #0c3b41 100%),
       url('/background-image-tablet.jpg');
   }
 
@@ -236,10 +237,8 @@ h3 {
 /* Mobile layout (up to 599px) */
 @media (max-width: 599px) {
   .App {
-    background-image:
-      linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.00) 30%),
-      radial-gradient(90% 90% at 50% 10%, rgba(12, 59, 65, 0.50) 0%, #0C3B41 100%),
-      url('/background-image-mobile.jpg');
+    background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 30%),
+      radial-gradient(90% 90% at 50% 10%, rgba(12, 59, 65, 0.5) 0%, #0c3b41 100%), url('/background-image-mobile.jpg');
   }
 
   .content-container {
@@ -261,5 +260,4 @@ h3 {
   .documentation-link {
     font-size: 14px;
   }
-
 }
