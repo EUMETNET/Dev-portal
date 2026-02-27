@@ -29,14 +29,14 @@ const InfoPanelCard = ({ children }) => {
       <div className="code-example">
         <strong className="code-label">In header:</strong>
         <pre className="code-block">
-          {`curl -H "apikey: YOUR_API_KEY" http://gateway.meteogate.eu/route`}
+          {`curl -H "apikey: <YOUR_API_KEY>" https://api.meteogate.eu/route`}
         </pre>
       </div>
 
       <div className="code-example">
         <strong className="code-label">In URL parameter:</strong>
         <pre className="code-block">
-          {`curl "http://gateway.meteogate.eu/route?apikey=YOUR_API_KEY"`}
+          {`curl "https://api.meteogate.eu/route?apikey=<YOUR_API_KEY>"`}
         </pre>
       </div>
 
