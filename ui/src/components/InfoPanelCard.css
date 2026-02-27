@@ -1,0 +1,299 @@
+/* Main Content Area */
+.infoPanel {
+  text-align: left;
+  color: var(--color-white);
+  font-family: 'Heebo', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Card Styles */
+.p-card {
+  background: var(--color-sherpa800) !important;
+  border: 1px solid var(--color-sherpa600) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.p-card .p-card-body {
+  padding: 32px !important;
+  color: var(--color-white) !important;
+}
+
+.p-card .p-card-content {
+  color: var(--color-white) !important;
+  font-family: 'Heebo', sans-serif !important;
+  font-size: 16px !important;
+  line-height: 24px !important;
+  min-height: 200px;
+}
+
+/* Routes Information */
+.routes-info-box {
+  background-color: var(--color-sherpa700);
+  border: 1px solid var(--color-sherpa500);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--color-sherpa200);
+}
+
+/* DataTable Styles */
+.p-datatable {
+  background: var(--color-sherpa800) !important;
+  border: 1px solid var(--color-sherpa600) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.p-datatable .p-datatable-table {
+  width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.p-datatable .p-datatable-header {
+  background: var(--color-sherpa700) !important;
+  border-bottom: 1px solid var(--color-sherpa600) !important;
+  color: var(--color-white) !important;
+  padding: 16px !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: var(--color-sherpa700) !important;
+  border: 1px solid var(--color-sherpa600) !important;
+  color: var(--color-white) !important;
+  font-family: 'Exo 2', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  background: var(--color-sherpa800) !important;
+  color: var(--color-white) !important;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  border: 1px solid var(--color-sherpa600) !important;
+  padding: 16px !important;
+  font-family: 'Heebo', sans-serif !important;
+  font-size: 16px !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  box-sizing: border-box !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Empty message in DataTable */
+.p-datatable .p-datatable-emptymessage > td {
+  color: var(--color-sherpa400) !important;
+}
+
+/* DataTable Column Widths */
+.p-datatable .p-datatable-thead > tr > th:nth-child(1),
+.p-datatable .p-datatable-tbody > tr > td:nth-child(1),
+.p-datatable .route-column {
+  width: 60% !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th:nth-child(2),
+.p-datatable .p-datatable-tbody > tr > td:nth-child(2),
+.p-datatable .limits-column {
+  width: 40% !important;
+}
+
+.routes-info-box .info-item {
+  margin-bottom: 8px;
+}
+
+.routes-info-box .info-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Footer Container */
+.info-card-footer {
+  text-align: left;
+  font-size: 14px;
+  color: var(--color-white);
+  background-color: var(--color-sherpa900);
+  border-top: 1px solid var(--color-sherpa600);
+  padding: 24px 32px;
+  margin: -1px;
+  border-radius: 4px 4px 8px 8px;
+}
+
+/* Footer Headings */
+.footer-title {
+  color: var(--color-sherpa400);
+  font-size: 20px;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.footer-subtitle {
+  color: var(--color-sherpa400);
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.footer-section-break {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-sherpa700);
+}
+
+/* Footer Text */
+.footer-text {
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+/* Code Examples */
+.code-example {
+  margin-bottom: 16px;
+}
+
+.code-label {
+  color: var(--color-sherpa300);
+  font-size: 13px;
+}
+
+.code-block {
+  background-color: var(--color-sherpa800);
+  border: 1px solid var(--color-sherpa700);
+  padding: 12px;
+  border-radius: 4px;
+  overflow: auto;
+  font-size: 13px;
+  margin-top: 8px;
+  color: var(--color-sherpa100);
+}
+
+/* Documentation Link */
+.footer-docs-link {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-sherpa700);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.footer-docs-link a {
+  color: var(--color-sherpa400);
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.footer-docs-link a:hover {
+  color: var(--color-white);
+}
+
+/* Tablet layout (600px - 1023px) */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .p-card .p-card-body {
+    padding: 24px !important;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th:nth-child(1),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(1),
+  .p-datatable .route-column {
+    width: 55% !important;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th:nth-child(2),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(2),
+  .p-datatable .limits-column {
+    width: 45% !important;
+  }
+
+  .routes-info-box {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+
+  .info-card-footer {
+    padding: 20px 24px;
+  }
+
+  .footer-title {
+    font-size: 18px;
+  }
+
+  .footer-subtitle {
+    font-size: 15px;
+  }
+
+  .code-block {
+    font-size: 12px;
+  }
+}
+
+/* Mobile layout (up to 599px) */
+@media (max-width: 599px) {
+  .p-card .p-card-body {
+    padding: 20px !important;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th:nth-child(1),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(1),
+  .p-datatable .route-column {
+    width: 50% !important;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th:nth-child(2),
+  .p-datatable .p-datatable-tbody > tr > td:nth-child(2),
+  .p-datatable .limits-column {
+    width: 50% !important;
+  }
+
+  .routes-info-box {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .info-card-footer {
+    padding: 16px 20px;
+  }
+
+  .footer-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .footer-subtitle {
+    font-size: 14px;
+    margin-top: 12px;
+  }
+
+  .footer-text {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .code-label {
+    font-size: 12px;
+  }
+
+  .code-block {
+    font-size: 11px;
+    padding: 10px;
+  }
+
+  .footer-docs-link {
+    font-size: 13px;
+  }
+}

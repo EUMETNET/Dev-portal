@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 import '/node_modules/primeflex/primeflex.css';
 import { Button } from 'primereact/button';
-import { Card } from 'primereact/card';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { useAuth } from 'react-oidc-context';
+import { toast } from 'react-toastify';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
-
+import InfoPanelCard from './components/InfoPanelCard';
 import { getAPIKey, deleteAPIKey, getRoutes } from './Services/apiService';
-import { useAuth } from 'react-oidc-context';
-import { toast } from 'react-toastify';
 
 function App() {
   const auth = useAuth();
@@ -75,10 +74,10 @@ function App() {
       if (!isError) {
         const routes = data.routes;
         const listItems = routes.map((currElement, index) => {
-          return { 
-            id: index, 
+          return {
+            id: index,
             route: currElement.url,
-            limits: currElement.limits
+            limits: currElement.limits,
           };
         });
         setInfoMessage(generateTable(listItems));
@@ -99,13 +98,10 @@ function App() {
     return (
       <>
         <div className="routes-info-box">
-          <img
-            className="icon"
-            src="/icons/info.svg"
-            alt="Information"
-          />
+          <img className="icon" src="/icons/info.svg" alt="Information" />
           <span>
-            Your effective rate limits are determined by route configuration and your group membership. EUMETNET member users receive higher limits.
+            Your effective rate limits are determined by route configuration and your group membership. EUMETNET member
+            users receive higher limits.
           </span>
         </div>
         <DataTable value={routes} stripedRows emptyMessage="No routes available">
@@ -141,82 +137,48 @@ function App() {
     <div className="App">
       {/* <Auth /> */}
       <Header />
-      
+
       {auth.isAuthenticated ? (
         <div className="content-container">
           {/* Button Group */}
           <div className="button-group">
-            <Button
-              onClick={handleGetAPIKey}
-              className="btn--yellow btn--uniform"
-              label="Get API key"
-              raised
-            />
-            <Button
-              onClick={handleRoutes}
-              className="btn--white btn--uniform"
-              label="Show routes"
-              raised
-            />
-            <Button
-              onClick={handleDeleteApiKey}
-              className="btn--red btn--uniform"
-              label="Delete API key"
-              raised
-            />
-            <Button
-              onClick={logout}
-              className="btn--green btn--uniform"
-              label="Logout"
-              raised
-            />
+            <Button onClick={handleGetAPIKey} className="btn--yellow btn--uniform" label="Get API Key" raised />
+            <Button onClick={handleRoutes} className="btn--white btn--uniform" label="Show Routes" raised />
+            <Button onClick={handleDeleteApiKey} className="btn--red btn--uniform" label="Delete API Key" raised />
+            <Button onClick={logout} className="btn--green btn--uniform" label="Logout" raised />
           </div>
 
-          {/* Info Panel Card */}
-          <div>
-            <h3>Info Panel</h3>
-            <Card>
-              <div id="infoPanel">
-                {infoMessage || 'Click a button above to get started'}
-              </div>
-            </Card>
-          </div>
+          <InfoPanelCard>{infoMessage}</InfoPanelCard>
         </div>
       ) : (
         <div className="content-container">
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '60px 20px' 
-          }}>
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '60px 20px',
+            }}
+          >
             <h3 style={{ marginBottom: '24px' }}>Welcome to Developer Portal</h3>
-            <p style={{ 
-              color: 'var(--color-sherpa200)', 
-              marginBottom: '32px', 
-              fontSize: '18px' 
-            }}>
+            <p
+              style={{
+                color: 'var(--color-sherpa200)',
+                marginBottom: '32px',
+                fontSize: '18px',
+              }}
+            >
               Please log in to access your API keys and manage routes
             </p>
-            <Button
-              onClick={() => auth.signinRedirect()}
-              className="btn--white"
-              label="Login"
-              raised
-            />
+            <Button onClick={() => auth.signinRedirect()} className="btn--white" label="Login" raised />
 
-            {/* Supporting Documentation Link */}
             <div style={{ marginTop: '24px' }}>
-              <a 
-                href="https://eumetnet.github.io/meteogate-documentation/2-discovering-and-accessing-data/" 
-                target="_blank" 
+              <a
+                href="https://eumetnet.github.io/meteogate-documentation/2-discovering-and-accessing-data/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="documentation-link"
               >
                 <span>Supporting Documentation</span>
-                <img
-                  className="icon"
-                  src="/icons/newtab.svg"
-                  alt="Opens in new tab"
-                />
+                <img className="icon" src="/icons/newtab.svg" alt="Opens in new tab" />
               </a>
             </div>
           </div>
