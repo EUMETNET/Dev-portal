@@ -152,25 +152,14 @@ function App() {
         </div>
       ) : (
         <div className="content-container">
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '60px 20px',
-            }}
-          >
-            <h3 style={{ marginBottom: '24px' }}>Welcome to Developer Portal</h3>
-            <p
-              style={{
-                color: 'var(--color-sherpa200)',
-                marginBottom: '32px',
-                fontSize: '18px',
-              }}
-            >
+          <div className="login-screen">
+            <h3>Welcome to Developer Portal</h3>
+            <p className="login-screen-text">
               Please log in to access your API keys and manage routes
             </p>
             <Button onClick={() => auth.signinRedirect()} className="btn--white" label="Login" raised />
 
-            <div style={{ marginTop: '24px' }}>
+            <div className="login-screen-docs">
               <a
                 href="https://eumetnet.github.io/meteogate-documentation/2-discovering-and-accessing-data/"
                 target="_blank"

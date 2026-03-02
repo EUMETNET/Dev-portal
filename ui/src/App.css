@@ -212,6 +212,27 @@ h3 {
   text-decoration: underline;
 }
 
+/* Login */
+.login-screen {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.login-screen h3 {
+  margin-bottom: 24px;
+}
+
+.login-screen-text {
+  color: var(--color-sherpa200);
+  margin-bottom: 32px;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.login-screen-docs {
+  margin-top: 24px;
+}
+
 /* Tablet layout (600px - 1023px) */
 @media (min-width: 600px) and (max-width: 1023px) {
   .App {
@@ -231,6 +252,14 @@ h3 {
 
   .btn--uniform {
     min-width: 160px !important;
+  }
+
+  .login-screen {
+    padding: 48px 20px;
+  }
+
+  .login-screen-text {
+    font-size: 16px;
   }
 }
 
@@ -259,5 +288,18 @@ h3 {
 
   .documentation-link {
     font-size: 14px;
+  }
+
+  .login-screen {
+    padding: 40px 16px;
+  }
+
+  .login-screen-text {
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+
+  .login-screen-docs {
+    margin-top: 20px;
   }
 }
