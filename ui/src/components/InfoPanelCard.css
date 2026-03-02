@@ -4,6 +4,7 @@
   color: var(--color-white);
   font-family: 'Heebo', sans-serif;
   font-size: 16px;
+  font-style: italic;
   line-height: 24px;
   white-space: pre-line;
   overflow-wrap: break-word;
@@ -39,6 +40,7 @@
   padding: 12px 16px;
   margin-bottom: 16px;
   font-size: 14px;
+  font-style: normal;
   color: var(--color-sherpa200);
 }
 

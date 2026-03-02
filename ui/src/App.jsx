@@ -32,12 +32,40 @@ function App() {
     };
   }, [auth]);
 
+  const handleCopyApiKey = (apiKey) => {
+    navigator.clipboard.writeText(apiKey);
+    toast.success('API key copied to clipboard!', {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: 'dark',
+    });
+  };
+
   const handleGetAPIKey = async () => {
     try {
       const { data, isError } = await getAPIKey();
       if (!isError) {
         const apiKey = data.apiKey;
-        setInfoMessage(`API key:\n ${apiKey}`);
+        setInfoMessage(
+          <>
+            <p className="api-key-label">API Key</p>
+            <div className="api-key-container">
+              <span className="api-key-text">{apiKey}</span>
+              <button
+                className="btn-copy"
+                aria-label="Copy API Key"
+                onClick={() => handleCopyApiKey(apiKey)}
+                title="Copy API Key"
+              >
+                <img src="/icons/copy.svg" alt="Copy" className="copy-icon" />
+              </button>
+            </div>
+          </>
+        );
       } else {
         showToaster(data?.message ?? 'Undefined error message');
       }
@@ -154,9 +182,7 @@ function App() {
         <div className="content-container">
           <div className="login-screen">
             <h3>Welcome to Developer Portal</h3>
-            <p className="login-screen-text">
-              Please log in to access your API keys and manage routes
-            </p>
+            <p className="login-screen-text">Please log in to access your API keys and manage routes</p>
             <Button onClick={() => auth.signinRedirect()} className="btn--white" label="Login" raised />
 
             <div className="login-screen-docs">

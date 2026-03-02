@@ -233,6 +233,71 @@ h3 {
   margin-top: 24px;
 }
 
+/* API Key Container */
+.api-key-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--color-sherpa700);
+  border-radius: 8px;
+  border: 1px solid var(--color-sherpa600);
+}
+
+.api-key-text {
+  font-family: monospace;
+  font-size: 16px;
+  font-style: normal;
+  color: var(--color-white);
+  flex: 1;
+  word-break: break-all;
+}
+
+/* API Key Label */
+.api-key-label {
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--color-white);
+}
+
+.btn-copy {
+  background: var(--color-sherpa600) !important;
+  border: 2px solid var(--color-sherpa500) !important;
+  color: var(--color-white) !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  min-width: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer;
+}
+
+.btn-copy:hover {
+  background: var(--color-sherpa500) !important;
+  border-color: var(--color-sherpa400) !important;
+}
+
+.btn-copy:active {
+  background: var(--color-sherpa700) !important;
+}
+
+.btn-copy:focus {
+  border-color: var(--color-yellow) !important;
+  outline: none !important;
+}
+
+.copy-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
 /* Tablet layout (600px - 1023px) */
 @media (min-width: 600px) and (max-width: 1023px) {
   .App {
