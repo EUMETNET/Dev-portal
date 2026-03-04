@@ -35,7 +35,7 @@
 
 .header-content h1 {
   color: var(--color-white);
-  font-family: "Exo 2", sans-serif;
+  font-family: 'Exo 2', sans-serif;
   font-size: 48px;
   font-weight: 600;
   line-height: 48px;
@@ -45,7 +45,7 @@
 
 .header-content .subtitle {
   color: var(--color-white);
-  font-family: "Exo 2", sans-serif;
+  font-family: 'Exo 2', sans-serif;
   font-size: 36px;
   font-weight: 600;
   line-height: 36px;

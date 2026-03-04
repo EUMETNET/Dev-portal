@@ -1,4 +1,3 @@
-import React from 'react';
 import './Footer.css';
 
 const Footer = () => {
@@ -7,17 +6,8 @@ const Footer = () => {
       <div className="footer-content">
         {/* First Row - Logo and Contact */}
         <div className="footer-row">
-          <img 
-            className="footer-logo" 
-            src="/eumetnet-logo.svg" 
-            alt="EUMETNET Logo" 
-          />
-          <a 
-            href="https://www.eumetnet.eu" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="footer-link"
-          >
+          <img className="footer-logo" src="/eumetnet-logo.svg" alt="EUMETNET Logo" />
+          <a href="https://www.eumetnet.eu" target="_blank" rel="noopener noreferrer" className="footer-link">
             <p>Contact information</p>
             <img className="icon" src="/icons/newtab.svg" alt="Opens in new tab" />
           </a>
@@ -27,12 +17,8 @@ const Footer = () => {
         <div className="footer-row footer-row-text">
           <div className="footer-text">
             <p className="semibold">
-              If you need technical guidance or encounter issues, see the Support Section {' '}
-              <a 
-                href="https://meteogate.eu/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
+              If you need technical guidance or encounter issues, see the Support Section{' '}
+              <a href="https://meteogate.eu/" target="_blank" rel="noopener noreferrer">
                 MeteoGate
               </a>
             </p>
@@ -45,9 +31,9 @@ const Footer = () => {
         {/* Third Row - Copyright and Legal Links */}
         <div className="footer-row footer-bottom">
           <p className="copyright">Copyright EUMETNET SNC ©{new Date().getFullYear()}</p>
-          <a 
-            href="https://www.eumetnet.eu/legal-information" 
-            target="_blank" 
+          <a
+            href="https://www.eumetnet.eu/legal-information"
+            target="_blank"
             rel="noopener noreferrer"
             className="footer-link"
           >

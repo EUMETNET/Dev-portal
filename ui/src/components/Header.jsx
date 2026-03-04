@@ -1,4 +1,3 @@
-import React from 'react';
 import './Header.css';
 
 const Header = () => {
@@ -15,7 +14,8 @@ const Header = () => {
       <div className="header-content">
         <h1>Developer Portal</h1>
         <p className="subtitle">
-          <span className="highlight">Register</span> and <span className="highlight">manage</span> your API keys and <span className="highlight">view</span> available routes
+          <span className="highlight">Register</span> and <span className="highlight">manage</span> your API keys and{' '}
+          <span className="highlight">view</span> available routes
         </p>
       </div>
     </div>

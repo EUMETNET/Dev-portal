@@ -12,9 +12,36 @@ on:
       - ui/**
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: 'ui/.nvmrc'
+        cache: 'npm'
+        cache-dependency-path: 'ui/package-lock.json'
+
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./ui
+
+    - name: Run Prettier format check
+      run: npm run format:check
+      working-directory: ./ui
+
+    - name: Run ESLint
+      run: npm run lint
+      working-directory: ./ui
+
   # Currently there are no tests to run before build
 
   build:
+    needs: lint
     runs-on: ubuntu-latest
 
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
