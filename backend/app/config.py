@@ -68,6 +68,22 @@ class KeyCloakSettings(BaseSettings):
     client_secret: str
 
 
+class StatusServiceSettings(BaseSettings):
+    """A single external service to monitor."""
+
+    name: str
+    url: str
+
+
+class StatusSettings(BaseSettings):
+    """Status monitoring settings."""
+
+    max_attempts: int = 3
+    retry_delay: int = 2
+    cache_ttl: int = 30
+    services: list[StatusServiceSettings] = []
+
+
 class ServerSettings(BaseSettings):
     """
     FastAPI server settings model
@@ -90,6 +106,7 @@ class Settings(BaseSettings):
     apisix: APISixSettings
     vault: VaultSettings
     keycloak: KeyCloakSettings
+    status: StatusSettings
 
     # Look first for specific config file or config.yaml
     # and fall back to the default config.default.yaml

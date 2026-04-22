@@ -59,6 +59,13 @@ server:
   port: 8082
   log_level: "DEBUG"
   allowed_origins: ["*"]
+status:
+  max_retries: 3
+  retry_delay: 2
+  cache_ttl: 30
+  services:
+    - name: "MeteoGate Website"
+      url: "https://meteogate.eu/"
 ```
 
 #### Example secrets.default.yaml

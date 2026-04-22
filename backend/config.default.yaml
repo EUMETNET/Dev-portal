@@ -3,3 +3,6 @@ server:
   port: 8082
   log_level: "DEBUG"
   allowed_origins: ["*"]
+
+status:
+  services: []

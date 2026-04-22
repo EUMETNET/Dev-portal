@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from app.exceptions import http_exception_handler, general_exception_handler
-from app.routers import admin, apikey, routes, health
+from app.routers import admin, apikey, routes, health, status
 from app.config import settings
 
 config = settings()
@@ -32,6 +32,7 @@ app.include_router(apikey.router)
 app.include_router(admin.router)
 app.include_router(routes.router)
 app.include_router(health.router)
+app.include_router(status.router)
 
 
 def start_dev() -> None:
