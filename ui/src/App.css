@@ -17,6 +17,9 @@
   --color-red-hover: #a65558;
   --color-red-active: #8d484b;
   --color-white-transparent: rgba(255, 255, 255, 0.1);
+  --color-success: #22c55e;
+  --color-warning: #f97316;
+  --color-danger:  #ef4444;
 }
 
 .App {
@@ -210,6 +213,27 @@ h3 {
 .documentation-link:hover {
   color: var(--color-white);
   text-decoration: underline;
+}
+
+/* Status Link Button */
+.status-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-sherpa400);
+  font-family: 'Heebo', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.status-link-btn:hover {
+  color: var(--color-white);
 }
 
 /* Login */

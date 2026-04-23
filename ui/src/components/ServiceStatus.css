@@ -1,0 +1,250 @@
+.status-title {
+  color: var(--color-white);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.status-overall {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-sherpa600);
+}
+
+.status-overall-label {
+  color: var(--color-sherpa200);
+  font-family: 'Heebo', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.status-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.status-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-sherpa700);
+}
+
+.status-list-item:last-child {
+  border-bottom: none;
+}
+
+.status-service-name {
+  color: var(--color-white);
+  font-family: 'Heebo', sans-serif;
+  font-weight: 500;
+  flex: 0 0 280px;
+}
+
+.status-service-link {
+  color: var(--color-white);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.status-service-link:hover {
+  color: var(--color-sherpa400);
+}
+
+.status-tag {
+  flex: 0 0 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.status-tag .p-tag {
+  min-width: 84px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+}
+
+.status-no-services {
+  color: var(--color-sherpa300);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.status-error-detail {
+  color: var(--color-white);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.status-error-tag {
+  min-width: 84px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+}
+
+.status-last-updated {
+  color: var(--color-sherpa300);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.8rem;
+  margin: 16px 0 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-sherpa700);
+  text-align: right;
+}
+
+.status-tag .p-tag-success,
+.status-legend-item .p-tag-success {
+  background: var(--color-success);
+}
+
+.status-tag .p-tag-warning,
+.status-legend-item .p-tag-warning {
+  background: var(--color-warning);
+}
+
+.status-tag .p-tag-danger,
+.status-legend-item .p-tag-danger {
+  background: var(--color-danger);
+}
+
+.status-card-footer {
+  text-align: left;
+  font-size: 14px;
+  color: var(--color-white);
+  background-color: var(--color-sherpa900);
+  border-top: 1px solid var(--color-sherpa600);
+  padding: 24px 32px;
+  margin: -1px;
+  border-radius: 4px 4px 8px 8px;
+}
+
+.status-card-footer .footer-title {
+  color: var(--color-sherpa400);
+  font-size: 20px;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.status-card-footer .footer-subtitle {
+  color: var(--color-sherpa400);
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.status-card-footer .footer-text {
+  color: var(--color-white);
+  font-family: 'Heebo', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.status-card-footer .footer-docs-link {
+  color: var(--color-white);
+  font-family: 'Heebo', sans-serif;
+  font-size: 14px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-sherpa700);
+}
+
+.status-card-footer .footer-docs-link a {
+  color: var(--color-sherpa400);
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.status-card-footer .footer-docs-link a:hover {
+  color: var(--color-white);
+}
+
+.status-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.status-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-white);
+  font-family: 'Heebo', sans-serif;
+  font-size: 14px;
+}
+
+.status-legend-item .p-tag {
+  min-width: 84px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+}
+
+.status-link-container {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.status-page-nav {
+  margin-bottom: 24px;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 599px) {
+  .status-service-name {
+    flex: 0 0 160px;
+  }
+
+  .status-tag {
+    flex: 0 0 74px;
+  }
+
+  .status-tag .p-tag,
+  .status-overall .status-tag .p-tag,
+  .status-legend-item .p-tag {
+    min-width: 74px;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+  }
+
+  .status-error-tag {
+    min-width: 74px;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+  }
+
+  .status-detail {
+    display: none;
+  }
+
+  .status-card-footer {
+    padding: 16px 20px;
+  }
+
+  .status-card-footer .footer-title {
+    font-size: 16px;
+  }
+
+  .status-card-footer .footer-subtitle {
+    font-size: 14px;
+  }
+}

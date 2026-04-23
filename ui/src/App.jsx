@@ -13,11 +13,13 @@ import { toast } from 'react-toastify';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import InfoPanelCard from './components/InfoPanelCard';
+import ServiceStatus from './components/ServiceStatus';
 import { getAPIKey, deleteAPIKey, getRoutes } from './Services/apiService';
 
 function App() {
   const auth = useAuth();
   const [infoMessage, setInfoMessage] = useState('');
+  const [showStatus, setShowStatus] = useState(false);
 
   useEffect(() => {
     // send user back to Keycloak login screen if there is silentRenewError
@@ -47,6 +49,7 @@ function App() {
   };
 
   const handleGetAPIKey = async () => {
+    setShowStatus(false);
     try {
       const { data, isError } = await getAPIKey();
       if (!isError) {
@@ -81,6 +84,7 @@ function App() {
   };
 
   const handleDeleteApiKey = async () => {
+    setShowStatus(false);
     try {
       const { data, isError } = await deleteAPIKey();
       if (!isError) {
@@ -98,6 +102,7 @@ function App() {
   };
 
   const handleRoutes = async () => {
+    setShowStatus(false);
     try {
       const { data, isError } = await getRoutes();
       if (!isError) {
@@ -123,6 +128,12 @@ function App() {
     }
   };
 
+  const handleShowStatus = () => {
+    setShowStatus(true);
+    setInfoMessage('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   function generateTable(routes) {
     return (
       <>
@@ -143,10 +154,8 @@ function App() {
 
   const logout = () => {
     auth.signoutRedirect();
-    // use below one if user is wanted to log out only from dev portal but not from keycloak
-    // of course prompted to login again once the IdP session expires
-    //auth.removeUser();
     setInfoMessage();
+    setShowStatus(false);
   };
 
   function showToaster(error) {
@@ -165,19 +174,34 @@ function App() {
   return (
     <div className="App">
       {/* <Auth /> */}
-      <Header />
+      {showStatus ? null : <Header />}
 
       {auth.isAuthenticated ? (
         <div className="content-container">
-          {/* Button Group */}
-          <div className="button-group">
-            <Button onClick={handleGetAPIKey} className="btn--yellow btn--uniform" label="Get API Key" raised />
-            <Button onClick={handleRoutes} className="btn--white btn--uniform" label="Show Routes" raised />
-            <Button onClick={handleDeleteApiKey} className="btn--red btn--uniform" label="Delete API Key" raised />
-            <Button onClick={logout} className="btn--green btn--uniform" label="Logout" raised />
-          </div>
+          {showStatus ? (
+            <div className="status-page-nav">
+              <button onClick={() => setShowStatus(false)} className="status-link-btn">
+                <span>← Back to Developer Portal</span>
+              </button>
+            </div>
+          ) : (
+            <div className="button-group">
+              <Button onClick={handleGetAPIKey} className="btn--yellow btn--uniform" label="Get API Key" raised />
+              <Button onClick={handleRoutes} className="btn--white btn--uniform" label="Show Routes" raised />
+              <Button onClick={handleDeleteApiKey} className="btn--red btn--uniform" label="Delete API Key" raised />
+              <Button onClick={logout} className="btn--green btn--uniform" label="Logout" raised />
+            </div>
+          )}
 
-          <InfoPanelCard>{infoMessage}</InfoPanelCard>
+          {showStatus ? <ServiceStatus /> : <InfoPanelCard>{infoMessage}</InfoPanelCard>}
+
+          {!showStatus && (
+            <div className="status-link-container">
+              <button onClick={handleShowStatus} className="status-link-btn">
+                <span>MeteoGate Status Dashboard</span>
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="content-container">

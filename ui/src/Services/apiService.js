@@ -74,3 +74,11 @@ export async function getRoutes() {
 
   return { data, isError: !response.ok };
 }
+
+export async function getServiceStatus() {
+  const response = await httpRequest('/status', { method: 'GET' });
+
+  const data = await response.json();
+
+  return { data, isError: !response.ok };
+}
