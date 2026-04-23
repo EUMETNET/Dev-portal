@@ -16,7 +16,11 @@ data:
       retry_delay: {{ .Values.backend.config.status_check.retry_delay }}
       cache_ttl: {{ .Values.backend.config.status_check.cache_ttl }}
       services:
+        {{- if .Values.backend.config.status_services }}
         {{- range .Values.backend.config.status_services }}
         - name: {{ .name | quote }}
           url: {{ .url | quote }}
+        {{- end }}
+        {{- else }}
+        []
         {{- end }}
