@@ -96,10 +96,7 @@ async def fetch_service_status(client: AsyncClient) -> StatusResponse:
     """
     logger.debug("Got a request to check service status")
 
-    checks = [
-        check_http_service(client, svc.name, svc.url)
-        for svc in config.status.services
-    ]
+    checks = [check_http_service(client, svc.name, svc.url) for svc in config.status.services]
 
     if not checks:
         logger.warning("No services configured for status monitoring")

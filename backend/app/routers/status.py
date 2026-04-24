@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.get("/status", response_model=StatusResponse)
 async def service_status(
-    token: AccessToken = Depends(validate_token),
+    _token: AccessToken = Depends(validate_token),
     client: AsyncClient = Depends(get_http_client),
 ) -> StatusResponse:
     """
@@ -30,4 +30,4 @@ async def service_status(
     Returns:
         StatusResponse with overall and per-service status.
     """
-    return await status.fetch_service_status(client)
+    return await status.fetch_service_status(client)  # type: ignore[no-any-return]
