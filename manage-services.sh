@@ -88,7 +88,7 @@ _remove() {
 
 # Start external services
 _start_external_services() {
-    docker compose --profile $ENV -p $ENV up -d --build
+    docker compose --profile $ENV -p $ENV up -d --build --wait
 }
 
 # Configure Vault
@@ -96,7 +96,7 @@ _configure_vault() {
     echo "Waiting for Vault to be ready before configuring it..."
     for instance in vault-${ENV} vault-2-${ENV}; do
         counter=0
-        while ! docker exec "$instance" vault status > /dev/null 2>&1; do
+        while ! docker exec -e VAULT_ADDR=http://localhost:8200 "$instance" vault status > /dev/null 2>&1; do
             sleep 2
             counter=$((counter+1))
             if [ $counter -ge 15 ]; then
