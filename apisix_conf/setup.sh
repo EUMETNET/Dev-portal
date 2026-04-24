@@ -15,6 +15,21 @@ check_response() {
 }
 
 # Assuming you have two instances running on ports 9180 and 9280
+echo "Waiting for APISIX instances to be ready..."
+for port in ${APISIX_ADMIN_API_PORTS//,/ }
+do
+    counter=0
+    while ! curl -s -o /dev/null -w "%{http_code}" -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' "http://localhost:$port/apisix/admin/routes" | grep -q "^200$"; do
+        sleep 2
+        counter=$((counter+1))
+        if [ $counter -ge 15 ]; then
+            echo "APISIX on port $port did not become ready after 15 attempts. Exiting..."
+            exit 1
+        fi
+        echo "APISIX on port $port not ready yet. Waiting 2 seconds before next check..."
+    done
+done
+
 echo "Configuring Vault secrets engine and consumer groups for APISIX instances"
 for port in ${APISIX_ADMIN_API_PORTS//,/ }
 do

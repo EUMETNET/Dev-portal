@@ -93,8 +93,20 @@ _start_external_services() {
 
 # Configure Vault
 _configure_vault() {
-    docker exec -e VAULT_SECRET_ENGINE=${VAULT_SECRET_ENGINE} -i vault-${ENV} sh /vault/config/setup.sh || { remove $ENV; exit 1; }
-    docker exec -e VAULT_SECRET_ENGINE=${VAULT_SECRET_ENGINE} -i vault-2-${ENV} sh /vault/config/setup.sh || { remove $ENV; exit 1; }
+    echo "Waiting for Vault to be ready before configuring it..."
+    for instance in vault-${ENV} vault-2-${ENV}; do
+        counter=0
+        while ! docker exec "$instance" vault status > /dev/null 2>&1; do
+            sleep 2
+            counter=$((counter+1))
+            if [ $counter -ge 15 ]; then
+                echo "Vault ($instance) did not become healthy after 15 attempts. Exiting..."
+                remove $ENV; exit 1
+            fi
+            echo "Vault ($instance) not ready yet. Waiting 2 seconds before next check..."
+        done
+        docker exec -e VAULT_SECRET_ENGINE=${VAULT_SECRET_ENGINE} -i "$instance" sh /vault/config/setup.sh || { remove $ENV; exit 1; }
+    done
 }
 
 # Configure Keycloak
