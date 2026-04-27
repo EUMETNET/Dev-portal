@@ -98,9 +98,8 @@ async def fetch_service_status(client: AsyncClient) -> StatusResponse:
     if not checks:
         logger.warning("No services configured for status monitoring")
 
-    results = await asyncio.gather(*checks)
-    services = results
-    overall = determine_overall_status(results)
+    services = await asyncio.gather(*checks)
+    overall = determine_overall_status(services)
 
     logger.debug("Service status check complete: %s", overall.value)
     return StatusResponse(overall=overall, services=services)

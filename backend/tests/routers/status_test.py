@@ -8,7 +8,8 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.config import settings
-from app.models.status import ServiceHealth, ServiceStatus, StatusResponse
+from app.models.status import ServiceHealth, ServiceStatus
+from app.models.response import StatusResponse
 
 pytestmark = pytest.mark.anyio
 
