@@ -7,11 +7,8 @@ from aiocache import cached, Cache  # type: ignore
 from httpx import AsyncClient, HTTPStatusError
 from app.config import settings, logger
 from app.dependencies.http_client import http_request
-from app.models.status import (
-    ServiceHealth,
-    ServiceStatus,
-    StatusResponse,
-)
+from app.models.status import ServiceHealth, ServiceStatus
+from app.models.response import StatusResponse
 
 config = settings()
 

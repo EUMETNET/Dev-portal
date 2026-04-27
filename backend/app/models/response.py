@@ -3,6 +3,7 @@ API client response models
 """
 
 from pydantic import BaseModel, Field
+from app.models.status import ServiceHealth, ServiceStatus
 
 
 class GetAPIKey(BaseModel):
@@ -38,3 +39,12 @@ class GetRoutes(BaseModel):
     routes: list[RouteWithLimits] = Field(
         ..., description="The routes that require key authentication"
     )
+
+
+class StatusResponse(BaseModel):
+    """
+    Response model for the GET /status endpoint
+    """
+
+    overall: ServiceStatus = Field(..., description="The overall status across all services")
+    services: list[ServiceHealth] = Field(..., description="The health of each individual service")

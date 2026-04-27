@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from httpx import AsyncClient
 from app.dependencies.jwt_token import validate_token, AccessToken
 from app.dependencies.http_client import get_http_client
-from app.models.status import StatusResponse
+from app.models.response import StatusResponse
 from app.services import status
 
 router = APIRouter()

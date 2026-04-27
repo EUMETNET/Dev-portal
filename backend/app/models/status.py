@@ -27,16 +27,3 @@ class ServiceHealth(BaseModel):
     name: str = Field(..., description="The name of the service")
     status: ServiceStatus = Field(..., description="The health status of the service")
     url: str = Field(..., description="The URL of the service")
-
-
-class StatusResponse(BaseModel):
-    """
-    Representing the overall status response.
-
-    Attributes:
-        overall (ServiceStatus): The overall status across all services.
-        services (list[ServiceHealth]): The health of each individual service.
-    """
-
-    overall: ServiceStatus = Field(..., description="The overall status across all services")
-    services: list[ServiceHealth] = Field(..., description="The health of each individual service")
