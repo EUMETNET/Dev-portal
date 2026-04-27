@@ -66,6 +66,14 @@ status:
   services:
     - name: "MeteoGate Website"
       url: "https://meteogate.eu/"
+    - name: "Open Radar Data (ORD)"
+      url: "https://api.meteogate.eu/eu-eumetnet-weather-radar/"
+    - name: "Warnings API"
+      url: "https://api.meteogate.eu/warnings"
+    - name: "Surface observation API"
+      url: "https://api.meteogate.eu/eu-eumetnet-surface-observations"
+    - name: "Climate Data API"
+      url: "https://api.meteogate.eu/eu-eumetnet-climate-observations/v1"
 ```
 
 #### Example secrets.default.yaml
