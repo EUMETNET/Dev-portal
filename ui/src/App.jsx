@@ -36,6 +36,61 @@ function App() {
     };
   }, [auth]);
 
+  const apiAction = async (apiCall, onSuccess) => {
+    setShowStatus(false);
+    try {
+      const { data, isError } = await apiCall();
+      if (!isError) {
+        onSuccess(data);
+      } else {
+        showToaster(data?.message ?? 'Undefined error message');
+      }
+    } catch (error) {
+      console.error(error);
+      if (error.message === 'User is not logged in') {
+        await auth.signinRedirect();
+        return;
+      }
+      showToaster('Unable to communicate with the API server');
+    }
+  };
+
+  const handleGetAPIKey = () =>
+    apiAction(getAPIKey, (data) => {
+      const apiKey = data.apiKey;
+      setInfoMessage(
+        <>
+          <p className="api-key-label">API Key</p>
+          <div className="api-key-container">
+            <span className="api-key-text">{apiKey}</span>
+            <button
+              className="btn-copy"
+              aria-label="Copy API Key"
+              onClick={() => handleCopyApiKey(apiKey)}
+              title="Copy API Key"
+            >
+              <img src="/icons/copy.svg" alt="Copy" className="copy-icon" />
+            </button>
+          </div>
+        </>
+      );
+    });
+
+  const handleDeleteApiKey = () =>
+    apiAction(deleteAPIKey, () => {
+      setInfoMessage('API key deleted successfully');
+    });
+
+  const handleRoutes = () =>
+    apiAction(getRoutes, (data) => {
+      const listItems = data.routes.map((currElement, index) => ({
+        id: index,
+        route: currElement.url,
+        limits: currElement.limits,
+      }));
+      setInfoMessage(generateTable(listItems));
+    });
+
   const handleCopyApiKey = (apiKey) => {
     navigator.clipboard.writeText(apiKey);
     toast.success('API key copied to clipboard!', {
@@ -47,86 +102,6 @@ function App() {
       draggable: true,
       theme: 'dark',
     });
-  };
-
-  const handleGetAPIKey = async () => {
-    setShowStatus(false);
-    try {
-      const { data, isError } = await getAPIKey();
-      if (!isError) {
-        const apiKey = data.apiKey;
-        setInfoMessage(
-          <>
-            <p className="api-key-label">API Key</p>
-            <div className="api-key-container">
-              <span className="api-key-text">{apiKey}</span>
-              <button
-                className="btn-copy"
-                aria-label="Copy API Key"
-                onClick={() => handleCopyApiKey(apiKey)}
-                title="Copy API Key"
-              >
-                <img src="/icons/copy.svg" alt="Copy" className="copy-icon" />
-              </button>
-            </div>
-          </>
-        );
-      } else {
-        showToaster(data?.message ?? 'Undefined error message');
-      }
-    } catch (error) {
-      console.error(error);
-      if (error.message === 'User is not logged in') {
-        await auth.signinRedirect();
-        console.log('User is not logged in');
-      }
-      showToaster('Unable to communicate with the API server');
-    }
-  };
-
-  const handleDeleteApiKey = async () => {
-    setShowStatus(false);
-    try {
-      const { data, isError } = await deleteAPIKey();
-      if (!isError) {
-        setInfoMessage('API key deleted successfully');
-      } else {
-        showToaster(data?.message ?? 'Undefined error message');
-      }
-    } catch (error) {
-      console.error(error);
-      if (error.message === 'User is not logged in') {
-        await auth.signinRedirect();
-      }
-      showToaster('Unable to communicate with the API server');
-    }
-  };
-
-  const handleRoutes = async () => {
-    setShowStatus(false);
-    try {
-      const { data, isError } = await getRoutes();
-      if (!isError) {
-        const routes = data.routes;
-        const listItems = routes.map((currElement, index) => {
-          return {
-            id: index,
-            route: currElement.url,
-            limits: currElement.limits,
-          };
-        });
-        setInfoMessage(generateTable(listItems));
-      } else {
-        showToaster(data?.message ?? 'Undefined error message');
-      }
-    } catch (error) {
-      console.error(error);
-      if (error.message === 'User is not logged in') {
-        await auth.signinRedirect();
-        console.log('User is not logged in');
-      }
-      showToaster('Unable to communicate with the API server');
-    }
   };
 
   const handleShowStatus = () => {
