@@ -20,6 +20,7 @@ function App() {
   const auth = useAuth();
   const [infoMessage, setInfoMessage] = useState('');
   const [showStatus, setShowStatus] = useState(false);
+  const statusTopRef = React.useRef(null);
 
   useEffect(() => {
     // send user back to Keycloak login screen if there is silentRenewError
@@ -131,7 +132,7 @@ function App() {
   const handleShowStatus = () => {
     setShowStatus(true);
     setInfoMessage('');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    statusTopRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   function generateTable(routes) {
@@ -172,7 +173,7 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className="App" ref={statusTopRef}>
       {/* <Auth /> */}
       {showStatus ? null : <Header />}
 
