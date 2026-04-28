@@ -56,8 +56,16 @@ async def check_http_service(
             last_error = str(e)
 
         if attempt < max_attempts:
-            logger.debug("Retry %d/%d for %s: %s", attempt, max_attempts, name, last_error)
-            await asyncio.sleep(retry_delay)
+            delay = retry_delay**attempt
+            logger.debug(
+                "Retry %d/%d for %s: %s (next retry in %ds)",
+                attempt,
+                max_attempts,
+                name,
+                last_error,
+                delay,
+            )
+            await asyncio.sleep(delay)
 
     logger.warning(
         "Service check failed for %s after %d attempts: %s", name, max_attempts, last_error
