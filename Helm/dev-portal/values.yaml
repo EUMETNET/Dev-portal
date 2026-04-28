@@ -28,13 +28,13 @@ backend:
       - name: "MeteoGate Website"
         url: "https://meteogate.eu/"
       - name: "Open Radar Data (ORD)"
-        url: "https://api.meteogate.eu/eu-eumetnet-weather-radar/"
+        url: "https://api.meteogate.eu/eu-eumetnet-weather-radar/health"
       - name: "Warnings API"
         url: "https://api.meteogate.eu/warnings"
       - name: "Surface observation API"
-        url: "https://api.meteogate.eu/eu-eumetnet-surface-observations"
+        url: "https://api.meteogate.eu/eu-eumetnet-surface-observations/health"
       - name: "Climate Data API"
-        url: "https://api.meteogate.eu/eu-eumetnet-climate-observations/v1"
+        url: "https://api.meteogate.eu/eu-eumetnet-climate-observations/v1/health"
   secrets:
     # Provide a existing secret. If empty, one is created
     secretName: ""
