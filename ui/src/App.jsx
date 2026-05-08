@@ -18,6 +18,7 @@ import { getAPIKey, deleteAPIKey, getRoutes } from './Services/apiService';
 function App() {
   const auth = useAuth();
   const [infoMessage, setInfoMessage] = useState('');
+  const [infoType, setInfoType] = useState(null); // 'apikey', 'routes', 'deleted', or null
   const [showStatus, setShowStatus] = useState(false);
   const statusTopRef = React.useRef(null);
 
@@ -57,6 +58,7 @@ function App() {
   const handleGetAPIKey = () =>
     apiAction(getAPIKey, (data) => {
       const apiKey = data.apiKey;
+      setInfoType('apikey');
       setInfoMessage(
         <>
           <p className="api-key-label">API Key</p>
@@ -77,7 +79,12 @@ function App() {
 
   const handleDeleteApiKey = () =>
     apiAction(deleteAPIKey, () => {
-      setInfoMessage('');
+      setInfoType('deleted');
+      setInfoMessage(
+        <div className="delete-success-message">
+          <p>Your API key has been deleted.</p>
+        </div>
+      );
       toast.success('API key deleted successfully!', {
         position: 'top-right',
         autoClose: 3000,
@@ -96,6 +103,7 @@ function App() {
         route: currElement.url,
         limits: currElement.limits,
       }));
+      setInfoType('routes');
       setInfoMessage(generateTable(listItems));
     });
 
@@ -113,6 +121,10 @@ function App() {
   };
 
   const handleShowStatus = () => {
+    if (infoType === 'deleted') {
+      setInfoMessage('');
+      setInfoType(null);
+    }
     setShowStatus(true);
     statusTopRef.current.scrollIntoView({ behavior: 'smooth' });
   };
@@ -138,6 +150,7 @@ function App() {
   const logout = () => {
     auth.signoutRedirect();
     setInfoMessage('');
+    setInfoType(null);
     setShowStatus(false);
   };
 
