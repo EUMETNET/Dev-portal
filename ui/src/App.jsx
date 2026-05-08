@@ -81,8 +81,8 @@ function App() {
     apiAction(deleteAPIKey, () => {
       setInfoType('deleted');
       setInfoMessage(
-        <div className="delete-success-message">
-          <p>Your API key has been deleted.</p>
+        <div className="infoPanel">
+          Your API key has been deleted.
         </div>
       );
       toast.success('API key deleted successfully!', {
