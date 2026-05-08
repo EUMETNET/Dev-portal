@@ -77,7 +77,16 @@ function App() {
 
   const handleDeleteApiKey = () =>
     apiAction(deleteAPIKey, () => {
-      setInfoMessage('API key deleted successfully');
+      setInfoMessage('');
+      toast.success('API key deleted successfully!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'dark',
+      });
     });
 
   const handleRoutes = () =>
@@ -105,7 +114,6 @@ function App() {
 
   const handleShowStatus = () => {
     setShowStatus(true);
-    setInfoMessage('');
     statusTopRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -129,7 +137,7 @@ function App() {
 
   const logout = () => {
     auth.signoutRedirect();
-    setInfoMessage();
+    setInfoMessage('');
     setShowStatus(false);
   };
 
