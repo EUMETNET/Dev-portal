@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -13,11 +12,15 @@ import { toast } from 'react-toastify';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import InfoPanelCard from './components/InfoPanelCard';
+import ServiceStatus from './components/ServiceStatus';
 import { getAPIKey, deleteAPIKey, getRoutes } from './Services/apiService';
 
 function App() {
   const auth = useAuth();
   const [infoMessage, setInfoMessage] = useState('');
+  const [infoType, setInfoType] = useState(null); // 'apikey', 'routes', 'deleted', or null
+  const [showStatus, setShowStatus] = useState(false);
+  const statusTopRef = React.useRef(null);
 
   useEffect(() => {
     // send user back to Keycloak login screen if there is silentRenewError
@@ -33,6 +36,73 @@ function App() {
     };
   }, [auth]);
 
+  const apiAction = async (apiCall, onSuccess) => {
+    setShowStatus(false);
+    try {
+      const { data, isError } = await apiCall();
+      if (!isError) {
+        onSuccess(data);
+      } else {
+        showToaster(data?.message ?? 'Undefined error message');
+      }
+    } catch (error) {
+      console.error(error);
+      if (error.message === 'User is not logged in') {
+        await auth.signinRedirect();
+        return;
+      }
+      showToaster('Unable to communicate with the API server');
+    }
+  };
+
+  const handleGetAPIKey = () =>
+    apiAction(getAPIKey, (data) => {
+      const apiKey = data.apiKey;
+      setInfoType('apikey');
+      setInfoMessage(
+        <>
+          <p className="api-key-label">API Key</p>
+          <div className="api-key-container">
+            <span className="api-key-text">{apiKey}</span>
+            <button
+              className="btn-copy"
+              aria-label="Copy API Key"
+              onClick={() => handleCopyApiKey(apiKey)}
+              title="Copy API Key"
+            >
+              <img src="/icons/copy.svg" alt="Copy" className="copy-icon" />
+            </button>
+          </div>
+        </>
+      );
+    });
+
+  const handleDeleteApiKey = () =>
+    apiAction(deleteAPIKey, () => {
+      setInfoType('deleted');
+      setInfoMessage(<div className="infoPanel">Your API key has been deleted.</div>);
+      toast.success('API key deleted successfully!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'dark',
+      });
+    });
+
+  const handleRoutes = () =>
+    apiAction(getRoutes, (data) => {
+      const listItems = data.routes.map((currElement, index) => ({
+        id: index,
+        route: currElement.url,
+        limits: currElement.limits,
+      }));
+      setInfoType('routes');
+      setInfoMessage(generateTable(listItems));
+    });
+
   const handleCopyApiKey = (apiKey) => {
     navigator.clipboard.writeText(apiKey);
     toast.success('API key copied to clipboard!', {
@@ -46,81 +116,13 @@ function App() {
     });
   };
 
-  const handleGetAPIKey = async () => {
-    try {
-      const { data, isError } = await getAPIKey();
-      if (!isError) {
-        const apiKey = data.apiKey;
-        setInfoMessage(
-          <>
-            <p className="api-key-label">API Key</p>
-            <div className="api-key-container">
-              <span className="api-key-text">{apiKey}</span>
-              <button
-                className="btn-copy"
-                aria-label="Copy API Key"
-                onClick={() => handleCopyApiKey(apiKey)}
-                title="Copy API Key"
-              >
-                <img src="/icons/copy.svg" alt="Copy" className="copy-icon" />
-              </button>
-            </div>
-          </>
-        );
-      } else {
-        showToaster(data?.message ?? 'Undefined error message');
-      }
-    } catch (error) {
-      console.error(error);
-      if (error.message === 'User is not logged in') {
-        await auth.signinRedirect();
-        console.log('User is not logged in');
-      }
-      showToaster('Unable to communicate with the API server');
+  const handleShowStatus = () => {
+    if (infoType === 'deleted') {
+      setInfoMessage('');
+      setInfoType(null);
     }
-  };
-
-  const handleDeleteApiKey = async () => {
-    try {
-      const { data, isError } = await deleteAPIKey();
-      if (!isError) {
-        setInfoMessage('API key deleted successfully');
-      } else {
-        showToaster(data?.message ?? 'Undefined error message');
-      }
-    } catch (error) {
-      console.error(error);
-      if (error.message === 'User is not logged in') {
-        await auth.signinRedirect();
-      }
-      showToaster('Unable to communicate with the API server');
-    }
-  };
-
-  const handleRoutes = async () => {
-    try {
-      const { data, isError } = await getRoutes();
-      if (!isError) {
-        const routes = data.routes;
-        const listItems = routes.map((currElement, index) => {
-          return {
-            id: index,
-            route: currElement.url,
-            limits: currElement.limits,
-          };
-        });
-        setInfoMessage(generateTable(listItems));
-      } else {
-        showToaster(data?.message ?? 'Undefined error message');
-      }
-    } catch (error) {
-      console.error(error);
-      if (error.message === 'User is not logged in') {
-        await auth.signinRedirect();
-        console.log('User is not logged in');
-      }
-      showToaster('Unable to communicate with the API server');
-    }
+    setShowStatus(true);
+    statusTopRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   function generateTable(routes) {
@@ -143,10 +145,9 @@ function App() {
 
   const logout = () => {
     auth.signoutRedirect();
-    // use below one if user is wanted to log out only from dev portal but not from keycloak
-    // of course prompted to login again once the IdP session expires
-    //auth.removeUser();
-    setInfoMessage();
+    setInfoMessage('');
+    setInfoType(null);
+    setShowStatus(false);
   };
 
   function showToaster(error) {
@@ -163,21 +164,36 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className="App" ref={statusTopRef}>
       {/* <Auth /> */}
-      <Header />
+      {showStatus ? null : <Header />}
 
       {auth.isAuthenticated ? (
         <div className="content-container">
-          {/* Button Group */}
-          <div className="button-group">
-            <Button onClick={handleGetAPIKey} className="btn--yellow btn--uniform" label="Get API Key" raised />
-            <Button onClick={handleRoutes} className="btn--white btn--uniform" label="Show Routes" raised />
-            <Button onClick={handleDeleteApiKey} className="btn--red btn--uniform" label="Delete API Key" raised />
-            <Button onClick={logout} className="btn--green btn--uniform" label="Logout" raised />
-          </div>
+          {showStatus ? (
+            <div className="status-page-nav">
+              <button onClick={() => setShowStatus(false)} className="status-link-btn">
+                <span>← Back to Developer Portal</span>
+              </button>
+            </div>
+          ) : (
+            <div className="button-group">
+              <Button onClick={handleGetAPIKey} className="btn--yellow btn--uniform" label="Get API Key" raised />
+              <Button onClick={handleRoutes} className="btn--white btn--uniform" label="Show Routes" raised />
+              <Button onClick={handleDeleteApiKey} className="btn--red btn--uniform" label="Delete API Key" raised />
+              <Button onClick={logout} className="btn--green btn--uniform" label="Logout" raised />
+            </div>
+          )}
 
-          <InfoPanelCard>{infoMessage}</InfoPanelCard>
+          {showStatus ? <ServiceStatus /> : <InfoPanelCard>{infoMessage}</InfoPanelCard>}
+
+          {!showStatus && (
+            <div className="status-link-container">
+              <button onClick={handleShowStatus} className="status-link-btn">
+                <span>MeteoGate Status Dashboard</span>
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="content-container">

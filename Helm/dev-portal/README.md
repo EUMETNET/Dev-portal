@@ -50,6 +50,10 @@ The following table lists the configurable parameters of the Smartmetserver char
 | `backend.service.port` | Port for the backend service | `80` |
 | `backend.config.log_level` | Log level for the backend | `INFO` |
 | `backend.config.keycloak_cluster_url` | URL for the Keycloak service | `http://keycloak.keycloak.svc.cluster.local` |
+| `backend.config.status_check.max_attempts` | Maximum attemps per service check | `3` |
+| `backend.config.status_check.retry_delay` | Delay (seconds) between retries | `2` |
+| `backend.config.status_check.cache_ttl` | Status cache TTL (seconds) | `30` |
+| `backend.config.status_services` | List of external services to monitor | See values.yaml |
 | `backend.secrets.secretName` | Name of a existing secret for the backend. If empty, one is created| `""` |
 | `backend.secrets.vault_url` | URL for the Vaul service | `http://vault.vault.svc.cluster.local:8200` |
 | `backend.secrets.vault_token` | Token for the Vault | `""` |

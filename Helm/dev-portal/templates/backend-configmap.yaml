@@ -10,3 +10,17 @@ data:
       port: {{ .Values.backend.containerport }}
       log_level: {{ .Values.backend.config.log_level | quote }}
       allowed_origins: ["*"]
+
+    status:
+      max_attempts: {{ .Values.backend.config.status_check.max_attempts }}
+      retry_delay: {{ .Values.backend.config.status_check.retry_delay }}
+      cache_ttl: {{ .Values.backend.config.status_check.cache_ttl }}
+      services:
+        {{- if .Values.backend.config.status_services }}
+        {{- range .Values.backend.config.status_services }}
+        - name: {{ .name | quote }}
+          url: {{ .url | quote }}
+        {{- end }}
+        {{- else }}
+        []
+        {{- end }}
