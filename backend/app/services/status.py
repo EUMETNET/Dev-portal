@@ -51,9 +51,6 @@ async def check_http_service(
             return ServiceHealth(name=name, status=ServiceStatus.UP, url=url)
         except HTTPStatusError as e:
             status_code = e.response.status_code
-            if status_code == 429:
-                logger.warning("Rate limited when checking %s (429), treating as UP", name)
-                return ServiceHealth(name=name, status=ServiceStatus.UP, url=url)
             if status_code < 500:
                 return ServiceHealth(name=name, status=ServiceStatus.DEGRADED, url=url)
             last_error = f"HTTP {status_code}"
