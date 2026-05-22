@@ -78,7 +78,7 @@ class StatusServiceSettings(BaseSettings):
 class StatusSettings(BaseSettings):
     """Status monitoring settings."""
 
-    max_attempts: int = 3
+    max_attempts: int = 5
     retry_delay: int = 2
     cache_ttl: int = 120
     services: list[StatusServiceSettings] = []
