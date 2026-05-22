@@ -60,7 +60,7 @@ server:
   log_level: "DEBUG"
   allowed_origins: ["*"]
 status:
-  max_attempts: 3
+  max_attempts: 5
   retry_delay: 2
   cache_ttl: 120
   services:
