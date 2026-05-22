@@ -62,7 +62,7 @@ server:
 status:
   max_attempts: 5
   retry_delay: 2
-  cache_ttl: 120
+  cache_ttl: 240
   services:
     - name: "MeteoGate Website"
       url: "https://meteogate.eu/"

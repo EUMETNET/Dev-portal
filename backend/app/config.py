@@ -80,7 +80,7 @@ class StatusSettings(BaseSettings):
 
     max_attempts: int = 5
     retry_delay: int = 2
-    cache_ttl: int = 120
+    cache_ttl: int = 240
     services: list[StatusServiceSettings] = []
 
 
