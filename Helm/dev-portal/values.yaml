@@ -23,7 +23,7 @@ backend:
     status_check:
       max_attempts: 5
       retry_delay: 2
-      cache_ttl: 30
+      cache_ttl: 240
     status_services:
       - name: "MeteoGate Website"
         url: "https://meteogate.eu/"

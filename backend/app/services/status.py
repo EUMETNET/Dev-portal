@@ -10,6 +10,8 @@ from app.dependencies.http_client import http_request
 from app.models.status import ServiceHealth, ServiceStatus
 from app.models.response import StatusResponse
 
+MAX_RETRY_DELAY = 8
+
 config = settings()
 
 MAX_ATTEMPTS = config.status.max_attempts
@@ -56,7 +58,7 @@ async def check_http_service(
             last_error = str(e)
 
         if attempt < max_attempts:
-            delay = retry_delay**attempt
+            delay = min(retry_delay**attempt, MAX_RETRY_DELAY)
             logger.debug(
                 "Retry %d/%d for %s: %s (next retry in %ds)",
                 attempt,
