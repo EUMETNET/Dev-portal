@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -46,13 +46,13 @@
                     <h2>Sign In</h2>
                     
                     <!-- Social Login Options -->
-                    <#if realm.password && social.providers??>
+                    <#if social.providers??>
                         <div class="social-login">
                             <#list social.providers as p>
                                 <a id="social-${p.alias}" 
                                    href="${p.loginUrl}" 
                                    class="social-btn"
-                                   type="button">
+                                   >
                                     ${p.displayName}
                                 </a>
                             </#list>
