@@ -14,7 +14,7 @@ const Header = () => {
         </div>
       </div>
       <div className="header-content">
-        <h1>Developer Portal</h1>
+        <h1>MeteoGate API key Portal</h1>
         <p className="subtitle">
           <span className="highlight">Register</span> and <span className="highlight">manage</span> your API keys and{' '}
           <span className="highlight">view</span> available routes
