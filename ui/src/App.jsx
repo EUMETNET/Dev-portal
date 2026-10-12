@@ -173,7 +173,7 @@ function App() {
           {showStatus ? (
             <div className="status-page-nav">
               <button onClick={() => setShowStatus(false)} className="status-link-btn">
-                <span>← Back to Developer Portal</span>
+                <span>← Back to API key Portal</span>
               </button>
             </div>
           ) : (
@@ -198,7 +198,7 @@ function App() {
       ) : (
         <div className="content-container">
           <div className="login-screen">
-            <h3>Welcome to Developer Portal</h3>
+            <h3>Welcome to the MeteoGate API key Portal</h3>
             <p className="login-screen-text">Please log in to access your API keys and manage routes</p>
             <Button onClick={() => auth.signinRedirect()} className="btn--white" label="Login" raised />
 
